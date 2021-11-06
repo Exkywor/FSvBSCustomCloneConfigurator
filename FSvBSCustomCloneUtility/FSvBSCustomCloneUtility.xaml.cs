@@ -30,9 +30,10 @@ namespace FSvBSCustomCloneUtility
 
             string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
             string targetFile = @"C:\Users\ferna\Desktop\target.pcc";
+            string customHair = @"C:\Users\ferna\Desktop\hair.pcc";
 
-            var writer = new MorphWriter();
-            writer.ApplyMorph(ronFile,targetFile);
+            var writer = new MorphWriter(ronFile,targetFile,customHair);
+            writer.ApplyMorph();
         }
 
         /// <summary>
