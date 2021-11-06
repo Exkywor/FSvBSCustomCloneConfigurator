@@ -1,6 +1,7 @@
 ﻿using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Unreal;
+using LegendaryExplorerCore.Unreal.BinaryConverters;
 using MassEffectModManagerCore.modmanager.save.game3;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace FSvBSCustomCloneUtility.Tools
 {
     public class MorphWriter
     {
+        // TODO: This will change for other files!
         const int TargetExportIndex = 2926;
         
         private string ronFile;
@@ -34,6 +36,8 @@ namespace FSvBSCustomCloneUtility.Tools
         {
             LoadResources(ronFile, targetFile);
             EditBones();
+            EditLODVertices();
+            // Only call for the ones that have LODs
             pcc.Save();
         }
 
@@ -60,8 +64,8 @@ namespace FSvBSCustomCloneUtility.Tools
 
             foreach (var item in m_aFinalSkeleton)
             {
-                var offsetBone = offsetBones.Find(x => x.Name.ToString() == item.Properties.GetProp<NameProperty>("nName").Value);
-                var vPos = item.Properties.GetProp<StructProperty>("vPos");
+                MorphHead.OffsetBone offsetBone = offsetBones.Find(x => x.Name.ToString() == item.Properties.GetProp<NameProperty>("nName").Value);
+                StructProperty vPos = item.Properties.GetProp<StructProperty>("vPos");
                 vPos.GetProp<FloatProperty>("X").Value = offsetBone.Offset.X;
                 vPos.GetProp<FloatProperty>("Y").Value = offsetBone.Offset.Y;
                 vPos.GetProp<FloatProperty>("Z").Value = offsetBone.Offset.Z;
@@ -69,6 +73,25 @@ namespace FSvBSCustomCloneUtility.Tools
                 morphExport.WriteProperty(m_aFinalSkeleton);
             }
 
+            return true;
+        }
+
+        private bool EditLODVertices()
+        {
+            BioMorphFace head = ObjectBinary.From<BioMorphFace>(morphExport);
+            List<Vector>[] lods = { morphHead.Lod0Vertices, morphHead.Lod1Vertices, morphHead.Lod2Vertices, morphHead.Lod3Vertices };
+
+            for (int lod = 0; lod < lods.Length; lod++)
+            {
+                for (int v = 0; v < lods[lod].Count; v++)
+                {
+                    head.LODs[lod][v].X = lods[lod][v].X;
+                    head.LODs[lod][v].Y = lods[lod][v].Y;
+                    head.LODs[lod][v].Z = lods[lod][v].Z;
+                }
+            }
+
+            morphExport.WriteBinary(head);
             return true;
         }
     }
