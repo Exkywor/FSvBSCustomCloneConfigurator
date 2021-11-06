@@ -1,4 +1,5 @@
-﻿using LegendaryExplorerCore;
+﻿using FSvBSCustomCloneUtility.Tools;
+using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,12 @@ namespace FSvBSCustomCloneUtility
         {
             InitializeComponent();
             initCoreLib();
+
+            string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
+            string targetFile = @"C:\Users\ferna\Desktop\target.pcc";
+
+            var writer = new MorphWriter();
+            writer.ApplyMorph(ronFile,targetFile);
         }
 
         /// <summary>
