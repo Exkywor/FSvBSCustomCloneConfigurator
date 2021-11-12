@@ -23,16 +23,18 @@ namespace FSvBSCustomCloneUtility
     /// </summary>
     public partial class MainWindow : Window
     {
+        string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
+        string targetFile = @"E:\Origin\Mass Effect 3\BIOGame\DLC\DLC_MOD_FSvBS\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
+        string customHair = @"C:\Users\ferna\Desktop\hair.pcc";
+
         public MainWindow()
         {
             InitializeComponent();
             initCoreLib();
 
-            string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
-            string targetFile = @"C:\Users\ferna\Desktop\target.pcc";
-            string customHair = @"C:\Users\ferna\Desktop\hair.pcc";
-
-            var writer = new MorphWriter(ronFile,targetFile,customHair);
+            var resources = new List<string>();
+            resources.Add(customHair);
+            var writer = new MorphWriter(ronFile,targetFile,resources);
             writer.ApplyMorph();
         }
 
