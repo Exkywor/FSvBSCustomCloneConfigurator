@@ -14,16 +14,13 @@ namespace FSvBSCustomCloneUtility.Tools
 {
     public class MorphWriter
     {
-        // Default path to clone vanilla meshes in case the user doesn't provide a hair
-        // private string customHair = @"E:\Origin/Mass Effect 3/BIOGame/CookedPCConsole/BIOG_HMG_HIR_PRO.pcc";
-        private string customHair = @"C:\Users\ferna\Desktop\hair.pcc";
-
         private string pccTargetFile;
         private IMEPackage pccTarget;
         private MorphHead morphSource;
         private ExportEntry morphTarget;
-        private List<IMEPackage> resources;
-        private IMEPackage hairPcc;
+        private Dictionary<String, IMEPackage> resources = new Dictionary<String, IMEPackage>();
+        private String[] vanillaNames = {"BIOG_HMM_HED_Alignment.pcc", "BIOG_HMF_HED_Alignment.pcc", "BIOG_HMM_HED_PROMorph_R.pcc", "BIOG_HMF_HED_PROMorph_R.pcc", "BIOG_HMM_HIR_PRO.pcc", "BIOG_HMF_HIR_PRO.pcc"};
+        private List<String> vanillaResourcePaths = new List<String>(); // Does not contain open pccs to save memory if not used
 
         // TODO: Validation of incoming stuff will be handled by Controller, not Model
         public MorphWriter(string ronFile, string targetFile)
@@ -62,17 +59,18 @@ namespace FSvBSCustomCloneUtility.Tools
             LoadMorphExport();
 
             // Load pccs that contain the hairs and complexions to use
-            if (resources != null && resources.Count > 0)
+            if (resourceFiles != null && resourceFiles.Count > 0)
             {
                 foreach (String file in resourceFiles)
                 {
-                    resources.Add(MEPackageHandler.OpenME3Package(file));
+                    String resourceName = file.Substring(file.LastIndexOf(@"\")+1);
+                    resourceName = resourceName.Remove(resourceName.Length - 4);
+                    resources.Add(resourceName, MEPackageHandler.OpenME3Package(file));
                 }
             }
 
-            // Deprecated: Will abstract to a load resources method
-            // TODO: Check if is ME3 or LE3
-            hairPcc = MEPackageHandler.OpenME3Package(this.customHair);
+            // Generate list of vanilla files that contains resources
+            LoadVanillaFiles();
 
             return;
         }
@@ -92,26 +90,67 @@ namespace FSvBSCustomCloneUtility.Tools
             return null;
         }
 
+        private void LoadVanillaFiles()
+        {
+            String prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame") + 7)}\CookedPCConsole";
+            // String prefix = pccTargetFile.Substring(0, pccTargetFile.LastIndexOf(@"\")+1);
+            foreach (String name in vanillaNames)
+            {
+                vanillaResourcePaths.Add(@$"{prefix}\{name}");
+            }
+        }
+
         private IEntry GetResource(String name)
         {
-            // Need to handle if there are no resources!
-            // Remember that the resources will point to the ME3 install folder, so I can figure it out from there
-            string hairName = name.Substring(name.IndexOf('.') + 1);
-            var sourceHair = hairPcc.FindEntry(hairName);
-            var sourcePackage = hairPcc.GetEntry(sourceHair.idxLink);
+            string fileName = name.Substring(0, name.IndexOf('.'));
+            string resourceName = name.Substring(name.IndexOf('.') + 1);
+            string packageName = resourceName.Substring(0, resourceName.IndexOf('.'));
 
-            EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, sourcePackage, pccTarget, null, true, out var result);
-            var clonedPackage = (ExportEntry) result;
+            if (vanillaResourcePaths.Contains(fileName)) {
+                // If resource is vanilla, try to find it in the current file
+                IEntry res = pccTarget.FindEntry(resourceName);
 
-            return clonedPackage;
+                if (res != null)
+                {
+                    return res;
+                }
+
+                // If resource not in current file, search in vanilla files
+                // TODO: Check if ME3 or LE3
+                String vanillaPccName = $"{vanillaResourcePaths[vanillaResourcePaths.IndexOf(fileName)]}.pcc";
+                IMEPackage vanillaPcc = MEPackageHandler.OpenME3Package(vanillaPccName);
+
+                // First we check that the resource we want exist
+                IEntry extRes = vanillaPcc.FindEntry(resourceName);
+                if (extRes == null) // Resource not found
+                {
+                    return null;
+                }
+                // Next we get the IEntry of the package itself, so we clone the full path, rather than just the resource
+                IEntry extPackage = vanillaPcc.FindEntry(packageName);
+
+                EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
+
+                // Now that the package is here, we find the ExportEntry of the resource, NOT the package, and resturn that
+                return pccTarget.FindEntry(resourceName);
+            } else if (resources.ContainsKey(fileName))
+            {
+                IEntry extRes = resources[fileName].FindEntry(resourceName);
+                if (extRes == null) // Resource not found
+                {
+                    return null;
+                }
+
+                IEntry extPackage = resources[fileName].FindEntry(packageName);
+
+                EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
+
+                return pccTarget.FindEntry(resourceName);
+            } else
+            {
+                return null;
+            }
         }
-
-        // Will need to add a parameter
-        private IEntry FindResource()
-        {
-            return null;
-        }
-
 
         private void EditBones()
         {
@@ -151,6 +190,11 @@ namespace FSvBSCustomCloneUtility.Tools
         private void EditHair()
         {
             ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
+            if (hairMesh == null)
+            {
+                // need to throw an error!
+                return;
+            }
 
             ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
             hairProp.Value = hairMesh.UIndex;

@@ -25,7 +25,7 @@ namespace FSvBSCustomCloneUtility
     {
         string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
         string targetFile = @"E:\Origin\Mass Effect 3\BIOGame\DLC\DLC_MOD_FSvBS\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
-        string customHair = @"C:\Users\ferna\Desktop\hair.pcc";
+        string customHair = @"C:\Users\ferna\Desktop\BIOG_HMF_HIR_PRO_HAIRMOD.pcc";
 
         public MainWindow()
         {
