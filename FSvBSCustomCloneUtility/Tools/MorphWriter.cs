@@ -18,9 +18,9 @@ namespace FSvBSCustomCloneUtility.Tools
         private IMEPackage pccTarget;
         private MorphHead morphSource;
         private ExportEntry morphTarget;
-        private Dictionary<String, IMEPackage> resources = new Dictionary<String, IMEPackage>();
-        private Dictionary<String, String> vanillaResources = new Dictionary<String, String>(); // Does not contain open pccs to save memory if not used
-        private String[] vanillaNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
+        private Dictionary<string, IMEPackage> resources = new Dictionary<string, IMEPackage>();
+        private Dictionary<string, string> vanillaResources = new Dictionary<string, string>(); // Does not contain open pccs to save memory if not used
+        private string[] vanillaNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
             "BIOG_HMM_HED_PROMorph_R", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO", "BIOG_HMF_HIR_PRO"};
 
         // TODO: Validation of incoming stuff will be handled by Controller, not Model
@@ -29,7 +29,7 @@ namespace FSvBSCustomCloneUtility.Tools
             Load(ronFile, targetFile);
         }
 
-        public MorphWriter(string ronFile, string targetFile, List<String> resources)
+        public MorphWriter(string ronFile, string targetFile, List<string> resources)
         {
 
             Load(ronFile, targetFile, resources);
@@ -49,7 +49,7 @@ namespace FSvBSCustomCloneUtility.Tools
             pccTarget.Save();
         }
 
-        private void Load(string ronFile, string targetFile, List<String>? resourceFiles = null)
+        private void Load(string ronFile, string targetFile, List<string>? resourceFiles = null)
         {
             // TODO: Add check for ME3 or LE3 file
             pccTargetFile = targetFile;
@@ -62,10 +62,10 @@ namespace FSvBSCustomCloneUtility.Tools
             // Load pccs that contain the hairs and complexions to use
             if (resourceFiles != null && resourceFiles.Count > 0)
             {
-                foreach (String file in resourceFiles)
+                foreach (string file in resourceFiles)
                 {
-                    String resourceName = file.Substring(file.LastIndexOf(@"\")+1);
-                    resourceName = resourceName.Remove(resourceName.Length - 4);
+                    string resourceName = file.Substring(file.LastIndexOf(@"\")+1); // Get only the file name
+                    resourceName = resourceName.Remove(resourceName.Length - 4); // Remove the .pcc part
                     resources.Add(resourceName, MEPackageHandler.OpenME3Package(file));
                 }
             }
@@ -93,24 +93,24 @@ namespace FSvBSCustomCloneUtility.Tools
 
         private void SetVanillaPaths()
         {
-            String prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame") + 7)}\CookedPCConsole";
-            // String prefix = pccTargetFile.Substring(0, pccTargetFile.LastIndexOf(@"\")+1);
-            foreach (String name in vanillaNames)
+            string prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame") + 7)}\CookedPCConsole";
+            // string prefix = pccTargetFile.Substring(0, pccTargetFile.LastIndexOf(@"\")+1);
+            foreach (string name in vanillaNames)
             {
                 vanillaResources.Add(name, $@"{prefix}\{name}.pcc");
             }
         }
 
         // Name Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
-        private IEntry GetResource(String name)
+        private IEntry GetResource(string name)
         {
             string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
-            string resourceName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
-            string packageName = resourceName.Substring(0, resourceName.IndexOf('.')); // Hair_Pulled02
+            string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
+            string packageName = instancedName.Substring(0, instancedName.IndexOf('.')); // Hair_Pulled02
 
             if (vanillaResources.ContainsKey(fileName)) {
                 // If resource is vanilla, try to find it in the current file
-                IEntry res = pccTarget.FindEntry(resourceName);
+                IEntry res = pccTarget.FindEntry(instancedName);
 
                 if (res != null)
                 {
@@ -122,7 +122,7 @@ namespace FSvBSCustomCloneUtility.Tools
                 IMEPackage vanillaPcc = MEPackageHandler.OpenME3Package(vanillaResources[fileName]);
 
                 // First we check that the resource we want exists
-                IEntry extRes = vanillaPcc.FindEntry(resourceName);
+                IEntry extRes = vanillaPcc.FindEntry(instancedName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
@@ -133,10 +133,10 @@ namespace FSvBSCustomCloneUtility.Tools
                 EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
 
                 // Now that the package and resource are here, we find the ExportEntry of the resource, NOT the package, and return that
-                return pccTarget.FindEntry(resourceName);
+                return pccTarget.FindEntry(instancedName);
             } else if (resources.ContainsKey(fileName))
             {
-                IEntry extRes = resources[fileName].FindEntry(resourceName);
+                IEntry extRes = resources[fileName].FindEntry(instancedName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
@@ -145,7 +145,7 @@ namespace FSvBSCustomCloneUtility.Tools
                 IEntry extPackage = resources[fileName].FindEntry(packageName);
                 EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
 
-                return pccTarget.FindEntry(resourceName);
+                return pccTarget.FindEntry(instancedName);
             } else
             {
                 return null;
