@@ -19,8 +19,9 @@ namespace FSvBSCustomCloneUtility.Tools
         private MorphHead morphSource;
         private ExportEntry morphTarget;
         private Dictionary<String, IMEPackage> resources = new Dictionary<String, IMEPackage>();
-        private String[] vanillaNames = {"BIOG_HMM_HED_Alignment.pcc", "BIOG_HMF_HED_Alignment.pcc", "BIOG_HMM_HED_PROMorph_R.pcc", "BIOG_HMF_HED_PROMorph_R.pcc", "BIOG_HMM_HIR_PRO.pcc", "BIOG_HMF_HIR_PRO.pcc"};
-        private List<String> vanillaResourcePaths = new List<String>(); // Does not contain open pccs to save memory if not used
+        private Dictionary<String, String> vanillaResources = new Dictionary<String, String>(); // Does not contain open pccs to save memory if not used
+        private String[] vanillaNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
+            "BIOG_HMM_HED_PROMorph_R", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO", "BIOG_HMF_HIR_PRO"};
 
         // TODO: Validation of incoming stuff will be handled by Controller, not Model
         public MorphWriter(string ronFile, string targetFile)
@@ -70,7 +71,7 @@ namespace FSvBSCustomCloneUtility.Tools
             }
 
             // Generate list of vanilla files that contains resources
-            LoadVanillaFiles();
+            SetVanillaPaths();
 
             return;
         }
@@ -90,23 +91,24 @@ namespace FSvBSCustomCloneUtility.Tools
             return null;
         }
 
-        private void LoadVanillaFiles()
+        private void SetVanillaPaths()
         {
             String prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame") + 7)}\CookedPCConsole";
             // String prefix = pccTargetFile.Substring(0, pccTargetFile.LastIndexOf(@"\")+1);
             foreach (String name in vanillaNames)
             {
-                vanillaResourcePaths.Add(@$"{prefix}\{name}");
+                vanillaResources.Add(name, $@"{prefix}\{name}.pcc");
             }
         }
 
+        // Name Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
         private IEntry GetResource(String name)
         {
-            string fileName = name.Substring(0, name.IndexOf('.'));
-            string resourceName = name.Substring(name.IndexOf('.') + 1);
-            string packageName = resourceName.Substring(0, resourceName.IndexOf('.'));
+            string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
+            string resourceName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
+            string packageName = resourceName.Substring(0, resourceName.IndexOf('.')); // Hair_Pulled02
 
-            if (vanillaResourcePaths.Contains(fileName)) {
+            if (vanillaResources.ContainsKey(fileName)) {
                 // If resource is vanilla, try to find it in the current file
                 IEntry res = pccTarget.FindEntry(resourceName);
 
@@ -117,21 +119,20 @@ namespace FSvBSCustomCloneUtility.Tools
 
                 // If resource not in current file, search in vanilla files
                 // TODO: Check if ME3 or LE3
-                String vanillaPccName = $"{vanillaResourcePaths[vanillaResourcePaths.IndexOf(fileName)]}.pcc";
-                IMEPackage vanillaPcc = MEPackageHandler.OpenME3Package(vanillaPccName);
+                IMEPackage vanillaPcc = MEPackageHandler.OpenME3Package(vanillaResources[fileName]);
 
-                // First we check that the resource we want exist
+                // First we check that the resource we want exists
                 IEntry extRes = vanillaPcc.FindEntry(resourceName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
                 }
+
                 // Next we get the IEntry of the package itself, so we clone the full path, rather than just the resource
                 IEntry extPackage = vanillaPcc.FindEntry(packageName);
-
                 EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
 
-                // Now that the package is here, we find the ExportEntry of the resource, NOT the package, and resturn that
+                // Now that the package and resource are here, we find the ExportEntry of the resource, NOT the package, and return that
                 return pccTarget.FindEntry(resourceName);
             } else if (resources.ContainsKey(fileName))
             {
@@ -142,7 +143,6 @@ namespace FSvBSCustomCloneUtility.Tools
                 }
 
                 IEntry extPackage = resources[fileName].FindEntry(packageName);
-
                 EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
 
                 return pccTarget.FindEntry(resourceName);
