@@ -18,10 +18,11 @@ namespace FSvBSCustomCloneUtility.Tools
         private IMEPackage pccTarget;
         private MorphHead morphSource;
         private ExportEntry morphTarget;
-        private Dictionary<string, IMEPackage> resources = new Dictionary<string, IMEPackage>();
-        private Dictionary<string, string> vanillaResources = new Dictionary<string, string>(); // Does not contain open pccs to save memory if not used
-        private string[] vanillaNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
-            "BIOG_HMM_HED_PROMorph_R", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO", "BIOG_HMF_HIR_PRO"};
+        // resources and vanillResources only contain paths, to avoid opening unnecessary pccs
+        private Dictionary<string, string> resources = new Dictionary<string, string>();
+        private Dictionary<string, string> globalResources = new Dictionary<string, string>();
+        private string[] globalNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
+            "BIOG_HMM_HED_PROMorph", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO_R", "BIOG_HMF_HIR_PRO"};
 
         // TODO: Validation of incoming stuff will be handled by Controller, not Model
         public MorphWriter(string ronFile, string targetFile)
@@ -45,13 +46,13 @@ namespace FSvBSCustomCloneUtility.Tools
             EditBones();
             EditLODVertices();
             EditHair();
+            EditMatOverrides();
 
             pccTarget.Save();
         }
 
-        private void Load(string ronFile, string targetFile, List<string>? resourceFiles = null)
+        private void Load(string ronFile, string targetFile, List<string>? resourcePaths = null)
         {
-            // TODO: Add check for ME3 or LE3 file
             pccTargetFile = targetFile;
             pccTarget = MEPackageHandler.OpenMEPackage(targetFile);
 
@@ -59,19 +60,14 @@ namespace FSvBSCustomCloneUtility.Tools
             morphSource = RONConverter.ConvertRON(ronFile);
             LoadMorphExport();
 
-            // Load pccs that contain the hairs and complexions to use
-            if (resourceFiles != null && resourceFiles.Count > 0)
+            // Store the list of resource files
+            if (resourcePaths != null && resourcePaths.Count > 0)
             {
-                foreach (string file in resourceFiles)
-                {
-                    string resourceName = file.Substring(file.LastIndexOf(@"\")+1); // Get only the file name
-                    resourceName = resourceName.Remove(resourceName.Length - 4); // Remove the .pcc part
-                    resources.Add(resourceName, MEPackageHandler.OpenME3Package(file));
-                }
+                SetResourcePaths(resourcePaths);
             }
 
-            // Generate list of vanilla files that contains resources
-            SetVanillaPaths();
+            // Generate list of BioG files that contains resources
+            SetGlobalPaths();
 
             return;
         }
@@ -91,13 +87,22 @@ namespace FSvBSCustomCloneUtility.Tools
             return null;
         }
 
-        private void SetVanillaPaths()
+        private void SetResourcePaths(List<string> resourcePaths)
+        {
+            foreach (string file in resourcePaths)
+            {
+                string resourceName = file.Substring(file.LastIndexOf(@"\") + 1); // Get only the file name
+                resourceName = resourceName.Remove(resourceName.Length - 4); // Remove the .pcc part
+                resources.Add(resourceName, file);
+            }
+        }
+
+        private void SetGlobalPaths()
         {
             string prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame") + 7)}\CookedPCConsole";
-            // string prefix = pccTargetFile.Substring(0, pccTargetFile.LastIndexOf(@"\")+1);
-            foreach (string name in vanillaNames)
+            foreach (string name in globalNames)
             {
-                vanillaResources.Add(name, $@"{prefix}\{name}.pcc");
+                globalResources.Add(name, $@"{prefix}\{name}.pcc");
             }
         }
 
@@ -108,44 +113,42 @@ namespace FSvBSCustomCloneUtility.Tools
             string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
             string packageName = instancedName.Substring(0, instancedName.IndexOf('.')); // Hair_Pulled02
 
-            if (vanillaResources.ContainsKey(fileName)) {
-                // If resource is vanilla, try to find it in the current file
-                IEntry res = pccTarget.FindEntry(instancedName);
+            if (globalResources.ContainsKey(fileName)) {
+                // If resource is in a BioG, try to find it in the current file
+                // Global resources are in a package named after the file
+                IEntry res = pccTarget.FindEntry(name);
 
                 if (res != null)
                 {
                     return res;
                 }
 
-                // If resource not in current file, search in vanilla files
-                // TODO: Check if ME3 or LE3
-                IMEPackage vanillaPcc = MEPackageHandler.OpenME3Package(vanillaResources[fileName]);
+                // If resource not in current file, search in BioG files
+                using IMEPackage globalPcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
 
-                // First we check that the resource we want exists
-                IEntry extRes = vanillaPcc.FindEntry(instancedName);
+                // We check that the resource we want exists
+                IEntry extRes = globalPcc.FindEntry(instancedName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
                 }
 
-                // Next we get the IEntry of the package itself, so we clone the full path, rather than just the resource
-                IEntry extPackage = vanillaPcc.FindEntry(packageName);
-                EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
+                EntryExporter.ExportExportToPackage((ExportEntry) extRes, pccTarget, out res);
 
-                // Now that the package and resource are here, we find the ExportEntry of the resource, NOT the package, and return that
-                return pccTarget.FindEntry(instancedName);
+                return res;
             } else if (resources.ContainsKey(fileName))
             {
-                IEntry extRes = resources[fileName].FindEntry(instancedName);
+                using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resources[fileName]);
+
+                IEntry extRes = resourcePcc.FindEntry(instancedName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
                 }
 
-                IEntry extPackage = resources[fileName].FindEntry(packageName);
-                EntryImporter.ImportAndRelinkEntries(EntryImporter.PortingOption.CloneAllDependencies, extPackage, pccTarget, null, true, out _);
+                EntryExporter.ExportExportToPackage((ExportEntry)extRes, pccTarget, out IEntry res);
 
-                return pccTarget.FindEntry(instancedName);
+                return res;
             } else
             {
                 return null;
@@ -189,7 +192,14 @@ namespace FSvBSCustomCloneUtility.Tools
 
         private void EditHair()
         {
-            ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
+            string hairName = morphSource.HairMesh.ToString();
+
+            if (hairName == "None")
+            {
+                return;
+            }
+
+            ExportEntry hairMesh = (ExportEntry)GetResource(morphSource.HairMesh);
             if (hairMesh == null)
             {
                 // need to throw an error!
@@ -199,6 +209,49 @@ namespace FSvBSCustomCloneUtility.Tools
             ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
             hairProp.Value = hairMesh.UIndex;
             morphTarget.WriteProperty(hairProp);
+        }
+
+        private void EditMatOverrides()
+        {
+            ExportEntry matOverride = (ExportEntry)pccTarget.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
+
+            matOverride.RemoveProperty("m_aTextureOverrides");
+            matOverride.WriteProperty(EditTextureOverride()); 
+
+        }
+
+        private ArrayProperty<StructProperty> EditTextureOverride()
+        {
+            var m_aTextureOverrides = new ArrayProperty<StructProperty>("m_aTextureOverrides");
+            foreach (var parameter in morphSource.TextureParameters)
+            {
+                string textureName = parameter.Value.Remove(parameter.Value.Length-1).Substring(1);
+
+                if (textureName == "None")
+                {
+                    continue;
+                }
+
+                PropertyCollection props = new PropertyCollection();
+                var texture = GetResource(textureName);
+                // Add handling of error if resource was not found
+                props.Add(new NameProperty(parameter.Name, "nName"));
+                props.Add(new ObjectProperty(texture.UIndex, "m_pTexture"));
+
+
+                m_aTextureOverrides.Add(new StructProperty("TextureParameter", props));
+            }
+            return m_aTextureOverrides;
+        }
+
+        private void EditColorOverride()
+        {
+
+        }
+
+        private void EditScalarOverride()
+        {
+
         }
     }
 }
