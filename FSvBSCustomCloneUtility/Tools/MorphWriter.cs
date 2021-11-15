@@ -138,6 +138,15 @@ namespace FSvBSCustomCloneUtility.Tools
                 return res;
             } else if (resources.ContainsKey(fileName))
             {
+                // After cloning a resource, it gets stored in a package with the fileName, so we check that it's not here already
+                IEntry res = pccTarget.FindEntry(name);
+
+                if (res != null)
+                {
+                    return res;
+
+                }
+
                 using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resources[fileName]);
 
                 IEntry extRes = resourcePcc.FindEntry(instancedName);
@@ -146,7 +155,7 @@ namespace FSvBSCustomCloneUtility.Tools
                     return null;
                 }
 
-                EntryExporter.ExportExportToPackage((ExportEntry)extRes, pccTarget, out IEntry res);
+                EntryExporter.ExportExportToPackage((ExportEntry)extRes, pccTarget, out res);
 
                 return res;
             } else
@@ -215,12 +224,54 @@ namespace FSvBSCustomCloneUtility.Tools
         {
             ExportEntry matOverride = (ExportEntry)pccTarget.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
 
+            matOverride.RemoveProperty("m_aScalarOverrides");
+            matOverride.WriteProperty(GenerateScalarOverrides());
+            matOverride.RemoveProperty("m_aColorOverrides");
+            matOverride.WriteProperty(GenerateColorOverrides());
             matOverride.RemoveProperty("m_aTextureOverrides");
-            matOverride.WriteProperty(EditTextureOverride()); 
-
+            matOverride.WriteProperty(GenerateTextureOverride());
         }
 
-        private ArrayProperty<StructProperty> EditTextureOverride()
+        private ArrayProperty<StructProperty> GenerateScalarOverrides()
+        {
+            var m_aScalarOverrides = new ArrayProperty<StructProperty>("m_aScalarOverrides");
+            foreach (var parameter in morphSource.ScalarParameters)
+            {
+                PropertyCollection props = new PropertyCollection();
+
+                props.Add(new NameProperty(parameter.Name, "nName"));
+                props.Add(new FloatProperty(parameter.Value, "sValue"));
+
+                m_aScalarOverrides.Add(new StructProperty("ScalarParameter", props));
+            }
+            return m_aScalarOverrides;
+        }
+
+        private ArrayProperty<StructProperty> GenerateColorOverrides()
+        {
+            var m_aColorOverrides = new ArrayProperty<StructProperty>("m_aColorOverrides");
+            foreach (var parameter in morphSource.VectorParameters)
+            {
+                PropertyCollection props = new PropertyCollection();
+
+                PropertyCollection color = new PropertyCollection();
+                color.Add(new FloatProperty(parameter.Value.R, "R"));
+                color.Add(new FloatProperty(parameter.Value.G, "G"));
+                color.Add(new FloatProperty(parameter.Value.B, "B"));
+                color.Add(new FloatProperty(parameter.Value.A, "A"));
+
+                StructProperty cValue = new StructProperty("LinearColor", color, "cValue", true);
+
+                props.Add(cValue);
+                props.Add(new NameProperty(parameter.Name, "nName"));
+
+                m_aColorOverrides.Add(new StructProperty("ColorParameter", props));
+            }
+
+            return m_aColorOverrides;
+        }
+
+        private ArrayProperty<StructProperty> GenerateTextureOverride()
         {
             var m_aTextureOverrides = new ArrayProperty<StructProperty>("m_aTextureOverrides");
             foreach (var parameter in morphSource.TextureParameters)
