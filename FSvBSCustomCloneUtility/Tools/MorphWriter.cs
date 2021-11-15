@@ -18,7 +18,7 @@ namespace FSvBSCustomCloneUtility.Tools
         private IMEPackage pccTarget;
         private MorphHead morphSource;
         private ExportEntry morphTarget;
-        // resources and vanillResources only contain paths, to avoid opening unnecessary pccs
+        // resources and globalResources only contain paths, to avoid opening unnecessary pccs
         private Dictionary<string, string> resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private Dictionary<string, string> globalResources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private string[] globalNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
@@ -56,24 +56,20 @@ namespace FSvBSCustomCloneUtility.Tools
             pccTargetFile = targetFile;
             pccTarget = MEPackageHandler.OpenMEPackage(targetFile);
 
-            // need to run some validation checks on the file first
             morphSource = RONConverter.ConvertRON(ronFile);
             LoadMorphExport();
 
-            // Store the list of resource files
             if (resourcePaths != null && resourcePaths.Count > 0)
             {
                 SetResourcePaths(resourcePaths);
             }
-
-            // Generate list of BioG files that contains resources
             SetGlobalPaths();
 
             return;
         }
         private IEntry LoadMorphExport()
         {
-            // Invariant: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
+            // INVARIANT: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
             var stuntActors = pccTarget.Exports.Where(e => e.ClassName == "SFXStuntActor");
             foreach (var stuntActor in stuntActors)
             {
@@ -109,59 +105,44 @@ namespace FSvBSCustomCloneUtility.Tools
         // Name Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
         private IEntry GetResource(string name)
         {
-            string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
-            string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
-            string packageName = instancedName.Substring(0, instancedName.IndexOf('.')); // Hair_Pulled02
+            string fileName = name.Substring(0, name.IndexOf('.'));
 
             if (globalResources.ContainsKey(fileName)) {
-                // If resource is in a BioG, try to find it in the current file
-                // Global resources are in a package named after the file
-                IEntry res = pccTarget.FindExport(name);
-
-                if (res != null)
-                {
-                    return res;
-                }
-
-                // If resource not in current file, search in BioG files
-                using IMEPackage globalPcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
-
-                // We check that the resource we want exists
-                IEntry extRes = globalPcc.FindExport(instancedName);
-                if (extRes == null) // Resource not found
-                {
-                    return null;
-                }
-
-                EntryExporter.ExportExportToPackage((ExportEntry) extRes, pccTarget, out res);
-
-                return res;
+                return GetOrCloneResource(name, globalResources);
             } else if (resources.ContainsKey(fileName))
             {
-                // After cloning a resource, it gets stored in a package with the fileName, so we check that it's not here already
-                IEntry res = pccTarget.FindExport(name);
-
-                if (res != null)
-                {
-                    return res;
-
-                }
-
-                using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resources[fileName]);
-
-                IEntry extRes = resourcePcc.FindExport(instancedName);
-                if (extRes == null) // Resource not found
-                {
-                    return null;
-                }
-
-                EntryExporter.ExportExportToPackage((ExportEntry)extRes, pccTarget, out res);
-
-                return res;
+                return GetOrCloneResource(name, resources);
             } else
             {
                 return null;
             }
+        }
+
+        private IEntry GetOrCloneResource(string name, Dictionary<string, string> resourcePaths)
+        {
+            string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
+            string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
+
+            // Check if resource is alrady in the file 
+            IEntry res = pccTarget.FindExport(name);
+
+            if (res != null)
+            {
+                return res;
+
+            }
+
+            using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resourcePaths[fileName]);
+
+            ExportEntry extRes = resourcePcc.FindExport(instancedName);
+            if (extRes == null) // Resource not found
+            {
+                return null;
+            }
+
+            EntryExporter.ExportExportToPackage(extRes, pccTarget, out res);
+
+            return res;
         }
 
         private void EditBones()
