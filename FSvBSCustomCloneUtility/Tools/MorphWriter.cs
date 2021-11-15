@@ -19,8 +19,8 @@ namespace FSvBSCustomCloneUtility.Tools
         private MorphHead morphSource;
         private ExportEntry morphTarget;
         // resources and vanillResources only contain paths, to avoid opening unnecessary pccs
-        private Dictionary<string, string> resources = new Dictionary<string, string>();
-        private Dictionary<string, string> globalResources = new Dictionary<string, string>();
+        private Dictionary<string, string> resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, string> globalResources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private string[] globalNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
             "BIOG_HMM_HED_PROMorph", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO_R", "BIOG_HMF_HIR_PRO"};
 
@@ -116,7 +116,7 @@ namespace FSvBSCustomCloneUtility.Tools
             if (globalResources.ContainsKey(fileName)) {
                 // If resource is in a BioG, try to find it in the current file
                 // Global resources are in a package named after the file
-                IEntry res = pccTarget.FindEntry(name);
+                IEntry res = pccTarget.FindExport(name);
 
                 if (res != null)
                 {
@@ -127,7 +127,7 @@ namespace FSvBSCustomCloneUtility.Tools
                 using IMEPackage globalPcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
 
                 // We check that the resource we want exists
-                IEntry extRes = globalPcc.FindEntry(instancedName);
+                IEntry extRes = globalPcc.FindExport(instancedName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
@@ -139,7 +139,7 @@ namespace FSvBSCustomCloneUtility.Tools
             } else if (resources.ContainsKey(fileName))
             {
                 // After cloning a resource, it gets stored in a package with the fileName, so we check that it's not here already
-                IEntry res = pccTarget.FindEntry(name);
+                IEntry res = pccTarget.FindExport(name);
 
                 if (res != null)
                 {
@@ -149,7 +149,7 @@ namespace FSvBSCustomCloneUtility.Tools
 
                 using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resources[fileName]);
 
-                IEntry extRes = resourcePcc.FindEntry(instancedName);
+                IEntry extRes = resourcePcc.FindExport(instancedName);
                 if (extRes == null) // Resource not found
                 {
                     return null;
