@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using Vector = MassEffectModManagerCore.modmanager.save.game3.Vector;
 
 namespace FSvBSCustomCloneUtility.Tools
 {
@@ -43,12 +45,21 @@ namespace FSvBSCustomCloneUtility.Tools
 
         public void ApplyMorph()
         {
-            EditBones();
-            EditLODVertices();
-            EditHair();
-            EditMatOverrides();
+            try
+            {
+                EditBones();
+                EditLODVertices();
+                EditHair();
+                EditMatOverrides();
 
-            pccTarget.Save();
+                pccTarget.Save();
+                return;
+            } catch (ArgumentNullException e)
+            {
+                MessageBox.Show($"{e.Message}.\nCheck that the element is spelled correctly and that you have provided a valid resource pcc if it's not in the basegame.", "Error", MessageBoxButton.OK);
+                return;
+            }
+
         }
 
         private void Load(string ronFile, string targetFile, List<string>? resourcePaths = null)
@@ -192,8 +203,7 @@ namespace FSvBSCustomCloneUtility.Tools
             ExportEntry hairMesh = (ExportEntry)GetResource(morphSource.HairMesh);
             if (hairMesh == null)
             {
-                // need to throw an error!
-                return;
+                throw new ArgumentNullException("HairMesh", $"Could not find {hairName}.");
             }
 
             ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
@@ -266,7 +276,12 @@ namespace FSvBSCustomCloneUtility.Tools
 
                 PropertyCollection props = new PropertyCollection();
                 var texture = GetResource(textureName);
-                // Add handling of error if resource was not found
+
+                if (texture == null)
+                {
+                    throw new ArgumentNullException(parameter.Name, $"Could not find texture {textureName}.");
+                }
+                
                 props.Add(new NameProperty(parameter.Name, "nName"));
                 props.Add(new ObjectProperty(texture.UIndex, "m_pTexture"));
 
@@ -274,16 +289,6 @@ namespace FSvBSCustomCloneUtility.Tools
                 m_aTextureOverrides.Add(new StructProperty("TextureParameter", props));
             }
             return m_aTextureOverrides;
-        }
-
-        private void EditColorOverride()
-        {
-
-        }
-
-        private void EditScalarOverride()
-        {
-
         }
     }
 }
