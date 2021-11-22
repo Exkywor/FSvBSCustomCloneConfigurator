@@ -27,15 +27,15 @@ namespace FSvBSCustomCloneUtility.Tools
             "BIOG_HMM_HED_PROMorph", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO_R", "BIOG_HMF_HIR_PRO"};
 
         // TODO: Validation of incoming stuff will be handled by Controller, not Model
-        public MorphWriter(string ronFile, string targetFile)
+        public MorphWriter(string ronFile, string targetFile, Gender gender)
         {
-            Load(ronFile, targetFile);
+            Load(ronFile, targetFile, gender);
         }
 
-        public MorphWriter(string ronFile, string targetFile, List<string> resources)
+        public MorphWriter(string ronFile, string targetFile, Gender gender, List<string> resources)
         {
 
-            Load(ronFile, targetFile, resources);
+            Load(ronFile, targetFile, gender, resources);
         }
 
         private void LoadCommands()
@@ -56,19 +56,22 @@ namespace FSvBSCustomCloneUtility.Tools
                 return;
             } catch (ArgumentNullException e)
             {
-                MessageBox.Show($"{e.Message}.\nCheck that the element is spelled correctly and that you have provided a valid resource pcc if it's not in the basegame.", "Error", MessageBoxButton.OK);
+                MessageBox.Show($"{e.Message}." +
+                    $"Check that the texture/hair is spelled correctly and that you have provided a valid resource pcc if it's not in the basegame." +
+                    $"If you don't have access to the modded resource, you can remove the entry from the .ron",
+                    "Error", MessageBoxButton.OK);
                 return;
             }
 
         }
 
-        private void Load(string ronFile, string targetFile, List<string>? resourcePaths = null)
+        private void Load(string ronFile, string targetFile, Gender gender, List<string>? resourcePaths = null)
         {
             pccTargetFile = targetFile;
             pccTarget = MEPackageHandler.OpenMEPackage(targetFile);
 
             morphSource = RONConverter.ConvertRON(ronFile);
-            LoadMorphExport();
+            LoadMorphExport(gender);
 
             if (resourcePaths != null && resourcePaths.Count > 0)
             {
@@ -78,14 +81,16 @@ namespace FSvBSCustomCloneUtility.Tools
 
             return;
         }
-        private IEntry LoadMorphExport()
+        private IEntry LoadMorphExport(Gender gender)
         {
             // INVARIANT: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
             var stuntActors = pccTarget.Exports.Where(e => e.ClassName == "SFXStuntActor");
             foreach (var stuntActor in stuntActors)
             {
+                var targetTag = gender is Gender.Female ? "dummy_custom_female" : "dummy_custom_male";
                 var tag = stuntActor.GetProperty<NameProperty>("Tag");
-                if (tag != null && tag.Value == "dummy_custom")
+
+                if (tag != null && tag.Value == targetTag)
                 {
                     ExportEntry archetype = (ExportEntry)stuntActor.Archetype;
                     morphTarget = (ExportEntry)pccTarget.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);

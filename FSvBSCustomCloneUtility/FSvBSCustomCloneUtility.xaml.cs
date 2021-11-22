@@ -21,11 +21,18 @@ namespace FSvBSCustomCloneUtility
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    public enum Gender
+    {
+        Male,
+        Female
+    }
+
     public partial class MainWindow : Window
     {
         string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
         string targetFile = @"E:\Origin\Mass Effect 3\BIOGame\DLC\DLC_MOD_FSvBS\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
         string customHair = @"C:\Users\ferna\Desktop\BIOG_HMF_HIR_PRO_HAIRMOD.pcc";
+
 
         public MainWindow()
         {
@@ -34,7 +41,7 @@ namespace FSvBSCustomCloneUtility
 
             var resources = new List<string>();
             resources.Add(customHair);
-            var writer = new MorphWriter(ronFile,targetFile,resources);
+            var writer = new MorphWriter(ronFile, targetFile, Gender.Female, resources);
             writer.ApplyMorph();
         }
 
