@@ -48,6 +48,7 @@ namespace FSvBSCustomCloneUtility.Tools
             try
             {
                 EditBones();
+                EditMorphFeatures();
                 EditLODVertices();
                 EditHair();
                 EditMatOverrides();
@@ -163,19 +164,44 @@ namespace FSvBSCustomCloneUtility.Tools
 
         private void EditBones()
         {
-            ArrayProperty<StructProperty> m_aFinalSkeleton = morphTarget.GetProperty<ArrayProperty<StructProperty>>("m_aFinalSkeleton");
+            morphTarget.RemoveProperty("m_aFinalSkeleton");
+
+            ArrayProperty<StructProperty> m_aFinalSkeleton = new("m_aFinalSkeleton");
             var offsetBones = morphSource.OffsetBones;
-
-            foreach (var item in m_aFinalSkeleton)
+            foreach (var bone in offsetBones)
             {
-                MorphHead.OffsetBone offsetBone = offsetBones.Find(x => x.Name.ToString() == item.Properties.GetProp<NameProperty>("nName").Value);
-                StructProperty vPos = item.Properties.GetProp<StructProperty>("vPos");
-                vPos.GetProp<FloatProperty>("X").Value = offsetBone.Offset.X;
-                vPos.GetProp<FloatProperty>("Y").Value = offsetBone.Offset.Y;
-                vPos.GetProp<FloatProperty>("Z").Value = offsetBone.Offset.Z;
+                PropertyCollection props = new();
+                
+                PropertyCollection vals = new();
+                vals.Add(new FloatProperty(bone.Offset.X, "X"));
+                vals.Add(new FloatProperty(bone.Offset.Y, "Y"));
+                vals.Add(new FloatProperty(bone.Offset.Z, "Z"));
 
-                morphTarget.WriteProperty(m_aFinalSkeleton);
+                props.Add(new StructProperty("Vector", vals, "vPos", true));
+                props.Add(new NameProperty(bone.Name, "nName"));
+
+                m_aFinalSkeleton.Add(new StructProperty("OffsetBonePos", props));
             }
+
+            morphTarget.WriteProperty(m_aFinalSkeleton);
+        }
+
+        private void EditMorphFeatures()
+        {
+            morphTarget.RemoveProperty("m_aMorphFeatures");
+
+            ArrayProperty<StructProperty> m_aMorphFeatures = new("m_aMorphFeatures");
+            List<MorphHead.MorphFeature> sourceFeatures = morphSource.MorphFeatures;
+            foreach (MorphHead.MorphFeature feature in sourceFeatures)
+            {
+                PropertyCollection props = new();
+                props.Add(new NameProperty(feature.Name, "sFeatureName"));
+                props.Add(new FloatProperty(feature.Offset, "Offset"));
+
+                m_aMorphFeatures.Add(new StructProperty("MorphFeature", props));
+            }
+
+            morphTarget.WriteProperty(m_aMorphFeatures);
         }
 
         private void EditLODVertices()
