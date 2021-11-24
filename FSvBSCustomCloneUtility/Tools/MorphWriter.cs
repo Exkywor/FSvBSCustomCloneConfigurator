@@ -47,8 +47,8 @@ namespace FSvBSCustomCloneUtility.Tools
         {
             try
             {
-                EditBones();
                 EditMorphFeatures();
+                EditBones();
                 EditLODVertices();
                 EditHair();
                 EditMatOverrides();
@@ -228,6 +228,11 @@ namespace FSvBSCustomCloneUtility.Tools
 
             if (hairName is "None" or "")
             {
+                // Remove the hair property in case it exists
+                if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null)
+                {
+                    morphTarget.RemoveProperty("m_oHairMesh");
+                }
                 return;
             }
 
