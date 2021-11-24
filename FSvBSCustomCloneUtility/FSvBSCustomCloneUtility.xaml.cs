@@ -29,9 +29,11 @@ namespace FSvBSCustomCloneUtility
 
     public partial class MainWindow : Window
     {
-        string ronFile = @"C:\Users\ferna\Desktop\morph.ron";
+        string ronFile = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\VoodooLilium_Boss.ron";
+        string ronFileF = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\VoodooLilium_Minmi.ron";
         string targetFile = @"E:\Origin\Mass Effect 3\BIOGame\DLC\DLC_MOD_FSvBS\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
-        string customHair = @"C:\Users\ferna\Desktop\BIOG_HMF_HIR_PRO_HAIRMOD.pcc";
+        string targetFileLE = @"D:\Games\Origin\Mass Effect Legendary Edition\Game\ME3\BioGame\DLC\DLC_MOD_FSvBSLE\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
+        string customHair = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\LE3\milkykookie_DLC_MOD_FemshepHair\CookedPCConsole\BIOG_HMF_HIR_ANTO.pcc";
 
 
         public MainWindow()
@@ -41,8 +43,10 @@ namespace FSvBSCustomCloneUtility
 
             var resources = new List<string>();
             resources.Add(customHair);
-            var writer = new MorphWriter(ronFile, targetFile, Gender.Female, resources);
-            writer.ApplyMorph();
+            var writerMale = new MorphWriter(ronFile, targetFile, Gender.Male);
+            writerMale.ApplyMorph();
+            var writerFemale = new MorphWriter(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
+            writerFemale.ApplyMorph();
         }
 
         /// <summary>

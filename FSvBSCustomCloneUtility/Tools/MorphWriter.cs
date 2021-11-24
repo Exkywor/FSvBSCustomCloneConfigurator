@@ -111,7 +111,7 @@ namespace FSvBSCustomCloneUtility.Tools
 
         private void SetGlobalPaths()
         {
-            string prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame") + 7)}\CookedPCConsole";
+            string prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame", StringComparison.OrdinalIgnoreCase) + 7)}\CookedPCConsole";
             foreach (string name in globalNames)
             {
                 globalResources.Add(name, $@"{prefix}\{name}.pcc");
@@ -200,7 +200,7 @@ namespace FSvBSCustomCloneUtility.Tools
         {
             string hairName = morphSource.HairMesh.ToString();
 
-            if (hairName == "None")
+            if (hairName is "None" or "")
             {
                 return;
             }
@@ -212,7 +212,13 @@ namespace FSvBSCustomCloneUtility.Tools
             }
 
             ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
-            hairProp.Value = hairMesh.UIndex;
+            if (hairProp != null)
+            {
+                hairProp.Value = hairMesh.UIndex;
+            } else
+            {
+                hairProp = new ObjectProperty(hairMesh.UIndex, "m_oHairMesh");
+            }
             morphTarget.WriteProperty(hairProp);
         }
 
@@ -274,7 +280,7 @@ namespace FSvBSCustomCloneUtility.Tools
             {
                 string textureName = parameter.Value.Remove(parameter.Value.Length-1).Substring(1);
 
-                if (textureName == "None")
+                if (textureName is "None" or "")
                 {
                     continue;
                 }
