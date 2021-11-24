@@ -85,11 +85,11 @@ namespace FSvBSCustomCloneUtility.Tools
         private IEntry LoadMorphExport(Gender gender)
         {
             // INVARIANT: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
-            var stuntActors = pccTarget.Exports.Where(e => e.ClassName == "SFXStuntActor");
-            foreach (var stuntActor in stuntActors)
+            IEnumerable<ExportEntry> stuntActors = pccTarget.Exports.Where(e => e.ClassName == "SFXStuntActor");
+            foreach (ExportEntry stuntActor in stuntActors)
             {
-                var targetTag = gender is Gender.Female ? "dummy_custom_female" : "dummy_custom_male";
-                var tag = stuntActor.GetProperty<NameProperty>("Tag");
+                string targetTag = gender is Gender.Female ? "dummy_custom_female" : "dummy_custom_male";
+                NameProperty tag = stuntActor.GetProperty<NameProperty>("Tag");
 
                 if (tag != null && tag.Value == targetTag)
                 {
@@ -167,8 +167,8 @@ namespace FSvBSCustomCloneUtility.Tools
             morphTarget.RemoveProperty("m_aFinalSkeleton");
 
             ArrayProperty<StructProperty> m_aFinalSkeleton = new("m_aFinalSkeleton");
-            var offsetBones = morphSource.OffsetBones;
-            foreach (var bone in offsetBones)
+            List<MorphHead.OffsetBone> offsetBones = morphSource.OffsetBones;
+            foreach (MorphHead.OffsetBone bone in offsetBones)
             {
                 PropertyCollection props = new();
                 
@@ -263,7 +263,7 @@ namespace FSvBSCustomCloneUtility.Tools
         private ArrayProperty<StructProperty> GenerateScalarOverrides()
         {
             var m_aScalarOverrides = new ArrayProperty<StructProperty>("m_aScalarOverrides");
-            foreach (var parameter in morphSource.ScalarParameters)
+            foreach (MorphHead.ScalarParameter parameter in morphSource.ScalarParameters)
             {
                 PropertyCollection props = new PropertyCollection();
 
@@ -278,17 +278,17 @@ namespace FSvBSCustomCloneUtility.Tools
         private ArrayProperty<StructProperty> GenerateColorOverrides()
         {
             var m_aColorOverrides = new ArrayProperty<StructProperty>("m_aColorOverrides");
-            foreach (var parameter in morphSource.VectorParameters)
+            foreach (MorphHead.VectorParameter parameter in morphSource.VectorParameters)
             {
-                PropertyCollection props = new PropertyCollection();
+                PropertyCollection props = new();
 
-                PropertyCollection color = new PropertyCollection();
+                PropertyCollection color = new();
                 color.Add(new FloatProperty(parameter.Value.R, "R"));
                 color.Add(new FloatProperty(parameter.Value.G, "G"));
                 color.Add(new FloatProperty(parameter.Value.B, "B"));
                 color.Add(new FloatProperty(parameter.Value.A, "A"));
 
-                StructProperty cValue = new StructProperty("LinearColor", color, "cValue", true);
+                StructProperty cValue = new("LinearColor", color, "cValue", true);
 
                 props.Add(cValue);
                 props.Add(new NameProperty(parameter.Name, "nName"));
@@ -302,9 +302,9 @@ namespace FSvBSCustomCloneUtility.Tools
         private ArrayProperty<StructProperty> GenerateTextureOverride()
         {
             var m_aTextureOverrides = new ArrayProperty<StructProperty>("m_aTextureOverrides");
-            foreach (var parameter in morphSource.TextureParameters)
+            foreach (MorphHead.TextureParameter parameter in morphSource.TextureParameters)
             {
-                string textureName = parameter.Value.Remove(parameter.Value.Length-1).Substring(1);
+                string textureName = parameter.Value.Remove(parameter.Value.Length - 1).Substring(1);
 
                 if (textureName is "None" or "")
                 {
@@ -312,7 +312,7 @@ namespace FSvBSCustomCloneUtility.Tools
                 }
 
                 PropertyCollection props = new PropertyCollection();
-                var texture = GetResource(textureName);
+                IEntry texture = GetResource(textureName);
 
                 if (texture == null)
                 {
