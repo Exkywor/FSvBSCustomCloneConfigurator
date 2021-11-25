@@ -47,7 +47,10 @@ namespace FSvBSCustomCloneUtility
             writerMale.ApplyMorph();
             MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
             writerFemale.ApplyMorph();
-        }
+
+            ConditionalsManager.SetConditional(Gender.Male, true, targetFile);
+            ConditionalsManager.SetConditional(Gender.Female, false, targetFile);
+        } 
 
         /// <summary>
         /// Initialize Legendary Explorer Core Library
