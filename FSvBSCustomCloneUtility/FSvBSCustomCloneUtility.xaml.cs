@@ -48,8 +48,8 @@ namespace FSvBSCustomCloneUtility
             MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
             writerFemale.ApplyMorph();
 
-            ConditionalsManager.SetConditional(Gender.Male, true, targetFile);
-            ConditionalsManager.SetConditional(Gender.Female, false, targetFile);
+            ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
+            ConditionalsManager.SetConditional(Gender.Female, true, targetFile);
         } 
 
         /// <summary>

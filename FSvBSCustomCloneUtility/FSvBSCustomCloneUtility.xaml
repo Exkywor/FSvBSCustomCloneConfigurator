@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="FemShep v BroShep Utility" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0">
+            <TextBlock >Hello there</TextBlock>
+        </DockPanel>
 
+        <Grid Grid.Row="1">
+        </Grid>
+
+        <DockPanel Grid.Row="2">
+            <TextBlock >Toggable buttons</TextBlock>
+        </DockPanel>
     </Grid>
 </Window>
