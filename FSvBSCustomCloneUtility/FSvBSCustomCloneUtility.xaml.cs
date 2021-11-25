@@ -43,13 +43,13 @@ namespace FSvBSCustomCloneUtility
 
             List<string> resources = new();
             resources.Add(customHair);
-            MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
-            writerMale.ApplyMorph();
-            MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
-            writerFemale.ApplyMorph();
+            // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
+            // writerMale.ApplyMorph();
+            // MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
+            // writerFemale.ApplyMorph();
 
-            ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
-            ConditionalsManager.SetConditional(Gender.Female, true, targetFile);
+            // ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
+            // ConditionalsManager.SetConditional(Gender.Female, true, targetFile);
         } 
 
         /// <summary>
