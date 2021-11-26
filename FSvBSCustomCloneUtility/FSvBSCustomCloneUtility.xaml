@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility"
+        xmlns:Content="clr-namespace:FSvBSCustomCloneUtility.Content"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
@@ -31,72 +32,7 @@
             <Image Grid.Column="0" Source="./images/logo.png" Margin="{adonisUi:Space}"/>
         </Grid>
 
-        <Grid Grid.Row="1" Margin="{adonisUi:Space}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="10*" />
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontWeight="Bold" Margin="{adonisUi:Space}">
-                STEPS
-            </TextBlock>
-
-            <!-- FSvBS file -->
-            <TextBlock Grid.Row="1" Grid.ColumnSpan="3">
-                1. Select the BioD_FSvBS.pcc file located in the DLC folder.
-            </TextBlock>
-            <TextBox x:Name="FSvBSTextBox" Text=""  ToolTip="BioD_FSvBS_Dummies.pcc file." Grid.Row="2" Grid.Column="0"/>
-            <Button x:Name="FSvBSBrowseButton" Content="Browse" Command="" Grid.Row="2" Grid.Column="1"/>
-            <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="2" Grid.Column="2"/>
-
-            <!-- Male headmorph -->
-            <TextBlock Grid.Row="3" Grid.ColumnSpan="3">
-                2. Select the .ron file containing the male headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
-            </TextBlock>
-            <TextBox x:Name="MaleRonText" Text=""  ToolTip="Male .ron file." Grid.Row="4" Grid.Column="0"/>
-            <Button x:Name="MaleRonBrowse" Content="Browse" Command="" Grid.Row="4" Grid.Column="1"/>
-            <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="4" Grid.Column="2"/>
-
-            <!-- Female headmorph -->
-            <TextBlock Grid.Row="5" Grid.ColumnSpan="3">
-                3. Select the .ron file containing the female headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
-            </TextBlock>
-            <TextBox x:Name="FemaleRonText" Text=""  ToolTip="Female .ron file." Grid.Row="6" Grid.Column="0"/>
-            <Button x:Name="FemaleRonBrowse" Content="Browse" Command="" Grid.Row="6" Grid.Column="1"/>
-            <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="6" Grid.Column="2"/>
-
-            <!-- Resources -->
-            <TextBlock Grid.Row="7" Grid.ColumnSpan="3">
-                4. Select the .pcc files that contain modded hairs or textures that your headmorph uses. Make sure they are for the correct game. You can skip this step if you don't use any mod for the headmorph, or if the textures are applied via .mem.
-            </TextBlock>
-            <TextBox x:Name="ResourcesText" Text=""  ToolTip="BioD_FSvBS_Dummies.pcc file." Grid.Row="8" Grid.Column="0"/>
-            <Button x:Name="ResourcesBrowse" Content="Browse" Command="" Grid.Row="8" Grid.Column="1"/>
-            <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="8" Grid.Column="2"/>
-
-            <!-- Apply -->
-            <TextBlock Grid.Row="9" Grid.ColumnSpan="3">
-                5. Apply the headmorphs!
-            </TextBlock>
-            <Button x:Name="ApplyButton" Content="Apply" Command="" Grid.Row="10" Grid.Column="0"/>
-            <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2">
-                ME3 
-            </TextBlock>
-
-        </Grid>
+        <Content:CustomMorphPage x:Name="CustomMorphPage" Grid.Row="1" />
 
         <DockPanel Grid.Row="2">
             <TextBlock >Toggable buttons</TextBlock>
