@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility"
-        xmlns:Content="clr-namespace:FSvBSCustomCloneUtility.Content"
+        xmlns:UserControls="clr-namespace:FSvBSCustomCloneUtility.UserControls"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
@@ -32,7 +32,7 @@
             <Image Grid.Column="0" Source="./images/logo.png" Margin="{adonisUi:Space}"/>
         </Grid>
 
-        <Content:CustomMorphPage x:Name="CustomMorphPage" Grid.Row="1" />
+        <UserControls:CustomMorphControl x:Name="CustomMorphControl" Grid.Row="1" />
 
         <DockPanel Grid.Row="2">
             <TextBlock >Toggable buttons</TextBlock>
