@@ -18,18 +18,10 @@ namespace FSvBSCustomCloneUtility.ViewModels
     {
         public CustomMorphViewModel()
         {
-            LoadCommands();
             DataContext = this;
         }
 
-        public ICommand SelectTargetCommand { get; set; }
-
-        private void LoadCommands()
-        {
-            SelectTargetCommand = new GenericCommand(SelectTargetFile);
-        }
-
-        private void SelectTargetFile()
+        public void SelectTarget()
         {
             OpenFileDialog dlg = new();
             dlg.Filter = "Pcc files (.pcc)|*.pcc";

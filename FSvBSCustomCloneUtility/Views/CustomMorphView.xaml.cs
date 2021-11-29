@@ -26,31 +26,7 @@ namespace FSvBSCustomCloneUtility.Views
     {
         public CustomMorphView()
         {
-            LoadCommands();
             InitializeComponent();
-
-            DataContext = this;
-        }
-
-        public ICommand SelectTargetCommand { get; set; }
-
-        private void LoadCommands()
-        {
-            SelectTargetCommand = new GenericCommand(SelectTargetFile);
-        }
-
-        private void SelectTargetFile()
-        {
-            OpenFileDialog dlg = new();
-            dlg.Filter = "Pcc files (.pcc)|*.pcc";
-
-            bool? result = dlg.ShowDialog();
-
-            if (result != true)
-            {
-                return;
-            }
-
         }
     }
 }

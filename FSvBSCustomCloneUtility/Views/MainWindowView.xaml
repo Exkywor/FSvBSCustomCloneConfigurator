@@ -31,8 +31,7 @@
             <Image Grid.Column="0" Source="../images/logo.png" Margin="{adonisUi:Space}"/>
         </Grid>
 
-        <ContentControl Grid.Row="1"
-                        x:Name="ActiveItem" />
+        <ContentControl Grid.Row="1" x:Name="ActiveItem" />
 
         <DockPanel Grid.Row="2">
             <TextBlock >Toggable buttons</TextBlock>
