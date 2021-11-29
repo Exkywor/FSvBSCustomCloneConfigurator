@@ -1,10 +1,9 @@
-﻿<Window x:Class="FSvBSCustomCloneUtility.MainWindow"
+﻿<Window x:Class="FSvBSCustomCloneUtility.Views.MainWindowView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility"
-        xmlns:UserControls="clr-namespace:FSvBSCustomCloneUtility.UserControls"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
@@ -26,13 +25,14 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <Grid.Background>
-                <ImageBrush ImageSource="./images/main_banner.png" Stretch="UniformToFill"/>
+                <ImageBrush ImageSource="../images/main_banner.png" Stretch="UniformToFill"/>
             </Grid.Background>
 
-            <Image Grid.Column="0" Source="./images/logo.png" Margin="{adonisUi:Space}"/>
+            <Image Grid.Column="0" Source="../images/logo.png" Margin="{adonisUi:Space}"/>
         </Grid>
 
-        <UserControls:CustomMorphControl x:Name="CustomMorphControl" Grid.Row="1" />
+        <ContentControl Grid.Row="1"
+                        x:Name="ActiveItem" />
 
         <DockPanel Grid.Row="2">
             <TextBlock >Toggable buttons</TextBlock>

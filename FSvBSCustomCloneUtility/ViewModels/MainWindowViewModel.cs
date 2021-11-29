@@ -1,4 +1,5 @@
-﻿using FSvBSCustomCloneUtility.Tools;
+﻿using Caliburn.Micro;
+using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.Packages;
 using System;
@@ -16,18 +17,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FSvBSCustomCloneUtility
+namespace FSvBSCustomCloneUtility.ViewModels
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public enum Gender
     {
         Male,
         Female
     }
 
-    public partial class MainWindow : Window
+    class MainWindowViewModel : Conductor<object>
     {
         string ronFile = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\CluckenDip.ron";
         string ronFileF = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\Exkywor_Natylaz.ron";
@@ -37,9 +35,8 @@ namespace FSvBSCustomCloneUtility
 
         private string TargetFile { get; set; }
 
-        public MainWindow()
+        public MainWindowViewModel()
         {
-            InitializeComponent();
             initCoreLib();
 
             List<string> resources = new();
@@ -51,6 +48,7 @@ namespace FSvBSCustomCloneUtility
 
             // ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
             // ConditionalsManager.SetConditional(Gender.Female, true, targetFile);
+            LoadViewAsync();
         } 
 
         /// <summary>
@@ -68,6 +66,11 @@ namespace FSvBSCustomCloneUtility
             }
 
             LegendaryExplorerCoreLib.InitLib(TaskScheduler.FromCurrentSynchronizationContext(), packageSaveFailed);
+        }
+
+        public async Task LoadViewAsync()
+        {
+            await ActivateItemAsync(new CustomMorphViewModel());
         }
     }
 }

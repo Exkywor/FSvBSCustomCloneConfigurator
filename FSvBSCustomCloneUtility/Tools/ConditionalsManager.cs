@@ -1,4 +1,5 @@
-﻿using LegendaryExplorerCore.Coalesced;
+﻿using FSvBSCustomCloneUtility.ViewModels;
+using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Misc;
 using System;
 using System.Collections.Generic;

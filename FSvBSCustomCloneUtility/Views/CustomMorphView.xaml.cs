@@ -17,14 +17,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FSvBSCustomCloneUtility.UserControls
+namespace FSvBSCustomCloneUtility.Views
 {
     /// <summary>
     /// Interaction logic for CustomMorphPage.xaml
     /// </summary>
-    public partial class CustomMorphControl : UserControl
+    public partial class CustomMorphView : UserControl
     {
-        public CustomMorphControl()
+        public CustomMorphView()
         {
             LoadCommands();
             InitializeComponent();
