@@ -1,6 +1,8 @@
 ﻿using Caliburn.Micro;
 using FSvBSCustomCloneUtility;
 using FSvBSCustomCloneUtility.SharedUI;
+using FSvBSCustomCloneUtility.Controls;
+using FSvBSCustomCloneUtility.ViewModels;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.Win32;
 using System;
@@ -14,11 +16,25 @@ using System.Windows.Controls;
 
 namespace FSvBSCustomCloneUtility.ViewModels
 {
-    public class CustomMorphViewModel : UserControl
+    public class CustomMorphViewModel : ObserverControl
     {
+        private string _targetGame = "";
+        public string TargetGame
+        {
+            get
+            {
+                return _targetGame;
+            }
+            set
+            {
+                _targetGame = value;
+                NotifyOfPropertyChange(() => TargetGame);
+            }
+        }
+
         public CustomMorphViewModel()
         {
-            DataContext = this;
+            // DataContext = this;
         }
 
         public void SelectTarget()
@@ -33,6 +49,16 @@ namespace FSvBSCustomCloneUtility.ViewModels
                 return;
             }
 
+        }
+
+        public override void Update(string property, string value)
+        {
+            switch (property)
+            {
+                case "TargetGame":
+                    TargetGame = value;
+                    break;
+            }
         }
     }
 }

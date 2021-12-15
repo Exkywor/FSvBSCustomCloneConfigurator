@@ -21,16 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\projects\Legendary Explorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="images\logo.png" />
     <Resource Include="images\main_banner.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\LegendaryExplorer\LegendaryExplorer\LegendaryExplorerCore\LegendaryExplorerCore.csproj" />
   </ItemGroup>
 
 </Project>

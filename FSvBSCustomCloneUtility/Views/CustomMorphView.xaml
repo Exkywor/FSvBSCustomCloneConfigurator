@@ -40,7 +40,7 @@
         <TextBlock Grid.Row="1" Grid.ColumnSpan="3">
                 1. Select the BioD_FSvBS.pcc file located in the DLC folder.
         </TextBlock>
-        <TextBox x:Name="FSvBSTextBox" Text=""  ToolTip="BioD_FSvBS_Dummies.pcc file." Grid.Row="2" Grid.Column="0"/>
+        <TextBox Text="{Binding TargetGame}" ToolTip="BioD_FSvBS_Dummies.pcc file." Grid.Row="2" Grid.Column="0"/>
         <Button x:Name="SelectTarget"  Grid.Row="2" Grid.Column="1">Browse</Button>
         <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="2" Grid.Column="2"/>
 

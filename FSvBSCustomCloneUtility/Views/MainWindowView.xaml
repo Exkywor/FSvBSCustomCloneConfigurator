@@ -7,6 +7,7 @@
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
         Title="FemShep v BroShep Utility" Height="450" Width="800">
     <Window.Style>
@@ -28,10 +29,14 @@
                 <ImageBrush ImageSource="../images/main_banner.png" Stretch="UniformToFill"/>
             </Grid.Background>
 
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <ToggleButton Width="50" x:Name="ToggleMEGame" IsChecked="{Binding IsME3}" />
+                <TextBlock Grid.Column="1" Foreground="White" x:Name="TargetGame"/>
+            </StackPanel>
             <Image Grid.Column="0" Source="../images/logo.png" Margin="{adonisUi:Space}"/>
         </Grid>
 
-        <ContentControl Grid.Row="1" x:Name="ActiveItem" />
+        <ContentControl Grid.Row="1" x:Name="CustomMorph" />
 
         <DockPanel Grid.Row="2">
             <TextBlock >Toggable buttons</TextBlock>
