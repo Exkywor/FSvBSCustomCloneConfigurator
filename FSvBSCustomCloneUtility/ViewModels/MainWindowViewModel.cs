@@ -18,10 +18,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FSvBSCustomCloneUtility.ViewModels
-{
-    public enum Gender
-    {
+namespace FSvBSCustomCloneUtility.ViewModels {
+    public enum Gender {
         Male,
         Female
     }
@@ -37,49 +35,44 @@ namespace FSvBSCustomCloneUtility.ViewModels
         string customHair = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\LE3\milkykookie_DLC_MOD_FemshepHair\CookedPCConsole\BIOG_HMF_HIR_ANTO.pcc";
 
         private string _targetGame = "ME3";
-        public string TargetGame
-        {
-            get
-            {
+        public string TargetGame {
+            get {
                 return _targetGame;
             }
 
-            set
-            {
+            set {
                 _targetGame = value;
                 NotifyOfPropertyChange(() => TargetGame);
             }
         }
 
         public bool IsME3 = true;
-        public bool ME3Checked
-        {
-            get { return IsME3; }
-            set
-            {
+        public bool ME3Checked {
+            get {
+                return IsME3;
+            }
+            set {
                 if (value.Equals(IsME3)) return;
                 ToggleMEGame();
             }
         }
-        public bool LE3Checked
-        {
-            get { return !IsME3; }
-            set
-            {
+        public bool LE3Checked {
+            get {
+                return !IsME3;
+            }
+            set {
                 if (value.Equals(!IsME3)) return;
                 ToggleMEGame();
             }
         }
 
-        public void ToggleMEGame()
-        {
+        public void ToggleMEGame() {
             IsME3 = !IsME3;
             TargetGame = IsME3 ? "ME3" : "LE3";
             Notify("TargetGame");
         }
 
-        public MainWindowViewModel()
-        {
+        public MainWindowViewModel() {
             initCoreLib();
 
             List<string> resources = new();
@@ -101,10 +94,8 @@ namespace FSvBSCustomCloneUtility.ViewModels
         /// <summary>
         /// Initialize Legendary Explorer Core Library
         /// </summary>
-        private static void initCoreLib()
-        {
-            static void packageSaveFailed(string message)
-            {
+        private static void initCoreLib() {
+            static void packageSaveFailed(string message) {
                 // I'm not sure if this requires ui thread since it's win32 but i'll just make sure
                 Application.Current.Dispatcher.Invoke(() => {
                     MessageBox.Show(message);
@@ -114,8 +105,7 @@ namespace FSvBSCustomCloneUtility.ViewModels
             LegendaryExplorerCoreLib.InitLib(TaskScheduler.FromCurrentSynchronizationContext(), packageSaveFailed);
         }
 
-        public async Task LoadViewAsync()
-        {
+        public async Task LoadViewAsync() {
             foreach (ObserverControl observer in observers) {
 
                 await ActivateItemAsync(observer);
@@ -123,10 +113,8 @@ namespace FSvBSCustomCloneUtility.ViewModels
         }
 
 
-        private void Notify(string property)
-        {
-            foreach(ObserverControl observer in observers)
-            {
+        private void Notify(string property) {
+            foreach(ObserverControl observer in observers) {
                 observer.Update(property, TargetGame);
             }
         }

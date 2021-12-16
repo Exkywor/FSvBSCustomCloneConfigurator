@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace FSvBSCustomCloneUtility.Controls {
-    public abstract class ObserverControl : PropertyChangedBase
-    {
+    public abstract class ObserverControl : PropertyChangedBase {
         public abstract void Update(string property, string value);
     }
 }
