@@ -28,12 +28,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private List<ObserverControl> observers = new();
         public ObserverControl CustomMorph { get; set; }
 
-        string ronFile = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\CluckenDip.ron";
-        string ronFileF = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\Exkywor_Natylaz.ron";
-        string targetFile = @"E:\Origin\Mass Effect 3\BIOGame\DLC\DLC_MOD_FSvBS\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
-        string targetFileLE = @"D:\Games\Origin\Mass Effect Legendary Edition\Game\ME3\BioGame\DLC\DLC_MOD_FSvBSLE\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
-        string customHair = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\LE3\milkykookie_DLC_MOD_FemshepHair\CookedPCConsole\BIOG_HMF_HIR_ANTO.pcc";
-
         private string _targetGame = "ME3";
         public string TargetGame {
             get {
@@ -46,20 +40,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        public bool IsME3 = true;
+        private bool IsME3 = true;
         public bool ME3Checked {
-            get {
-                return IsME3;
-            }
+            get { return IsME3; }
             set {
                 if (value.Equals(IsME3)) return;
                 ToggleMEGame();
             }
         }
         public bool LE3Checked {
-            get {
-                return !IsME3;
-            }
+            get { return !IsME3; }
             set {
                 if (value.Equals(!IsME3)) return;
                 ToggleMEGame();
@@ -74,22 +64,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public MainWindowViewModel() {
             initCoreLib();
-
-            List<string> resources = new();
-            resources.Add(customHair);
-            // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
-            // writerMale.ApplyMorph();
-            // MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
-            // writerFemale.ApplyMorph();
+            LoadViewAsync();
 
             // ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
             // ConditionalsManager.SetConditional(Gender.Female, true, targetFile);
-
-            CustomMorph = new CustomMorphViewModel();
-            observers.Add(CustomMorph);
-
-            LoadViewAsync();
-            } 
+        } 
 
         /// <summary>
         /// Initialize Legendary Explorer Core Library
@@ -105,7 +84,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             LegendaryExplorerCoreLib.InitLib(TaskScheduler.FromCurrentSynchronizationContext(), packageSaveFailed);
         }
 
-        public async Task LoadViewAsync() {
+        private async Task LoadViewAsync() {
+            CustomMorph = new CustomMorphViewModel();
+            observers.Add(CustomMorph);
             foreach (ObserverControl observer in observers) {
 
                 await ActivateItemAsync(observer);
