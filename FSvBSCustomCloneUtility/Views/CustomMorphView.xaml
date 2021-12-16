@@ -40,16 +40,16 @@
         <TextBlock Grid.Row="1" Grid.ColumnSpan="3">
                 1. Select the BioD_FSvBS.pcc file located in the DLC folder.
         </TextBlock>
-        <TextBox Text="{Binding TargetGame}" ToolTip="BioD_FSvBS_Dummies.pcc file." Grid.Row="2" Grid.Column="0"/>
-        <Button x:Name="SelectTarget"  Grid.Row="2" Grid.Column="1">Browse</Button>
+        <TextBox Text="{Binding FSvBSFile, Mode=OneWay}" ToolTip="BioD_FSvBS_Dummies.pcc file." IsReadOnly="True" Grid.Row="2" Grid.Column="0"/>
+        <Button x:Name="FSvBSFileButton"  Grid.Row="2" Grid.Column="1">Browse</Button>
         <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="2" Grid.Column="2"/>
 
         <!-- Male headmorph -->
         <TextBlock Grid.Row="3" Grid.ColumnSpan="3">
                 2. Select the .ron file containing the male headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
         </TextBlock>
-        <TextBox x:Name="MaleRonText" Text=""  ToolTip="Male .ron file." Grid.Row="4" Grid.Column="0"/>
-        <Button x:Name="MaleRonBrowse" Content="Browse" Command="" Grid.Row="4" Grid.Column="1"/>
+        <TextBox Text="{Binding RonFile, Mode=OneWay}"  ToolTip="Male .ron file." IsReadOnly="True" Grid.Row="4" Grid.Column="0"/>
+        <Button x:Name="RonFileButton"  Content="Browse" Command="" Grid.Row="4" Grid.Column="1"/>
         <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="4" Grid.Column="2"/>
 
         <!-- Female headmorph -->

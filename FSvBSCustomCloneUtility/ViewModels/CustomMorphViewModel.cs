@@ -3,6 +3,7 @@ using FSvBSCustomCloneUtility;
 using FSvBSCustomCloneUtility.SharedUI;
 using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.ViewModels;
+using FSvBSCustomCloneUtility.Tools;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.Win32;
 using System;
@@ -24,6 +25,17 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 NotifyOfPropertyChange(() => TargetGame);
             }
         }
+        private string _ronFile = "";
+        public string RonFile {
+            get { return _ronFile; }
+        }
+
+        private string _fsvbsFile = "";
+        public string FSvBSFile {
+            get { return _fsvbsFile; }
+        }
+
+        private List<string> resources = new();
 
         string ronFile = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\CluckenDip.ron";
         string ronFileF = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\ME3\Exkywor_Natylaz.ron";
@@ -34,7 +46,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public CustomMorphViewModel() {
             // DataContext = this;
 
-            List<string> resources = new();
             resources.Add(customHair);
 
             // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
@@ -43,13 +54,30 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             // writerFemale.ApplyMorph();
         }
 
-        public void SelectTarget() {
+        public void FSvBSFileButton() {
             OpenFileDialog dlg = new();
             dlg.Filter = "Pcc files (.pcc)|*.pcc";
 
             bool? result = dlg.ShowDialog();
 
             if (result != true) { return; }
+            else {
+                _fsvbsFile = dlg.FileName;
+                NotifyOfPropertyChange(() => FSvBSFile);
+            }
+        }
+
+        public void RonFileButton() {
+            OpenFileDialog dlg = new();
+            dlg.Filter = "Ron files (.ron)|*.ron";
+
+            bool? result = dlg.ShowDialog();
+
+            if (result != true) { return; }
+            else {
+                _ronFile = dlg.FileName;
+                NotifyOfPropertyChange(() => RonFile);
+            }
         }
 
         public override void Update(string property, string value) {
