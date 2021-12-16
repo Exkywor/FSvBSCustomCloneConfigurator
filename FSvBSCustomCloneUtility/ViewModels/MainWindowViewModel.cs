@@ -52,6 +52,31 @@ namespace FSvBSCustomCloneUtility.ViewModels
         }
 
         public bool IsME3 = true;
+        public bool ME3Checked
+        {
+            get { return IsME3; }
+            set
+            {
+                if (value.Equals(IsME3)) return;
+                ToggleMEGame();
+            }
+        }
+        public bool LE3Checked
+        {
+            get { return !IsME3; }
+            set
+            {
+                if (value.Equals(!IsME3)) return;
+                ToggleMEGame();
+            }
+        }
+
+        public void ToggleMEGame()
+        {
+            IsME3 = !IsME3;
+            TargetGame = IsME3 ? "ME3" : "LE3";
+            Notify("TargetGame");
+        }
 
         public MainWindowViewModel()
         {
@@ -97,12 +122,6 @@ namespace FSvBSCustomCloneUtility.ViewModels
             }
         }
 
-        public void ToggleMEGame()
-        {
-            IsME3 = !IsME3;
-            TargetGame = IsME3 ? "ME3" : "LE3";
-            Notify("TargetGame");
-        }
 
         private void Notify(string property)
         {

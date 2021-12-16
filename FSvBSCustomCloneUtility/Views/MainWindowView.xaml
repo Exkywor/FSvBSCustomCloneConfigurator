@@ -8,6 +8,8 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:cal="http://www.caliburnproject.org"
+        xmlns:viewmodels="clr-namespace:FSvBSCustomCloneUtility.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="FemShep v BroShep Utility" Height="450" Width="800">
     <Window.Style>
@@ -30,7 +32,8 @@
             </Grid.Background>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <ToggleButton Width="50" x:Name="ToggleMEGame" IsChecked="{Binding IsME3}" />
+                <RadioButton GroupName="MEGame" Content="ME3" Name="ME3Checked"/>
+                <RadioButton GroupName="MEGame" Content="LE3" Name="LE3Checked"/>
                 <TextBlock Grid.Column="1" Foreground="White" x:Name="TargetGame"/>
             </StackPanel>
             <Image Grid.Column="0" Source="../images/logo.png" Margin="{adonisUi:Space}"/>
