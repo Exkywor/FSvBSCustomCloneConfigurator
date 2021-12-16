@@ -20,28 +20,38 @@
             <RowDefinition Height="100" />
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
+            <RowDefinition Height="10" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <Grid.Background>
                 <ImageBrush ImageSource="../images/main_banner.png" Stretch="UniformToFill"/>
             </Grid.Background>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <RadioButton GroupName="MEGame" Content="ME3" Name="ME3Checked"/>
-                <RadioButton GroupName="MEGame" Content="LE3" Name="LE3Checked"/>
-                <TextBlock Grid.Column="1" Foreground="White" x:Name="TargetGame"/>
+            <Image Grid.Column="1" Source="../images/logo.png" Margin="{adonisUi:Space}"/>
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Label Margin="0,0,0,10" FontSize="15" Content="Target Game" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Name="ME3Checked" FontSize="15" Margin="10, 0" GroupName="MEGame" Content="ME3" />
+                    <RadioButton Name="LE3Checked" FontSize="15" Margin="10, 0" GroupName="MEGame" Content="LE3" />
+                </StackPanel>
             </StackPanel>
-            <Image Grid.Column="0" Source="../images/logo.png" Margin="{adonisUi:Space}"/>
         </Grid>
 
-        <ContentControl Grid.Row="1" x:Name="CustomMorph" />
+        <ContentControl Grid.Row="1" Grid.Column="1" x:Name="CustomMorph" />
 
-        <DockPanel Grid.Row="2">
+        <DockPanel Grid.Row="2" Grid.Column="1">
             <TextBlock >Toggable buttons</TextBlock>
         </DockPanel>
     </Grid>

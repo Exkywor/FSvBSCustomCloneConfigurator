@@ -112,7 +112,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-
         private void Notify(string property) {
             foreach(ObserverControl observer in observers) {
                 observer.Update(property, TargetGame);
