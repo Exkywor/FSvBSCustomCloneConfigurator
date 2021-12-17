@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -37,27 +37,31 @@
         </TextBlock>
 
         <!-- FSvBS file -->
-        <TextBlock Grid.Row="1" Grid.ColumnSpan="3">
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="3">
+            <TextBlock>
                 1. Select the BioD_FSvBS.pcc file located in the DLC folder.
-        </TextBlock>
-        <TextBox Text="{Binding FSvBSFile, Mode=OneWay}" ToolTip="BioD_FSvBS_Dummies.pcc file." IsReadOnly="True" Grid.Row="2" Grid.Column="0"/>
-        <Button x:Name="FSvBSFileButton"  Grid.Row="2" Grid.Column="1">Browse</Button>
-        <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="2" Grid.Column="2"/>
+            </TextBlock>
+            <StackPanel Margin="0, 10" Orientation="Horizontal">
+                <TextBox Text="{Binding FSvBSFile, Mode=OneWay}" ToolTip="BioD_FSvBS_Dummies.pcc file." IsReadOnly="True" Width="500" Height="20"/>
+                <Button x:Name="FSvBSFileButton">Browse</Button>
+            </StackPanel>
+            <TextBlock x:Name="WarningFSvBSFile" Foreground="Red"/>
+        </StackPanel>
 
         <!-- Male headmorph -->
         <TextBlock Grid.Row="3" Grid.ColumnSpan="3">
                 2. Select the .ron file containing the male headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
         </TextBlock>
-        <TextBox Text="{Binding RonFile, Mode=OneWay}"  ToolTip="Male .ron file." IsReadOnly="True" Grid.Row="4" Grid.Column="0"/>
-        <Button x:Name="RonFileButton"  Content="Browse" Command="" Grid.Row="4" Grid.Column="1"/>
+        <TextBox Text="{Binding RonMFile, Mode=OneWay}"  ToolTip="Male .ron file." IsReadOnly="True" Grid.Row="4" Grid.Column="0"/>
+        <Button x:Name="RonMFileButton"  Content="Browse" Command="" Grid.Row="4" Grid.Column="1"/>
         <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="4" Grid.Column="2"/>
 
         <!-- Female headmorph -->
         <TextBlock Grid.Row="5" Grid.ColumnSpan="3">
                 3. Select the .ron file containing the female headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
         </TextBlock>
-        <TextBox x:Name="FemaleRonText" Text=""  ToolTip="Female .ron file." Grid.Row="6" Grid.Column="0"/>
-        <Button x:Name="FemaleRonBrowse" Content="Browse" Command="" Grid.Row="6" Grid.Column="1"/>
+        <TextBox Text="{Binding RonFFile, Mode=OneWay}"  ToolTip="Female .ron file." Grid.Row="6" Grid.Column="0"/>
+        <Button x:Name="RonFFileButton" Content="Browse" Command="" Grid.Row="6" Grid.Column="1"/>
         <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="6" Grid.Column="2"/>
 
         <!-- Resources -->
@@ -72,9 +76,6 @@
         <TextBlock Grid.Row="9" Grid.ColumnSpan="3">
                 5. Apply the headmorphs!
         </TextBlock>
-        <Button x:Name="ApplyButton" Content="Apply" Command="" Grid.Row="10" Grid.Column="0"/>
-        <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2">
-                ME3
-        </TextBlock>
+        <Button x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Content="Apply" Command="" Grid.Row="10" Grid.Column="0"/>
     </Grid>
 </UserControl>
