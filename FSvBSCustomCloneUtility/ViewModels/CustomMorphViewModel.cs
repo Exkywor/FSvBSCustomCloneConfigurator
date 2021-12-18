@@ -23,18 +23,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         private bool _isFSvBSFileValid = false;
-        public bool IsFSvBSFileValid {
-            get { return _isFSvBSFileValid; }
-        }
         private string _warningFSvBSFile = "";
         public string WarningFSvBSFile {
             get { return _warningFSvBSFile; }
         }
 
         private bool _isRonFileValid = false;
-        public bool IsRonFileValid {
-            get { return _isRonFileValid; }
-        }
         private string _warningRonFile = "";
         public string WarningRonFile {
             get { return _warningRonFile; }
@@ -84,22 +78,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (dlg != null) {
                 _fsvbsFile = dlg.FileName;
-
-                bool valid = Validators.ValidateFSvBSFile(_fsvbsFile, TargetGame);
-                if (!valid) {
-                    _warningFSvBSFile = "Invalid file. Select a file that matches the target game, and is the one indicated in the instructions.";
-                    _isFSvBSFileValid = false;
-                    NotifyOfPropertyChange(() => WarningFSvBSFile);
-                    NotifyOfPropertyChange(() => FSvBSFile);
-                    CheckIfApply();
-                    return;
-                }
-
-                _warningFSvBSFile = "";
-                _isFSvBSFileValid = true;
-                NotifyOfPropertyChange(() => WarningFSvBSFile);
-                NotifyOfPropertyChange(() => FSvBSFile);
-                CheckIfApply();
+                CheckFSvBSFile();
             }
         }
 
@@ -124,8 +103,30 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
+        private void CheckFSvBSFile() {
+            bool valid = Validators.ValidateFSvBSFile(_fsvbsFile, TargetGame);
+            if (!valid) {
+                _warningFSvBSFile = "Invalid file. Select a file that matches the target game, and is the one indicated in the instructions.";
+                _isFSvBSFileValid = false;
+
+                NotifyOfPropertyChange(() => WarningFSvBSFile);
+                NotifyOfPropertyChange(() => FSvBSFile);
+
+                CheckIfApply();
+                return;
+            }
+
+            _warningFSvBSFile = "";
+            _isFSvBSFileValid = true;
+
+            NotifyOfPropertyChange(() => WarningFSvBSFile);
+            NotifyOfPropertyChange(() => FSvBSFile);
+
+            CheckIfApply();
+        }
+
         private void CheckIfApply() {
-            _isValid = (IsFSvBSFileValid && IsRonFileValid);
+            _isValid = (_isFSvBSFileValid && _isRonFileValid);
             NotifyOfPropertyChange(() => IsValid);
         }
 
@@ -133,7 +134,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             switch (property) {
                 case "TargetGame":
                     TargetGame = value;
-                    // Revalidate all files
+
+                    CheckFSvBSFile();
+                    CheckIfApply();
+
                     break;
             }
         }

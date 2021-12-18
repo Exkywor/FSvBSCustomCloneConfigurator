@@ -11,7 +11,9 @@
         xmlns:viewmodels="clr-namespace:FSvBSCustomCloneUtility.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="FemShep v BroShep Utility" Height="450" Width="800">
+        Title="FemShep v BroShep Utility" Height="450" Width="800"
+        MinWidth="720"
+        MinHeight="560">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
