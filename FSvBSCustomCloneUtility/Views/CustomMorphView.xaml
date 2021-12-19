@@ -20,15 +20,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontWeight="Bold" Margin="{adonisUi:Space}">
@@ -36,47 +30,69 @@
         </TextBlock>
 
         <!-- FSvBS file -->
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
-            <TextBlock>
-                1. Select the BioD_FSvBS.pcc file located in the DLC folder.
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0, 10, 0, 10">
+            <TextBlock TextWrapping="Wrap">
+                1. Select the BioD_FSvBS_Dummies.pcc file located in the DLC_MOD_FSvBS DLC folder.
             </TextBlock>
             <Grid Margin="0, 10, 0, 5" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
+
                 <TextBox Text="{Binding FSvBSFile, Mode=OneWay}" ToolTip="BioD_FSvBS_Dummies.pcc file." IsReadOnly="True" Margin="0,0,10,0" Grid.Column="0"/>
                 <Button x:Name="FSvBSFileButton" HorizontalAlignment="Right" Width="100" Grid.Column="1" >Browse</Button>
             </Grid>
             <TextBlock x:Name="WarningFSvBSFile" Foreground="Red"/>
         </StackPanel>
 
-        <!-- Male headmorph -->
-        <TextBlock Grid.Row="3" Grid.ColumnSpan="3">
-                2. Select the .ron file containing the male headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
-        </TextBlock>
-        <TextBox Text="{Binding RonMFile, Mode=OneWay}"  ToolTip="Male .ron file." IsReadOnly="True" Grid.Row="4" Grid.Column="0"/>
-        <Button x:Name="RonMFileButton"  Content="Browse" Command="" Grid.Row="4" Grid.Column="1"/>
+        <!-- Ron files -->
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
+            <TextBlock TextWrapping="Wrap">
+                2. Select either, or both, the male or female .ron headmorph files. They must be for the appropriate game.
+            </TextBlock>
+            <Grid Margin="0, 10, 0, 5" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-        <!-- Female headmorph -->
-        <TextBlock Grid.Row="5" Grid.ColumnSpan="3">
-                3. Select the .ron file containing the female headmorph you wish to apply. Make sure to use a headmorph for the correct game. You can skip this step if you don't want to use a male headmorph.
-        </TextBlock>
-        <TextBox Text="{Binding RonFFile, Mode=OneWay}"  ToolTip="Female .ron file." Grid.Row="6" Grid.Column="0"/>
-        <Button x:Name="RonFFileButton" Content="Browse" Command="" Grid.Row="6" Grid.Column="1"/>
+                <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="0" Grid.Column="0">Male</TextBlock>
+                <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Male .ron file." IsReadOnly="True"  Margin="0,0,10,5" Grid.Row="0" Grid.Column="1"/>
+                <Button x:Name="RonMFileButton" HorizontalAlignment="Right" Width="100" Margin="0,0,0,10" Grid.Row="0" Grid.Column="2">Browse</Button>
 
+                <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="1" Grid.Column="0">Female</TextBlock>
+                <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Margin="0,5,10,0" Grid.Row="1" Grid.Column="1"/>
+                <Button x:Name="RonFFileButton" HorizontalAlignment="Right" Width="100" Grid.Row="1" Grid.Column="2" >Browse</Button>
+            </Grid>
+        </StackPanel>
+        
         <!-- Resources -->
-        <TextBlock Grid.Row="7" Grid.ColumnSpan="3">
-                4. Select the .pcc files that contain modded hairs or textures that your headmorph uses. Make sure they are for the correct game. You can skip this step if you don't use any mod for the headmorph, or if the textures are applied via .mem.
-        </TextBlock>
-        <TextBox x:Name="ResourcesText" Text=""  ToolTip="BioD_FSvBS_Dummies.pcc file." Grid.Row="8" Grid.Column="0"/>
-        <Button x:Name="ResourcesBrowse" Content="Browse" Command="" Grid.Row="8" Grid.Column="1"/>
-        <!-- <fa5:ImageAwesome Icon="Solid_CheckCircle" Foreground="#FFFFFF" Grid.Row="8" Grid.Column="2"/> -->
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
+            <TextBlock TextWrapping="Wrap">
+                3. Select the .pcc files containing modded hairs or textures for your headmorph. They must be for the appropriate game.
+            </TextBlock>
+            <Grid Margin="0, 10, 0, 5" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox ToolTip="Resources" IsReadOnly="True" Margin="0,0,10,0" Grid.Column="0"/>
+                <Button HorizontalAlignment="Right" Width="100" Grid.Column="1" >Browse</Button>
+            </Grid>
+        </StackPanel>
 
         <!-- Apply -->
-        <TextBlock Grid.Row="9" Grid.ColumnSpan="3">
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
+            <TextBlock>
                 5. Apply the headmorphs!
-        </TextBlock>
-        <Button x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Content="Apply" Command="" Grid.Row="10" Grid.Column="0"/>
+            </TextBlock>
+            <Button x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" HorizontalAlignment="Left"/>
+        </StackPanel>
     </Grid>
 </UserControl>
