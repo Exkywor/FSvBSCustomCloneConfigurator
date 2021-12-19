@@ -59,16 +59,17 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="10"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="0" Grid.Column="0">Male</TextBlock>
-                <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Male .ron file." IsReadOnly="True"  Margin="0,0,10,5" Grid.Row="0" Grid.Column="1"/>
-                <Button x:Name="RonMFileButton" HorizontalAlignment="Right" Width="100" Margin="0,0,0,10" Grid.Row="0" Grid.Column="2">Browse</Button>
+                <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Male .ron file." IsReadOnly="True"  Margin="0,0,10,0" Grid.Row="0" Grid.Column="1"/>
+                <Button x:Name="RonMFileButton" HorizontalAlignment="Right" Width="100" Grid.Row="0" Grid.Column="2">Browse</Button>
 
-                <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="1" Grid.Column="0">Female</TextBlock>
-                <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Margin="0,5,10,0" Grid.Row="1" Grid.Column="1"/>
-                <Button x:Name="RonFFileButton" HorizontalAlignment="Right" Width="100" Grid.Row="1" Grid.Column="2" >Browse</Button>
+                <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="2" Grid.Column="0">Female</TextBlock>
+                <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Margin="0,0,10,0" Grid.Row="2" Grid.Column="1"/>
+                <Button x:Name="RonFFileButton" HorizontalAlignment="Right" Width="100" Grid.Row="2" Grid.Column="2" >Browse</Button>
             </Grid>
         </StackPanel>
         
@@ -88,11 +89,6 @@
         </StackPanel>
 
         <!-- Apply -->
-        <StackPanel Grid.Row="4" Grid.ColumnSpan="3">
-            <TextBlock>
-                5. Apply the headmorphs!
-            </TextBlock>
-            <Button x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" HorizontalAlignment="Left"/>
-        </StackPanel>
+        <Button Grid.Row="4" Grid.ColumnSpan="3" x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
     </Grid>
 </UserControl>
