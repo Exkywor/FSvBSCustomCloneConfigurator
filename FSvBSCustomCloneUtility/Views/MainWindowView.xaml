@@ -20,6 +20,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
             <RowDefinition Height="10" />
@@ -51,9 +53,30 @@
             </StackPanel>
         </Grid>
 
-        <ContentControl Grid.Row="1" Grid.Column="1" x:Name="CustomMorph" />
+        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,20,0,0">
+                STEPS
+        </TextBlock>
 
-        <DockPanel Grid.Row="2" Grid.Column="1">
+        <!-- FSvBS file -->
+        <StackPanel Grid.Row="2" Grid.Column="1" Margin="{adonisUi:Space}">
+            <TextBlock TextWrapping="Wrap">
+                1. Select the target game.
+            </TextBlock>
+            <Grid Margin="0, 10, 0, 5" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="FSvBSFileButtonA" HorizontalAlignment="Center" Width="200" Grid.Column="0" >ME3</Button>
+                <Button x:Name="FSvBSFileButton" HorizontalAlignment="Center" Width="200" Grid.Column="2" >LE3</Button>
+            </Grid>
+        </StackPanel>
+
+        <ContentControl Grid.Row="3" Grid.Column="1" x:Name="CustomMorph" />
+
+        <DockPanel Grid.Row="4" Grid.Column="1">
             <TextBlock >Toggable buttons</TextBlock>
         </DockPanel>
     </Grid>

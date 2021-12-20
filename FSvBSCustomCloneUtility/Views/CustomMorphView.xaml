@@ -20,34 +20,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontWeight="Bold" Margin="{adonisUi:Space}">
-                STEPS
-        </TextBlock>
-
-        <!-- FSvBS file -->
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0, 10, 0, 10">
-            <TextBlock TextWrapping="Wrap">
-                1. Select the BioD_FSvBS_Dummies.pcc file located in the DLC_MOD_FSvBS DLC folder.
-            </TextBlock>
-            <Grid Margin="0, 10, 0, 5" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-
-                <TextBox Text="{Binding FSvBSFile, Mode=OneWay}" ToolTip="BioD_FSvBS_Dummies.pcc file." IsReadOnly="True" Margin="0,0,10,0" Grid.Column="0"/>
-                <Button x:Name="FSvBSFileButton" HorizontalAlignment="Right" Width="100" Grid.Column="1" >Browse</Button>
-            </Grid>
-            <TextBlock x:Name="WarningFSvBSFile" Foreground="Red"/>
-        </StackPanel>
-
         <!-- Ron files -->
-        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
             <TextBlock TextWrapping="Wrap">
                 2. Select either, or both, the male or female .ron headmorph files. They must be for the appropriate game.
             </TextBlock>
@@ -71,24 +47,10 @@
                 <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Margin="0,0,10,0" Grid.Row="2" Grid.Column="1"/>
                 <Button x:Name="RonFFileButton" HorizontalAlignment="Right" Width="100" Grid.Row="2" Grid.Column="2" >Browse</Button>
             </Grid>
-        </StackPanel>
-        
-        <!-- Resources -->
-        <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
-            <TextBlock TextWrapping="Wrap">
-                3. Select the .pcc files containing modded hairs or textures for your headmorph. They must be for the appropriate game.
-            </TextBlock>
-            <Grid Margin="0, 10, 0, 5" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <TextBox ToolTip="Resources" IsReadOnly="True" Margin="0,0,10,0" Grid.Column="0"/>
-                <Button HorizontalAlignment="Right" Width="100" Grid.Column="1" >Browse</Button>
-            </Grid>
+            <TextBlock x:Name="WarningRonFiles" Foreground="Red"/>
         </StackPanel>
 
         <!-- Apply -->
-        <Button Grid.Row="4" Grid.ColumnSpan="3" x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
+        <Button Grid.Row="1" Grid.ColumnSpan="3" x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
     </Grid>
 </UserControl>
