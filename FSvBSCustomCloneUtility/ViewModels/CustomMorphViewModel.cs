@@ -130,10 +130,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             NotifyOfPropertyChange(() => IsValid);
         }
 
-        public override void Update(string property, string value) {
+        public override void Update(string property, string value1, string value2 = "") {
             switch (property) {
                 case "TargetGame":
-                    TargetGame = value;
+                    TargetGame = value1;
 
                     CheckFSvBSFile();
                     CheckIfApply();

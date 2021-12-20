@@ -28,37 +28,66 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private List<ObserverControl> observers = new();
         public ObserverControl CustomMorph { get; set; }
 
-        private string _targetGame = "ME3";
-        public string TargetGame {
-            get {
-                return _targetGame;
-            }
+        private const string BUTTONSELECTEDCOLOR = "#5c5f72";
+        private const string BUTTONDEFAULTCOLOR = "#3e3d4b";
 
+        private string ME3Path = "";
+        private string LE3Path = "";
+        private bool IsME3 = false;
+
+        private string _ME3ButtonColor = BUTTONDEFAULTCOLOR;
+        private string _LE3ButtonColor = BUTTONDEFAULTCOLOR;
+        public string ME3ButtonColor {
+            get { return _ME3ButtonColor; }
             set {
-                _targetGame = value;
-                NotifyOfPropertyChange(() => TargetGame);
+                _ME3ButtonColor = value;
+                NotifyOfPropertyChange(() => ME3ButtonColor);
+            }
+        }
+        public string LE3ButtonColor {
+            get { return _LE3ButtonColor; }
+            set {
+                _LE3ButtonColor = value;
+                NotifyOfPropertyChange(() => LE3ButtonColor);
             }
         }
 
-        private bool IsME3 = true;
-        public bool ME3Checked {
-            get { return IsME3; }
-            set {
-                if (value.Equals(IsME3)) return;
-                ToggleMEGame();
-            }
-        }
-        public bool LE3Checked {
-            get { return !IsME3; }
-            set {
-                if (value.Equals(!IsME3)) return;
-                ToggleMEGame();
-            }
-        }
+        public void ME3Clicked() {
+            string path = "";
 
-        public void ToggleMEGame() {
-            IsME3 = !IsME3;
-            TargetGame = IsME3 ? "ME3" : "LE3";
+            if (ME3Path == "") {
+                path = GetPath("ME3");
+
+                if (path == "") {
+                    // Prompt the user for the path
+                    // Potentially return and stop everything here
+                }
+
+                ME3Path = path;
+            } 
+
+            IsME3 = true;
+            ME3ButtonColor = BUTTONSELECTEDCOLOR;
+            LE3ButtonColor = BUTTONDEFAULTCOLOR;
+            Notify("TargetGame");
+        }
+        public void LE3Clicked() {
+            string path = "";
+
+            if (LE3Path == "") {
+                path = GetPath("LE3");
+
+                if (path == "") {
+                    // Prompt the user for the path
+                    // Potentially return and stop everything here
+                }
+
+                LE3Path = path;
+            } 
+
+            IsME3 = false;
+            LE3ButtonColor = BUTTONSELECTEDCOLOR;
+            ME3ButtonColor = BUTTONDEFAULTCOLOR;
             Notify("TargetGame");
         }
 
@@ -84,6 +113,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             LegendaryExplorerCoreLib.InitLib(TaskScheduler.FromCurrentSynchronizationContext(), packageSaveFailed);
         }
 
+        private string GetPath(string game) {
+            return "";
+        }
+
         private async Task LoadViewAsync() {
             CustomMorph = new CustomMorphViewModel();
             observers.Add(CustomMorph);
@@ -95,7 +128,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         private void Notify(string property) {
             foreach(ObserverControl observer in observers) {
-                observer.Update(property, TargetGame);
+                switch(property) {
+                    case "TargetGame":
+                        observer.Update(property, IsME3 ? "ME3" : "LE3", IsME3 ? ME3Path : LE3Path);
+                        break;
+                }
             }
         }
     }
