@@ -52,7 +52,7 @@
         <!-- FSvBS file -->
         <StackPanel Grid.Row="2" Grid.Column="1" Margin="{adonisUi:Space}">
             <TextBlock TextWrapping="Wrap">
-                1. Select the target game.
+                1. Select the target game. The FemShep v BroShep mod must be installed before using this tool.
             </TextBlock>
             <Grid Margin="0, 10, 0, 5" >
                 <Grid.ColumnDefinitions>

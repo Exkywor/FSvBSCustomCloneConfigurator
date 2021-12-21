@@ -46,7 +46,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Game to get the path for</param>
         /// <returns>Path to the dummies file, null if the file version is not valid</returns>
         public static string GetDummiesPath(MEGame game) {
-            string dummies = Path.Combine(GetModPath(game), "DLC_FSvBS_Dummies.pcc");
+            string dummies = Path.Combine(GetModPath(game), @"CookedPCConsole\BioD_FSvBS_Dummies.pcc");
             if (!IsValidDummies(game, dummies)) { return null; }
             else { return dummies; }
         }

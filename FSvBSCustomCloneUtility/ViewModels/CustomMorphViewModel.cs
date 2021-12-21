@@ -22,12 +22,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private bool _isValid = false;
         public bool IsValid {
             get { return _isValid; }
-        }
-
-        private bool _isRonFileValid = false;
-        private string _warningRonFile = "";
-        public string WarningRonFile {
-            get { return _warningRonFile; }
+            set {
+                _isValid = value;
+                NotifyOfPropertyChange(() => IsValid);
+            }
         }
 
         private MEGame _targetGame;
@@ -42,20 +40,22 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private string _ronMFile = "";
         public string RonMFile {
             get { return _ronMFile; }
+            set {
+                _ronMFile = value;
+                NotifyOfPropertyChange(() => RonMFile);
+            }
         }
         private string _ronFFile = "";
         public string RonFFile {
             get { return _ronFFile; }
+            set {
+                _ronFFile = value;
+                NotifyOfPropertyChange(() => RonFFile);
+            }
         }
-
-        private List<string> resources = new();
-
-        string customHair = @"D:\Ministerio\dev\modding\Mass Effect\mods\Counter Clone\project\ron and saves\LE3\milkykookie_DLC_MOD_FemshepHair\CookedPCConsole\BIOG_HMF_HIR_ANTO.pcc";
 
         public CustomMorphViewModel() {
             // DataContext = this;
-
-            resources.Add(customHair);
 
             // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
             // writerMale.ApplyMorph();
@@ -67,9 +67,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             string file = Misc.PromptForFile("Ron files (.ron)|*.ron", "Select male headmorph");
 
             if (!string.IsNullOrEmpty(file)) {
-                _ronMFile = file;
-                NotifyOfPropertyChange(() => RonMFile);
-                _isRonFileValid = true;
+                RonMFile = file;
                 CheckIfApply();
             }
         }
@@ -77,16 +75,24 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             string file = Misc.PromptForFile("Ron files (.ron)|*.ron", "Select female headmorph");
 
             if (!string.IsNullOrEmpty(file)) {
-                _ronFFile = file;
-                NotifyOfPropertyChange(() => RonFFile);
-                _isRonFileValid = true;
+                RonFFile = file;
                 CheckIfApply();
             }
         }
 
+        public void ClearMRon() {
+            RonMFile = "";
+            CheckIfApply();
+        }
+
+        public void ClearFRon() {
+            RonFFile = "";
+            CheckIfApply();
+        }
+
         private void CheckIfApply() {
-            _isValid = (_isRonFileValid);
-            NotifyOfPropertyChange(() => IsValid);
+            // If both ron files are empty it will check as false, meaning the file is invalid
+            IsValid = !(String.IsNullOrEmpty(RonMFile) && String.IsNullOrEmpty(RonFFile));
         }
 
         public override void Update(string property, string value1, string value2 = "") {
