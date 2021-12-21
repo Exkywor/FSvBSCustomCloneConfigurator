@@ -59,6 +59,8 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         private void Load(string ronFile, string targetFile, Gender gender, List<string>? resourcePaths = null) {
+            // string path += $@"\DLC\DLC_MOD_{(IsME3 ? "FSvBS" : "FSvBSLE")}\BioD_FSvBS_Dummies.pcc";
+
             pccTargetFile = targetFile;
             pccTarget = MEPackageHandler.OpenMEPackage(targetFile);
 

@@ -2,9 +2,12 @@
 using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public enum Gender {
@@ -31,8 +35,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private const string BUTTONSELECTEDCOLOR = "#5c5f72";
         private const string BUTTONDEFAULTCOLOR = "#3e3d4b";
 
-        private string ME3Path = "";
-        private string LE3Path = "";
+        private bool ME3PathChecked = false;
+        private bool LE3PathChecked = false;
         private bool IsME3 = false;
 
         private string _ME3ButtonColor = BUTTONDEFAULTCOLOR;
@@ -52,39 +56,27 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        public void ME3Clicked() {
-            string path = "";
+        public void TargetME3(string game) {
+            if (!ME3PathChecked) {
+                if (!SetGamePath(MEGame.ME3)) { return; }
+                else { ME3PathChecked = true; }
+            }
 
-            if (ME3Path == "") {
-                path = GetPath("ME3");
-
-                if (path == "") {
-                    // Prompt the user for the path
-                    // Potentially return and stop everything here
-                }
-
-                ME3Path = path;
-            } 
-
+            if (!CheckModIsInstalled(MEGame.ME3)) { return; }
+            
             IsME3 = true;
             ME3ButtonColor = BUTTONSELECTEDCOLOR;
             LE3ButtonColor = BUTTONDEFAULTCOLOR;
             Notify("TargetGame");
         }
-        public void LE3Clicked() {
-            string path = "";
+        public void TargetLE3() {
+            if (!LE3PathChecked) {
+                if (!SetGamePath(MEGame.LE3)) { return; }
+                else { LE3PathChecked = true; }
+            }
 
-            if (LE3Path == "") {
-                path = GetPath("LE3");
-
-                if (path == "") {
-                    // Prompt the user for the path
-                    // Potentially return and stop everything here
-                }
-
-                LE3Path = path;
-            } 
-
+            if (!CheckModIsInstalled(MEGame.LE3)) { return; }
+            
             IsME3 = false;
             LE3ButtonColor = BUTTONSELECTEDCOLOR;
             ME3ButtonColor = BUTTONDEFAULTCOLOR;
@@ -109,12 +101,42 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     MessageBox.Show(message);
                 });
             }
-
+ 
             LegendaryExplorerCoreLib.InitLib(TaskScheduler.FromCurrentSynchronizationContext(), packageSaveFailed);
         }
 
-        private string GetPath(string game) {
-            return "";
+        private bool SetGamePath(MEGame game) {
+            // Get the user to point to the game path if it's not found
+            if (string.IsNullOrEmpty(MEDirectories.GetDefaultGamePath(game))) {
+                string file = Misc.PromptForFile("MassEffect3.exe|MassEffect3.exe",
+                                                 $"Select Mass Effect 3 {(game.IsGame3() ? "" : "LE ")}executable");
+
+                if (string.IsNullOrEmpty(file)) { return false; } // User didn't select a file
+
+                if (game == MEGame.ME3) {
+                    ME3Directory.DefaultGamePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));
+                } else {
+                    LE3Directory.DefaultGamePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));
+                }
+            }
+
+            return true;
+        }
+
+        private bool CheckModIsInstalled(MEGame game) {
+            string fsvbsFile = MEDirectories.GetBioGamePath(game) + $@"\DLC\DLC_MOD_{(game == MEGame.ME3 ? "FSvBS" : "FSvBSLE")}\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
+
+            if (!File.Exists(fsvbsFile)) { // Check that the mod is installed
+                MessageBox.Show("The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.",
+                    "Error", MessageBoxButton.OK);
+                return false;
+            } else if (!Validators.ValidateFSvBSFile(fsvbsFile, game)) { // Check that the mod version is compatible
+                MessageBox.Show("The FeemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.",
+                    "Error", MessageBoxButton.OK);
+                return false;
+            }
+
+            return true;
         }
 
         private async Task LoadViewAsync() {
@@ -130,7 +152,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             foreach(ObserverControl observer in observers) {
                 switch(property) {
                     case "TargetGame":
-                        observer.Update(property, IsME3 ? "ME3" : "LE3", IsME3 ? ME3Path : LE3Path);
+                        observer.Update(property, IsME3 ? "ME3" : "LE3");
                         break;
                 }
             }

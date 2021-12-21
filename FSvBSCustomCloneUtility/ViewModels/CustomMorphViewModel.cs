@@ -4,6 +4,8 @@ using FSvBSCustomCloneUtility.SharedUI;
 using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.ViewModels;
 using FSvBSCustomCloneUtility.Tools;
+using LegendaryExplorerCore.GameFilesystem;
+using LegendaryExplorerCore.Packages;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.Win32;
 using System;
@@ -22,30 +24,19 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             get { return _isValid; }
         }
 
-        private bool _isFSvBSFileValid = false;
-        private string _warningFSvBSFile = "";
-        public string WarningFSvBSFile {
-            get { return _warningFSvBSFile; }
-        }
-
         private bool _isRonFileValid = false;
         private string _warningRonFile = "";
         public string WarningRonFile {
             get { return _warningRonFile; }
         }
 
-        private string _targetGame = "";
-        public string TargetGame {
+        private MEGame _targetGame;
+        public MEGame TargetGame {
             get { return _targetGame; }
             set {
                 _targetGame = value;
                 NotifyOfPropertyChange(() => TargetGame);
             }
-        }
-
-        private string _fsvbsFile = "";
-        public string FSvBSFile {
-            get { return _fsvbsFile; }
         }
 
         private string _ronMFile = "";
@@ -56,7 +47,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public string RonFFile {
             get { return _ronFFile; }
         }
-
 
         private List<string> resources = new();
 
@@ -73,82 +63,39 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             // writerFemale.ApplyMorph();
         }
 
-        public void FSvBSFileButton() {
-            OpenFileDialog dlg = PromptForFile("Pcc files (.pcc)|*.pcc");
-
-            if (dlg != null) {
-                _fsvbsFile = dlg.FileName;
-                CheckFSvBSFile();
-            }
-        }
-
         public void RonMFileButton() {
-            OpenFileDialog dlg = PromptForFile("Ron files (.ron)|*.ron");
+            string file = Misc.PromptForFile("Ron files (.ron)|*.ron", "Select male headmorph");
 
-            if (dlg != null) {
-                _ronMFile = dlg.FileName;
+            if (!string.IsNullOrEmpty(file)) {
+                _ronMFile = file;
                 NotifyOfPropertyChange(() => RonMFile);
                 _isRonFileValid = true;
                 CheckIfApply();
             }
         }
         public void RonFFileButton() {
-            OpenFileDialog dlg = PromptForFile("Ron files (.ron)|*.ron");
+            string file = Misc.PromptForFile("Ron files (.ron)|*.ron", "Select female headmorph");
 
-            if (dlg != null) {
-                _ronFFile = dlg.FileName;
+            if (!string.IsNullOrEmpty(file)) {
+                _ronFFile = file;
                 NotifyOfPropertyChange(() => RonFFile);
                 _isRonFileValid = true;
                 CheckIfApply();
             }
         }
 
-        private void CheckFSvBSFile() {
-            bool valid = Validators.ValidateFSvBSFile(_fsvbsFile, TargetGame);
-            if (!valid) {
-                _warningFSvBSFile = "Invalid file. Select a file that matches the target game, and is the one indicated in the instructions.";
-                _isFSvBSFileValid = false;
-
-                NotifyOfPropertyChange(() => WarningFSvBSFile);
-                NotifyOfPropertyChange(() => FSvBSFile);
-
-                CheckIfApply();
-                return;
-            }
-
-            _warningFSvBSFile = "";
-            _isFSvBSFileValid = true;
-
-            NotifyOfPropertyChange(() => WarningFSvBSFile);
-            NotifyOfPropertyChange(() => FSvBSFile);
-
-            CheckIfApply();
-        }
-
         private void CheckIfApply() {
-            _isValid = (_isFSvBSFileValid && _isRonFileValid);
+            _isValid = (_isRonFileValid);
             NotifyOfPropertyChange(() => IsValid);
         }
 
         public override void Update(string property, string value1, string value2 = "") {
             switch (property) {
                 case "TargetGame":
-                    TargetGame = value1;
-
-                    CheckFSvBSFile();
+                    TargetGame = value1 == "ME3" ? MEGame.ME3 : MEGame.LE3;
                     CheckIfApply();
-
                     break;
             }
-        }
-
-        private OpenFileDialog PromptForFile(string filter) {
-            OpenFileDialog dlg = new();
-            dlg.Filter = filter;
-            bool? result = dlg.ShowDialog();
-
-            if (result != true) { return null; }
-            else { return dlg; }
         }
     }
 }

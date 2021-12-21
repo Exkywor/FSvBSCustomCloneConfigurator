@@ -7,25 +7,14 @@ using System.Threading.Tasks;
 
 namespace FSvBSCustomCloneUtility.Tools {
     public static class Validators {
-        public static bool ValidateFSvBSFile(string fsvbsFile, string game) {
-            // Check that the file has the correct name
-            if (!fsvbsFile.Contains("BioD_FSvBS_Dummies.pcc")) { return false; }
+        public static bool ValidateFSvBSFile(string fsvbsFile, MEGame game) {
+            using (IMEPackage file = MEPackageHandler.OpenMEPackage(fsvbsFile)) {
 
-            IMEPackage file = MEPackageHandler.OpenMEPackage(fsvbsFile);
-
-            if (!file.Game.IsGame3()) { return false; }
-
-            if (game == "ME3") {
-                if (file.Game is not MEGame.ME3) { return false; }
-
-                if (!file.Names.Contains("FSvBS_ME3_DummiesFile")) { return false; }
-
-            } else {
-                if (file.Game is not MEGame.LE3) { return false; }
-
-                if (!file.Names.Contains("FSvBS_LE3_DummiesFile")) { return false; }
+                // FIle does not contain the identifier, meaning it's from an older version of the mod
+                if (!file.Names.Contains($"FSvBS_{(game == MEGame.ME3 ? "ME3" : "LE3")}_DummiesFile")) {
+                    return false;
+                } 
             }
-
             return true;
         }
     }
