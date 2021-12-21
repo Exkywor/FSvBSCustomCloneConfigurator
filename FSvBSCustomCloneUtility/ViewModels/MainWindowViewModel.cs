@@ -62,7 +62,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 else { ME3PathChecked = true; }
             }
 
-            if (!CheckModIsInstalled(MEGame.ME3)) { return; }
+            if (!VerifyMod(MEGame.ME3)) { return; }
             
             IsME3 = true;
             ME3ButtonColor = BUTTONSELECTEDCOLOR;
@@ -75,7 +75,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 else { LE3PathChecked = true; }
             }
 
-            if (!CheckModIsInstalled(MEGame.LE3)) { return; }
+            if (!VerifyMod(MEGame.LE3)) { return; }
             
             IsME3 = false;
             LE3ButtonColor = BUTTONSELECTEDCOLOR;
@@ -123,20 +123,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             return true;
         }
 
-        private bool CheckModIsInstalled(MEGame game) {
-            string fsvbsFile = MEDirectories.GetBioGamePath(game) + $@"\DLC\DLC_MOD_{(game == MEGame.ME3 ? "FSvBS" : "FSvBSLE")}\CookedPCConsole\BioD_FSvBS_Dummies.pcc";
-
-            if (!File.Exists(fsvbsFile)) { // Check that the mod is installed
+        private bool VerifyMod(MEGame game) {
+            if (!FSvBSDirectories.IsModInstalled(game)) {
                 MessageBox.Show("The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.",
                     "Error", MessageBoxButton.OK);
                 return false;
-            } else if (!Validators.ValidateFSvBSFile(fsvbsFile, game)) { // Check that the mod version is compatible
+            } else if (!FSvBSDirectories.IsValidDummies(game, FSvBSDirectories.GetDummiesPath(game))) {
                 MessageBox.Show("The FeemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.",
                     "Error", MessageBoxButton.OK);
                 return false;
-            }
-
-            return true;
+            } else { return true; }
         }
 
         private async Task LoadViewAsync() {
