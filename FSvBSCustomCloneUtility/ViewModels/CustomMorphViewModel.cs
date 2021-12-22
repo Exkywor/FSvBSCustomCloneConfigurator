@@ -96,13 +96,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public void Apply() {
             if (!string.IsNullOrEmpty(RonMFile)) {
                 MorphWriter writerMale = new(RonMFile, TargetGame, Gender.Male);
-                writerMale.ApplyMorph();
-                Notify("Apply", "M");
+                bool res = writerMale.ApplyMorph();
+                if (res) { Notify("Apply", "M"); }
             }
             if (!string.IsNullOrEmpty(RonFFile)) {
                 MorphWriter writerFemale = new(RonFFile, TargetGame, Gender.Female);
-                writerFemale.ApplyMorph();
-                Notify("Apply", "F");
+                bool res = writerFemale.ApplyMorph();
+                if (res) { Notify("Apply", "F"); }
             }
         }
 

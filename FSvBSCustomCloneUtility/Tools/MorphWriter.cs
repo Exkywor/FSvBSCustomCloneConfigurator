@@ -24,6 +24,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         private IMEPackage pcc; // Opened package
 
         private MEGame targetGame; // Target game
+        private Gender gender;
         private MorphHead morphSource; // Parsed headmorph
         private ExportEntry morphTarget; // Target morph export
 
@@ -31,6 +32,9 @@ namespace FSvBSCustomCloneUtility.Tools {
         private Dictionary<string, string> resources = new(StringComparer.OrdinalIgnoreCase);
         /// <summary> Global files name , Global files path </summary>
         private Dictionary<string, string> globalResources = new(StringComparer.OrdinalIgnoreCase);
+
+        // Resources not found. Used to tell user what they are missing
+        List<string> notFound = new();
 
         /// <summary>
         /// Create an instance of MorphWriter
@@ -43,30 +47,37 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Apply the headmorph
+        /// Apply the headmorph 
         /// </summary>
-        public void ApplyMorph() {
-            try {
-                EditMorphFeatures();
-                EditBones();
-                EditLODVertices();
-                EditHair();
-                EditMatOverrides();
+        /// <returns>True if there were no errors</returns>
+        public bool ApplyMorph() {
+            EditMorphFeatures();
+            EditBones();
+            EditLODVertices();
+            EditHair();
+            EditMatOverrides();
 
-                pcc.Save();
-                pcc.Release();
-                pcc.Dispose();
-            } catch (ArgumentNullException e) {
-                MessageBox.Show($"{e.Message}." +
-                    $"Check that the texture/hair is spelled correctly and that you have provided a valid resource pcc if it's not in the basegame." +
-                    $"If you don't have access to the modded resource, you can remove the entry from the .ron",
+            if (notFound.Count > 0) {
+                string errMsg = string.Join(Environment.NewLine, notFound.ToArray());
+                MessageBox.Show($"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
+                    Environment.NewLine + Environment.NewLine +
+                    $"{errMsg}"
+                    + Environment.NewLine + Environment.NewLine +
+                    $"Make sure that any modded texture/hairs are installed, and that the names are spelled correctly in the headmorph file." +
+                    Environment.NewLine +
+                    $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
                     "Error", MessageBoxButton.OK);
+            } else {
+                pcc.Save();
             }
 
+            pcc.Release();
+            pcc.Dispose();
+            return (notFound.Count == 0);
         }
 
         /// <summary>
-        /// Loads the files and variables required by the methods
+        /// Load the files and variables required by the methods
         /// </summary>
         /// <param name="ronFile">Path to headmorph</param>
         /// <param name="game">Target game</param>
@@ -75,6 +86,7 @@ namespace FSvBSCustomCloneUtility.Tools {
             pccPath = FSvBSDirectories.GetDummiesPath(MEGame.ME3);
             pcc = MEPackageHandler.OpenMEPackage(pccPath);
             targetGame = game;
+            this.gender = gender;
 
             morphSource = RONConverter.ConvertRON(ronFile);
             LoadMorphExport(gender);
@@ -115,7 +127,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Gets the export of the input resource
+        /// Get the export of the input resource
         /// </summary>
         /// <param name="name">
         /// Instantiated name of the resource
@@ -134,7 +146,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Gets or clones the input resource
+        /// Get or clones the input resource
         /// </summary>
         /// <param name="name">
         /// Instantiated name of the resource
@@ -176,7 +188,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Gets a list of modded files that match the input fileName name
+        /// Get a list of modded files that match the input fileName name
         /// </summary>
         /// <param name="fileName">Filename to find</param>
         /// <returns>List of matching files</returns>
@@ -186,7 +198,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Applies the bones property from the headmorph to the morphTarget
+        /// Apply the bones property from the headmorph to the morphTarget
         /// </summary>
         private void EditBones() {
             morphTarget.RemoveProperty("m_aFinalSkeleton");
@@ -212,7 +224,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Applies the morh features property from the headmorph to the morphTarget
+        /// Apply the morh features property from the headmorph to the morphTarget
         /// </summary>
         private void EditMorphFeatures() {
             morphTarget.RemoveProperty("m_aMorphFeatures");
@@ -232,7 +244,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Applies the vertices binary data from the headmorph to the morphTarget
+        /// Apply the vertices binary data from the headmorph to the morphTarget
         /// </summary>
         private void EditLODVertices() {
             BioMorphFace head = ObjectBinary.From<BioMorphFace>(morphTarget);
@@ -250,7 +262,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Applies the hair property from the headmorph to the morphTarget
+        /// Apply the hair property from the headmorph to the morphTarget
         /// </summary>
         private void EditHair() {
             string hairName = morphSource.HairMesh.ToString();
@@ -263,9 +275,10 @@ namespace FSvBSCustomCloneUtility.Tools {
                 return;
             }
 
-            ExportEntry hairMesh = (ExportEntry)GetResource(morphSource.HairMesh);
+            ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
             if (hairMesh == null) {
-                throw new ArgumentNullException("HairMesh", $"Could not find {hairName}.");
+                notFound.Add($" - HairMesh: {morphSource.HairMesh}");
+                return;
             }
 
             ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
@@ -278,7 +291,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Applies the material overrides property from the headmorph to the morphTarget
+        /// Apply the material overrides property from the headmorph to the morphTarget
         /// </summary>
         private void EditMatOverrides() {
             ExportEntry matOverride = (ExportEntry) pcc.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
@@ -292,11 +305,11 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Generates a scalar overrides property with the morphSource values
+        /// Generate a scalar overrides property with the morphSource values
         /// </summary>
         /// <returns>A scalar overrides property</returns>
         private ArrayProperty<StructProperty> GenerateScalarOverrides() {
-            var m_aScalarOverrides = new ArrayProperty<StructProperty>("m_aScalarOverrides");
+            ArrayProperty<StructProperty> m_aScalarOverrides = new("m_aScalarOverrides");
             foreach (MorphHead.ScalarParameter parameter in morphSource.ScalarParameters) {
                 PropertyCollection props = new PropertyCollection();
 
@@ -309,11 +322,11 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Generates a color overrides property with the morphSource values
+        /// Generate a color overrides property with the morphSource values
         /// </summary>
         /// <returns>A color overrides property</returns>
         private ArrayProperty<StructProperty> GenerateColorOverrides() {
-            var m_aColorOverrides = new ArrayProperty<StructProperty>("m_aColorOverrides");
+            ArrayProperty<StructProperty> m_aColorOverrides = new("m_aColorOverrides");
             foreach (MorphHead.VectorParameter parameter in morphSource.VectorParameters) {
                 PropertyCollection props = new();
 
@@ -335,11 +348,11 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Generates a texture overrides property with the morphSource values
+        /// Generate a texture overrides property with the morphSource values
         /// </summary>
         /// <returns>A texture overrides property</returns>
         private ArrayProperty<StructProperty> GenerateTextureOverride() {
-            var m_aTextureOverrides = new ArrayProperty<StructProperty>("m_aTextureOverrides");
+            ArrayProperty<StructProperty> m_aTextureOverrides = new("m_aTextureOverrides");
 
             foreach (MorphHead.TextureParameter parameter in morphSource.TextureParameters) {
                 string textureName = parameter.Value.Remove(parameter.Value.Length - 1).Substring(1);
@@ -350,7 +363,8 @@ namespace FSvBSCustomCloneUtility.Tools {
                 IEntry texture = GetResource(textureName);
 
                 if (texture == null) {
-                    throw new ArgumentNullException(parameter.Name, $"Could not find texture {textureName}.");
+                    notFound.Add($" - {parameter.Name}: {textureName}");
+                    continue;
                 }
                 
                 props.Add(new NameProperty(parameter.Name, "nName"));
@@ -359,6 +373,7 @@ namespace FSvBSCustomCloneUtility.Tools {
 
                 m_aTextureOverrides.Add(new StructProperty("TextureParameter", props));
             }
+
             return m_aTextureOverrides;
         }
     }
