@@ -11,10 +11,10 @@
         xmlns:viewmodels="clr-namespace:FSvBSCustomCloneUtility.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="FemShep v BroShep Utility" Height="450" Width="720"
+        Title="FemShep v BroShep Utility Tool" Height="520" Width="720"
         WindowStartupLocation="CenterScreen"
         MinWidth="720"
-        MinHeight="450">
+        MinHeight="520">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -24,7 +24,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
-            <RowDefinition Height="50" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>

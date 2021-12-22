@@ -3,12 +3,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:local="clr-namespace:FSvBSCustomCloneUtility.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <DockPanel>
-            <TextBlock >Toggable buttons</TextBlock>
-        </DockPanel>
+             mc:Ignorable="d">
+
+    <Grid Margin="{adonisUi:Space}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,10">
+            APPEARANCE
+        </TextBlock>
+
+        <TextBlock TextWrapping="Wrap" Grid.Row="1" Grid.ColumnSpan="3">
+            This controls what appearance Shepard will have. You can toggle between the default or customized appearances.
+        </TextBlock>
+
+        <!-- Male toggle -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Grid.Row="2" Grid.Column="0">
+            <TextBlock Text="Male" Margin="12,0,10,0" VerticalAlignment="Center"/>
+            <Button x:Name="MaleDefault" Width="125" 
+                    Background="{Binding MaleDefaultColor}"
+                    Content="Default"/>
+            <Button x:Name="MaleCustom" Width="125"
+                    Background="{Binding MaleCustomColor}" 
+                    Content="Custom"
+            />
+        </StackPanel>
+
+        <!-- Female toggle -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Grid.Row="2" Grid.Column="2">
+            <TextBlock Text="Female" Margin="12,0,10,0" VerticalAlignment="Center"/>
+            <Button x:Name="FemaleDefault" Width="125" 
+                    Background="{Binding FemaleDefaultColor}"
+                    Content="Default"/>
+            <Button x:Name="FemaleCustom" Width="125"
+                    Background="{Binding FemaleCustomColor}" 
+                    Content="Custom"
+            />
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -11,18 +11,14 @@
       BorderThickness="0">
 
 
-    <Grid Grid.Row="1" Margin="{adonisUi:Space}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
+    <Grid Margin="{adonisUi:Space}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <!-- Ron files -->
-        <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Margin="0, 0, 0, 10">
+        <StackPanel Grid.Row="0" Margin="0, 0, 0, 10">
             <TextBlock TextWrapping="Wrap">
                 2. Select either, or both, the male or female .ron headmorph files. They must be for the appropriate game.
             </TextBlock>
@@ -52,6 +48,6 @@
         </StackPanel>
 
         <!-- Apply -->
-        <Button Grid.Row="1" Grid.ColumnSpan="3" x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
+        <Button Grid.Row="1" x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
     </Grid>
 </UserControl>
