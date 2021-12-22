@@ -8,6 +8,12 @@ using System.Windows.Controls;
 
 namespace FSvBSCustomCloneUtility.Controls {
     public abstract class ObserverControl : PropertyChangedBase {
+        /// <summary>
+        /// Informs the observer that the observable has had an update
+        /// </summary>
+        /// <typeparam name="Type">Type of the updated property from the observable</typeparam>
+        /// <param name="name">The name of the updated property</param>
+        /// <param name="value">The value of the updated property</param>
         public abstract void Update<Type>(string name, Type value);
     }
 }

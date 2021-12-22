@@ -31,6 +31,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
     public class MainWindowViewModel : Conductor<ObserverControl> {
         private List<ObserverControl> observers = new();
         public ObserverControl CustomMorph { get; set; }
+        public ObserverControl ConditionalsControl { get; set; }
 
         private const string BUTTONSELECTEDCOLOR = "#5c5f72";
         private const string BUTTONDEFAULTCOLOR = "#3e3d4b";
@@ -85,6 +86,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public MainWindowViewModel() {
             initCoreLib();
+
+            // Create views and adds them to the observers
+            CustomMorph = new CustomMorphViewModel();
+            ConditionalsControl = new ConditionalsControlViewModel();
+            observers.Add(CustomMorph);
+            observers.Add(ConditionalsControl);
+
             LoadViewAsync();
 
             // ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
@@ -136,10 +144,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         private async Task LoadViewAsync() {
-            CustomMorph = new CustomMorphViewModel();
-            observers.Add(CustomMorph);
             foreach (ObserverControl observer in observers) {
-
                 await ActivateItemAsync(observer);
             }
         }

@@ -11,9 +11,10 @@
         xmlns:viewmodels="clr-namespace:FSvBSCustomCloneUtility.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="FemShep v BroShep Utility" Height="450" Width="800"
+        Title="FemShep v BroShep Utility" Height="450" Width="720"
+        WindowStartupLocation="CenterScreen"
         MinWidth="720"
-        MinHeight="560">
+        MinHeight="450">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -22,7 +23,7 @@
             <RowDefinition Height="100" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="50" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
@@ -49,7 +50,7 @@
                 STEPS
         </TextBlock>
 
-        <!-- FSvBS file -->
+        <!-- Game Target -->
         <StackPanel Grid.Row="2" Grid.Column="1" Margin="{adonisUi:Space}">
             <TextBlock TextWrapping="Wrap">
                 1. Select the target game. The FemShep v BroShep mod must be installed before using this tool.
@@ -73,8 +74,6 @@
 
         <ContentControl Grid.Row="3" Grid.Column="1" x:Name="CustomMorph" />
 
-        <DockPanel Grid.Row="4" Grid.Column="1">
-            <TextBlock >Toggable buttons</TextBlock>
-        </DockPanel>
+        <ContentControl Grid.Row="4" Grid.Column="1" x:Name="ConditionalsControl" />
     </Grid>
 </Window>

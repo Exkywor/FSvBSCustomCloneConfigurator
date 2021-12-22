@@ -1,7 +1,4 @@
-﻿using FSvBSCustomCloneUtility;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,15 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FSvBSCustomCloneUtility.Views
-{
+namespace FSvBSCustomCloneUtility.Views {
     /// <summary>
-    /// Interaction logic for CustomMorphPage.xaml
+    /// Interaction logic for ConditionalsControlView.xaml
     /// </summary>
-    public partial class CustomMorphView : UserControl
-    {
-        public CustomMorphView()
-        {
+    public partial class ConditionalsControlView : UserControl {
+        public ConditionalsControlView() {
             InitializeComponent();
         }
     }

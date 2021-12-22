@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using FSvBSCustomCloneUtility;
-using FSvBSCustomCloneUtility.SharedUI;
 using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.ViewModels;
 using FSvBSCustomCloneUtility.Tools;
@@ -101,6 +100,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 case "TargetGame":
                     TargetGame = (MEGame) Convert.ChangeType(value, typeof(MEGame));
                     CheckIfApply();
+                    break;
+                default:
                     break;
             }
         }
