@@ -94,12 +94,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
-            // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
-            // writerMale.ApplyMorph();
-            // MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
-            // writerFemale.ApplyMorph();
-
-            Notify<bool>("Apply", true);
+            if (!string.IsNullOrEmpty(RonMFile)) {
+                MorphWriter writerMale = new(RonMFile, TargetGame, Gender.Male);
+                writerMale.ApplyMorph();
+                Notify("Apply", "M");
+            }
+            if (!string.IsNullOrEmpty(RonFFile)) {
+                MorphWriter writerFemale = new(RonFFile, TargetGame, Gender.Female);
+                writerFemale.ApplyMorph();
+                Notify("Apply", "F");
+            }
         }
 
         public override void Update<Type>(string name, Type value) {

@@ -110,7 +110,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     
                     break;
                 case "Apply":
-                    UpdateState();
+                    string gender = (string) Convert.ChangeType(value, typeof(string));
+                    if (gender == "M") { SetMaleCustom(); }
+                    else if (gender == "F") { SetFemaleCustom(); }
 
                     break;
                 default:

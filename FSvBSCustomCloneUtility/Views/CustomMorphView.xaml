@@ -48,6 +48,6 @@
         </StackPanel>
 
         <!-- Apply -->
-        <Button Grid.Row="1" x:Name="ApplyButton" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
+        <Button Grid.Row="1" x:Name="Apply" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
     </Grid>
 </UserControl>

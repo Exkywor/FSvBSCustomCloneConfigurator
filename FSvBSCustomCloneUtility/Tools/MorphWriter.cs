@@ -1,5 +1,6 @@
 ﻿using FSvBSCustomCloneUtility.ViewModels;
 using LegendaryExplorerCore;
+using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
 using LegendaryExplorerCore.Unreal;
@@ -7,6 +8,7 @@ using LegendaryExplorerCore.Unreal.BinaryConverters;
 using MassEffectModManagerCore.modmanager.save.game3;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,30 +16,35 @@ using System.Windows;
 using Vector = MassEffectModManagerCore.modmanager.save.game3.Vector;
 
 namespace FSvBSCustomCloneUtility.Tools {
+    /// <summary>
+    /// Writer to apply a headmorph to the dummies file
+    /// </summary>
     public class MorphWriter {
-        private string pccTargetFile;
-        private IMEPackage pccTarget;
-        private MorphHead morphSource;
-        private ExportEntry morphTarget;
+        private string pccPath; // Found path, for ease of use
+        private IMEPackage pcc; // Opened package
+
+        private MEGame targetGame; // Target game
+        private MorphHead morphSource; // Parsed headmorph
+        private ExportEntry morphTarget; // Target morph export
+
         // resources and globalResources only contain paths, to avoid opening unnecessary pccs
-        private Dictionary<string, string> resources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private Dictionary<string, string> globalResources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private string[] globalNames = {"BIOG_HMM_HED_Alignment", "BIOG_HMF_HED_Alignment",
-            "BIOG_HMM_HED_PROMorph", "BIOG_HMF_HED_PROMorph_R", "BIOG_HMM_HIR_PRO_R", "BIOG_HMF_HIR_PRO"};
+        private Dictionary<string, string> resources = new(StringComparer.OrdinalIgnoreCase);
+        /// <summary> Global files name , Global files path </summary>
+        private Dictionary<string, string> globalResources = new(StringComparer.OrdinalIgnoreCase);
 
-        // TODO: Validation of incoming stuff will be handled by Controller, not Model
-        public MorphWriter(string ronFile, string targetFile, Gender gender) {
-            Load(ronFile, targetFile, gender);
+        /// <summary>
+        /// Create an instance of MorphWriter
+        /// </summary>
+        /// <param name="ronFile">Path to headmorph</param>
+        /// <param name="game">Target game</param>
+        /// <param name="gender">Target Shepard</param>
+        public MorphWriter(string ronFile, MEGame game, Gender gender) {
+            Load(ronFile, game, gender);
         }
 
-        public MorphWriter(string ronFile, string targetFile, Gender gender, List<string> resources) {
-
-            Load(ronFile, targetFile, gender, resources);
-        }
-
-        private void LoadCommands() {
-        }
-
+        /// <summary>
+        /// Apply the headmorph
+        /// </summary>
         public void ApplyMorph() {
             try {
                 EditMorphFeatures();
@@ -46,96 +53,141 @@ namespace FSvBSCustomCloneUtility.Tools {
                 EditHair();
                 EditMatOverrides();
 
-                pccTarget.Save();
-                return;
+                pcc.Save();
+                pcc.Release();
+                pcc.Dispose();
             } catch (ArgumentNullException e) {
                 MessageBox.Show($"{e.Message}." +
                     $"Check that the texture/hair is spelled correctly and that you have provided a valid resource pcc if it's not in the basegame." +
                     $"If you don't have access to the modded resource, you can remove the entry from the .ron",
                     "Error", MessageBoxButton.OK);
-                return;
             }
 
         }
 
-        private void Load(string ronFile, string targetFile, Gender gender, List<string>? resourcePaths = null) {
-            // string path += $@"\DLC\DLC_MOD_{(IsME3 ? "FSvBS" : "FSvBSLE")}\BioD_FSvBS_Dummies.pcc";
-
-            pccTargetFile = targetFile;
-            pccTarget = MEPackageHandler.OpenMEPackage(targetFile);
+        /// <summary>
+        /// Loads the files and variables required by the methods
+        /// </summary>
+        /// <param name="ronFile">Path to headmorph</param>
+        /// <param name="game">Target game</param>
+        /// <param name="gender">Target Shepard</param>
+        private void Load(string ronFile, MEGame game, Gender gender) {
+            pccPath = FSvBSDirectories.GetDummiesPath(MEGame.ME3);
+            pcc = MEPackageHandler.OpenMEPackage(pccPath);
+            targetGame = game;
 
             morphSource = RONConverter.ConvertRON(ronFile);
             LoadMorphExport(gender);
 
-            if (resourcePaths != null && resourcePaths.Count > 0) {
-                SetResourcePaths(resourcePaths);
-            }
             SetGlobalPaths();
-
-            return;
         }
-        private IEntry LoadMorphExport(Gender gender) {
-            // INVARIANT: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
-            IEnumerable<ExportEntry> stuntActors = pccTarget.Exports.Where(e => e.ClassName == "SFXStuntActor");
+
+        /// <summary>
+        /// Find and load the morph target in the dummies file.
+        /// INVARIANT: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
+        /// </summary>
+        /// <param name="gender">Target Shepard</param>
+        private void LoadMorphExport(Gender gender) {
+            IEnumerable<ExportEntry> stuntActors = pcc.Exports.Where(e => e.ClassName == "SFXStuntActor");
             foreach (ExportEntry stuntActor in stuntActors) {
                 string targetTag = gender is Gender.Female ? "dummy_custom_female" : "dummy_custom_male";
                 NameProperty tag = stuntActor.GetProperty<NameProperty>("Tag");
 
                 if (tag != null && tag.Value == targetTag) {
                     ExportEntry archetype = (ExportEntry)stuntActor.Archetype;
-                    morphTarget = (ExportEntry)pccTarget.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);
+                    morphTarget = (ExportEntry)pcc.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);
                 }
             }
-            return null;
         }
 
-        private void SetResourcePaths(List<string> resourcePaths) {
-            foreach (string file in resourcePaths) {
-                string resourceName = file.Substring(file.LastIndexOf(@"\") + 1); // Get only the file name
-                resourceName = resourceName.Remove(resourceName.Length - 4); // Remove the .pcc part
-                resources.Add(resourceName, file);
-            }
-        }
-
+        /// <summary>
+        /// Set the list of global files
+        /// </summary>
         private void SetGlobalPaths() {
-            string prefix = @$"{pccTargetFile.Substring(0, pccTargetFile.IndexOf("BIOGame", StringComparison.OrdinalIgnoreCase) + 7)}\CookedPCConsole";
-            foreach (string name in globalNames) {
-                globalResources.Add(name, $@"{prefix}\{name}.pcc");
+            // Code thanks to Noira Fayn
+            IEnumerable<string> globalFiles = Directory.EnumerateFiles
+                (MEDirectories.GetCookedPath(targetGame), "*.pcc", SearchOption.AllDirectories)
+                    .Where(file => Path.GetFileName(file).Contains("BIOG_HM"));
+            
+            foreach (string file in globalFiles) {
+                globalResources.Add(Path.GetFileNameWithoutExtension(file), file);
             }
         }
 
-        // Name Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
+        /// <summary>
+        /// Gets the export of the input resource
+        /// </summary>
+        /// <param name="name">
+        /// Instantiated name of the resource
+        /// Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
+        /// </param>
+        /// <returns>The export of the resource in the dummies file; null if not found</returns>
         private IEntry GetResource(string name) {
             string fileName = name.Substring(0, name.IndexOf('.'));
 
+            // We check if the resource is global to save time searching for the file
             if (globalResources.ContainsKey(fileName)) {
-                return GetOrCloneResource(name, globalResources);
-            } else if (resources.ContainsKey(fileName)) {
-                return GetOrCloneResource(name, resources);
+                return GetOrCloneResource(name, true);
             } else {
-                return null;
+                return GetOrCloneResource(name);
             }
         }
 
-        private IEntry GetOrCloneResource(string name, Dictionary<string, string> resourcePaths) {
+        /// <summary>
+        /// Gets or clones the input resource
+        /// </summary>
+        /// <param name="name">
+        /// Instantiated name of the resource
+        /// Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
+        /// </param>
+        /// <returns>The export of the resource in the dummies file; null if not found</returns>
+        private IEntry GetOrCloneResource(string name, bool useGlobalPaths = false) {
             string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
             string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
 
             // Check if resource is alrady in the file 
-            IEntry res = pccTarget.FindExport(name);
+            IEntry res = pcc.FindExport(name);
 
             if (res != null) { return res; }
 
-            using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resourcePaths[fileName]);
+            ExportEntry extRes = null;
+            
+            if (useGlobalPaths) {
+                using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
+                extRes = resourcePcc.FindExport(instancedName);
+            } else {
+                // Iterate through modded files that match the fileName
+                // Stop if the resource was found, else the loop continues and leaves extRes as null
+                foreach (string resourcePath in GetModdedResourcePaths(fileName)) {
+                    using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resourcePath);
+                    ExportEntry tmpRes = resourcePcc.FindExport(instancedName);
+                    if (tmpRes != null) { // The resource was found
+                        extRes = tmpRes;
+                        break;
+                    }
+                }
+            }
 
-            ExportEntry extRes = resourcePcc.FindExport(instancedName);
             if (extRes == null) { return null; } // Resource not found
 
-            EntryExporter.ExportExportToPackage(extRes, pccTarget, out res);
+            EntryExporter.ExportExportToPackage(extRes, pcc, out res);
 
             return res;
         }
 
+        /// <summary>
+        /// Gets a list of modded files that match the input fileName name
+        /// </summary>
+        /// <param name="fileName">Filename to find</param>
+        /// <returns>List of matching files</returns>
+        private IEnumerable<string> GetModdedResourcePaths(string fileName) {
+            return Directory.EnumerateFiles (MEDirectories.GetDLCPath(targetGame), "*.pcc", SearchOption.AllDirectories)
+                .Where(file => Path.GetFileNameWithoutExtension(file).Equals(fileName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Applies the bones property from the headmorph to the morphTarget
+        /// </summary>
         private void EditBones() {
             morphTarget.RemoveProperty("m_aFinalSkeleton");
 
@@ -159,6 +211,9 @@ namespace FSvBSCustomCloneUtility.Tools {
             morphTarget.WriteProperty(m_aFinalSkeleton);
         }
 
+        /// <summary>
+        /// Applies the morh features property from the headmorph to the morphTarget
+        /// </summary>
         private void EditMorphFeatures() {
             morphTarget.RemoveProperty("m_aMorphFeatures");
 
@@ -176,6 +231,9 @@ namespace FSvBSCustomCloneUtility.Tools {
             morphTarget.WriteProperty(m_aMorphFeatures);
         }
 
+        /// <summary>
+        /// Applies the vertices binary data from the headmorph to the morphTarget
+        /// </summary>
         private void EditLODVertices() {
             BioMorphFace head = ObjectBinary.From<BioMorphFace>(morphTarget);
             List<Vector>[] lods = { morphSource.Lod0Vertices, morphSource.Lod1Vertices, morphSource.Lod2Vertices, morphSource.Lod3Vertices };
@@ -191,6 +249,9 @@ namespace FSvBSCustomCloneUtility.Tools {
             morphTarget.WriteBinary(head);
         }
 
+        /// <summary>
+        /// Applies the hair property from the headmorph to the morphTarget
+        /// </summary>
         private void EditHair() {
             string hairName = morphSource.HairMesh.ToString();
 
@@ -216,8 +277,11 @@ namespace FSvBSCustomCloneUtility.Tools {
             morphTarget.WriteProperty(hairProp);
         }
 
+        /// <summary>
+        /// Applies the material overrides property from the headmorph to the morphTarget
+        /// </summary>
         private void EditMatOverrides() {
-            ExportEntry matOverride = (ExportEntry)pccTarget.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
+            ExportEntry matOverride = (ExportEntry) pcc.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
 
             matOverride.RemoveProperty("m_aScalarOverrides");
             matOverride.WriteProperty(GenerateScalarOverrides());
@@ -227,6 +291,10 @@ namespace FSvBSCustomCloneUtility.Tools {
             matOverride.WriteProperty(GenerateTextureOverride());
         }
 
+        /// <summary>
+        /// Generates a scalar overrides property with the morphSource values
+        /// </summary>
+        /// <returns>A scalar overrides property</returns>
         private ArrayProperty<StructProperty> GenerateScalarOverrides() {
             var m_aScalarOverrides = new ArrayProperty<StructProperty>("m_aScalarOverrides");
             foreach (MorphHead.ScalarParameter parameter in morphSource.ScalarParameters) {
@@ -240,6 +308,10 @@ namespace FSvBSCustomCloneUtility.Tools {
             return m_aScalarOverrides;
         }
 
+        /// <summary>
+        /// Generates a color overrides property with the morphSource values
+        /// </summary>
+        /// <returns>A color overrides property</returns>
         private ArrayProperty<StructProperty> GenerateColorOverrides() {
             var m_aColorOverrides = new ArrayProperty<StructProperty>("m_aColorOverrides");
             foreach (MorphHead.VectorParameter parameter in morphSource.VectorParameters) {
@@ -262,6 +334,10 @@ namespace FSvBSCustomCloneUtility.Tools {
             return m_aColorOverrides;
         }
 
+        /// <summary>
+        /// Generates a texture overrides property with the morphSource values
+        /// </summary>
+        /// <returns>A texture overrides property</returns>
         private ArrayProperty<StructProperty> GenerateTextureOverride() {
             var m_aTextureOverrides = new ArrayProperty<StructProperty>("m_aTextureOverrides");
 
