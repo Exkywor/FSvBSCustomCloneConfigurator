@@ -1,11 +1,8 @@
 ﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSvBSCustomCloneUtility.Tools {
     /// <summary>
@@ -49,6 +46,16 @@ namespace FSvBSCustomCloneUtility.Tools {
             string dummies = Path.Combine(GetModPath(game), @"CookedPCConsole\BioD_FSvBS_Dummies.pcc");
             if (!IsValidDummies(game, dummies)) { return null; }
             else { return dummies; }
+        }
+        /// <summary>
+        /// Gets the path to the clean dummies file for the input game
+        /// </summary>
+        /// <param name="game">Game to get the path for</param>
+        /// <returns>Path to the clean dummies file, null if the file version is not valid</returns>
+        public static string GetCleanDummiesPath(MEGame game) {
+            string dummiesClean = Path.Combine(GetModPath(game), @"CookedPCConsole\BioD_FSvBS_Dummies_Clean.pcc");
+            if (!IsValidDummies(game, dummiesClean)) { return null; }
+            else { return dummiesClean; }
         }
 
         /// <summary>
@@ -94,6 +101,14 @@ namespace FSvBSCustomCloneUtility.Tools {
             if (!file.Names.Contains($"FSvBS_{(game == MEGame.ME3 ? "ME3" : "LE3")}_DummiesFile")) {
                 return false;
             } else { return true; }
+        }
+
+        /// <summary>
+        /// Replace the dummies file with a clean version
+        /// </summary>
+        /// <param name="game">Game to replace for</param>
+        public static void ApplyCleanDummies(MEGame game) {
+            File.Copy(GetCleanDummiesPath(game), GetDummiesPath(game), true);
         }
     }
 }

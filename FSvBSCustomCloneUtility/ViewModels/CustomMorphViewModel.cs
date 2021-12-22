@@ -96,6 +96,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
+            FSvBSDirectories.ApplyCleanDummies((MEGame) TargetGame);
+
             if (!string.IsNullOrEmpty(RonMFile)) {
                 MorphWriter writerMale = new(RonMFile, (MEGame) TargetGame, Gender.Male);
                 bool res = writerMale.ApplyMorph();
