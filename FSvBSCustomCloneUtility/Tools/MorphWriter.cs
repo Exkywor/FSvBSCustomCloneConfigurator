@@ -26,9 +26,13 @@ namespace FSvBSCustomCloneUtility.Tools {
         private Gender gender; // Target gender
         private MorphHead morphSource; // Parsed headmorph
         private ExportEntry morphTarget; // Target morph export
+
         /// <summary> Global file name , Global file path </summary>
         private Dictionary<string, string> globalResources = new(StringComparer.OrdinalIgnoreCase);
-        private List<string> notFound = new();  // Resources not found. Used to tell user what they are missing
+
+        private List<string> resourcesNotFound = new();  // Resources not found.
+        /// <summary> Resource's instanced name, paths to duplicates </summary>
+        private Dictionary<string, IEnumerable<String>> resourceDuplicates = new(); // Resources in multiple files.
 
         /// <summary>
         /// Create an instance of MorphWriter
@@ -51,17 +55,9 @@ namespace FSvBSCustomCloneUtility.Tools {
             EditHair();
             EditMatOverrides();
 
-            if (notFound.Count > 0) {
-                string errMsg = string.Join(Environment.NewLine, notFound.ToArray());
-                MessageBox.Show($"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
-                    Environment.NewLine + Environment.NewLine +
-                    $"{errMsg}"
-                    + Environment.NewLine + Environment.NewLine +
-                    $"Make sure that any modded texture/hairs are installed, and that the names are spelled correctly in the headmorph file." +
-                    Environment.NewLine +
-                    $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
-                    "Error", MessageBoxButton.OK);
-            } else {
+            if (resourcesNotFound.Count > 0) { DisplayErrors("resourcesNotFound"); }
+            else if (resourceDuplicates.Count > 0) { DisplayErrors("resourceDuplicates"); }
+            else {
                 MessageBox.Show($"The {(gender == Gender.Male ? "male" : "female")} headmorph was applied succesfully.",
                     "Success", MessageBoxButton.OK);
                 pcc.Save();
@@ -69,7 +65,7 @@ namespace FSvBSCustomCloneUtility.Tools {
 
             pcc.Release();
             pcc.Dispose();
-            return (notFound.Count == 0);
+            return (resourcesNotFound.Count == 0 && resourceDuplicates.Count == 0);
         }
 
         /// <summary>
@@ -153,30 +149,39 @@ namespace FSvBSCustomCloneUtility.Tools {
             string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
             string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
 
-            // Check if resource is alrady in the file 
+            // Check if resource is already in the file 
             IEntry res = pcc.FindExport(name);
 
             if (res != null) { return res; }
 
             ExportEntry extRes = null;
-            
+            int count = 0; // Used to verify that not more than one file contains the resource
+
             if (useGlobalPaths) {
                 using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
                 extRes = resourcePcc.FindExport(instancedName);
+                count++;
             } else {
                 // Iterate through modded files that match the fileName
-                // Stop if the resource was found, else the loop continues and leaves extRes as null
                 foreach (string resourcePath in GetModdedResourcePaths(fileName)) {
                     using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resourcePath);
                     ExportEntry tmpRes = resourcePcc.FindExport(instancedName);
                     if (tmpRes != null) { // The resource was found
                         extRes = tmpRes;
-                        break;
+                        count++;
                     }
                 }
             }
 
             if (extRes == null) { return null; } // Resource not found
+
+            // Multiple files contain the resource. Store the instancedName and the paths that contain it
+            // Don't return null, since the resource was found
+            if (count > 1) {
+                if (!resourceDuplicates.ContainsKey(instancedName)) {
+                    resourceDuplicates.Add(instancedName, GetModdedResourcePaths(fileName));
+                }
+            }
 
             EntryExporter.ExportExportToPackage(extRes, pcc, out res);
 
@@ -273,7 +278,7 @@ namespace FSvBSCustomCloneUtility.Tools {
 
             ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
             if (hairMesh == null) {
-                notFound.Add($" - HairMesh: {morphSource.HairMesh}");
+                resourcesNotFound.Add($" - HairMesh: {morphSource.HairMesh}");
                 return;
             }
 
@@ -359,7 +364,7 @@ namespace FSvBSCustomCloneUtility.Tools {
                 IEntry texture = GetResource(textureName);
 
                 if (texture == null) {
-                    notFound.Add($" - {parameter.Name}: {textureName}");
+                    resourcesNotFound.Add($" - {parameter.Name}: {textureName}");
                     continue;
                 }
                 
@@ -371,6 +376,46 @@ namespace FSvBSCustomCloneUtility.Tools {
             }
 
             return m_aTextureOverrides;
+        }
+
+        /// <summary>
+        /// Show a message box for the input error type
+        /// </summary>
+        /// <param name="type">The error type</param>
+        private void DisplayErrors(string type) {
+            switch(type) {
+                case "resourcesNotFound":
+                    string errMsg = string.Join(Environment.NewLine, resourcesNotFound.ToArray());
+                    MessageBox.Show($"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
+                        Environment.NewLine + Environment.NewLine +
+                        $"{errMsg}"
+                        + Environment.NewLine + Environment.NewLine +
+                        $"Make sure that any modded texture/hairs are installed, and that the names are spelled correctly in the headmorph file." +
+                        Environment.NewLine +
+                        $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
+                        "Error", MessageBoxButton.OK);
+                    break;
+                case "resourceDuplicates":
+                    string dupMsg = "";
+                    foreach (string key in resourceDuplicates.Keys) {
+                        // Example:
+                        //
+                        // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff:
+                        // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIR\CookedPCConsole\BioD_MOD_HAIR1.pcc
+                        // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
+                        dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key].ToArray()) + Environment.NewLine + Environment.NewLine;
+                    }
+                    MessageBox.Show($"The following textures/hair were found in more than one file for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
+                        Environment.NewLine + Environment.NewLine +
+                        $"{dupMsg}" +
+                        $"Make sure to only have one mod file containing the resource." +
+                        Environment.NewLine +
+                        $"You can remove the duplicate files while using this tool, and put them back in place afterwards.",
+                        "Duplicate resources found", MessageBoxButton.OK);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
