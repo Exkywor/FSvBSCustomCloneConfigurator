@@ -30,12 +30,12 @@
         <!-- Male toggle -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Grid.Row="2" Grid.Column="0">
             <TextBlock Text="Male" Margin="12,0,10,0" VerticalAlignment="Center"/>
-            <Button x:Name="MaleDefault" Width="125" 
-                    Background="{Binding SetMaleDefaultColor}"
+            <Button x:Name="SetMaleDefault" Width="125" 
+                    Background="{Binding MaleDefaultColor}"
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Default"/>
-            <Button x:Name="MaleCustom" Width="125"
-                    Background="{Binding SetMaleCustomColor}" 
+            <Button x:Name="SetMaleCustom" Width="125"
+                    Background="{Binding MaleCustomColor}" 
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Custom"
             />
@@ -44,12 +44,12 @@
         <!-- Female toggle -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Grid.Row="2" Grid.Column="2">
             <TextBlock Text="Female" Margin="12,0,10,0" VerticalAlignment="Center"/>
-            <Button x:Name="FemaleDefault" Width="125" 
-                    Background="{Binding SetFemaleDefaultColor}"
+            <Button x:Name="SetFemaleDefault" Width="125" 
+                    Background="{Binding FemaleDefaultColor}"
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Default"/>
-            <Button x:Name="FemaleCustom" Width="125"
-                    Background="{Binding SetFemaleCustomColor}" 
+            <Button x:Name="SetFemaleCustom" Width="125"
+                    Background="{Binding FemaleCustomColor}" 
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Custom"
             />

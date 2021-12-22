@@ -59,12 +59,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public CustomMorphViewModel() { }
         public CustomMorphViewModel(List<ObserverControl> observers) {
             this.observers = observers;
-            // DataContext = this;
-
-            // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
-            // writerMale.ApplyMorph();
-            // MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
-            // writerFemale.ApplyMorph();
         }
 
         public void RonMFileButton() {
@@ -100,6 +94,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
+            // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
+            // writerMale.ApplyMorph();
+            // MorphWriter writerFemale = new(ronFileF, targetFile, Gender.Female, new List<string>() { customHair });
+            // writerFemale.ApplyMorph();
+
             Notify<bool>("Apply", true);
         }
 
