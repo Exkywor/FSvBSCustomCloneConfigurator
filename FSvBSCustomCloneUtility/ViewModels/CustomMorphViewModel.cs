@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -95,10 +96,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             IsValid = !(String.IsNullOrEmpty(RonMFile) && String.IsNullOrEmpty(RonFFile));
         }
 
-        public override void Update(string property, string value1, string value2 = "") {
-            switch (property) {
+        public override void Update<Type>(string name, Type value) {
+            switch (name) {
                 case "TargetGame":
-                    TargetGame = value1 == "ME3" ? MEGame.ME3 : MEGame.LE3;
+                    TargetGame = (MEGame) Convert.ChangeType(value, typeof(MEGame));
                     CheckIfApply();
                     break;
             }

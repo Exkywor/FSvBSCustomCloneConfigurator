@@ -67,7 +67,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             IsME3 = true;
             ME3ButtonColor = BUTTONSELECTEDCOLOR;
             LE3ButtonColor = BUTTONDEFAULTCOLOR;
-            Notify("TargetGame");
+            Notify("TargetGame", MEGame.ME3);
         }
         public void TargetLE3() {
             if (!LE3PathChecked) {
@@ -80,7 +80,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             IsME3 = false;
             LE3ButtonColor = BUTTONSELECTEDCOLOR;
             ME3ButtonColor = BUTTONDEFAULTCOLOR;
-            Notify("TargetGame");
+            Notify("TargetGame", MEGame.LE3);
         }
 
         public MainWindowViewModel() {
@@ -144,13 +144,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        private void Notify(string property) {
+        private void Notify<Type>(string name, Type value) {
             foreach(ObserverControl observer in observers) {
-                switch(property) {
-                    case "TargetGame":
-                        observer.Update(property, IsME3 ? "ME3" : "LE3");
-                        break;
-                }
+                observer.Update(name, value);
             }
         }
     }
