@@ -56,7 +56,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        public void TargetME3(string game) {
+        public void TargetME3() {
             if (!ME3PathChecked) {
                 if (!SetGamePath(MEGame.ME3)) { return; }
                 else { ME3PathChecked = true; }
@@ -66,6 +66,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             
             ME3ButtonColor = BUTTONSELECTEDCOLOR;
             LE3ButtonColor = BUTTONDEFAULTCOLOR;
+            TargetPath = ME3Directory.GetExecutablePath();
             Notify("TargetGame", MEGame.ME3);
         }
         public void TargetLE3() {
@@ -78,7 +79,17 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             
             LE3ButtonColor = BUTTONSELECTEDCOLOR;
             ME3ButtonColor = BUTTONDEFAULTCOLOR;
+            TargetPath = LE3Directory.GetExecutablePath();
             Notify("TargetGame", MEGame.LE3);
+        }
+
+        private string _targetPath = "";
+        public string TargetPath {
+            get { return _targetPath; }
+            set {
+                _targetPath = value;
+                NotifyOfPropertyChange(() => TargetPath);
+            }
         }
 
         public MainWindowViewModel() {

@@ -11,44 +11,45 @@
       BorderThickness="0">
 
 
-    <Grid Margin="{adonisUi:Space}">
+    <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Ron files -->
-        <StackPanel Grid.Row="0" Margin="0, 0, 0, 10">
-            <TextBlock TextWrapping="Wrap">
-                2. Select either, or both, the male or female .ron headmorph files. They must be for the appropriate game.
-                   This will reset the file and only use the newly selected headmorphs.
+        <StackPanel Grid.Row="0">
+            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">SELECT MORPH FILES</TextBlock>
+            <TextBlock TextWrapping="Wrap">Select either, or both, the male or female .ron headmorph files. They mus be for the appropriate game.
+                This will clear any previously apply headmorphs.
             </TextBlock>
-            <Grid Margin="0, 10, 0, 5" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="0" Grid.Column="0">Male</TextBlock>
-                <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Male .ron file." IsReadOnly="True"  Grid.Row="0" Grid.Column="1"/>
-                <Button x:Name="RonMFileButton" Width="100" Margin="10,0" Grid.Row="0" Grid.Column="2">Browse</Button>
-                <Button x:Name="ClearMRon" Width="25" Grid.Row="0" Grid.Column="3">X</Button>
-
-                <TextBlock VerticalAlignment="Center" Margin="12,0,10,0" Grid.Row="2" Grid.Column="0">Female</TextBlock>
-                <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Grid.Row="2" Grid.Column="1"/>
-                <Button x:Name="RonFFileButton" Margin="10,0" Width="100" Grid.Row="2" Grid.Column="2" >Browse</Button>
-                <Button x:Name="ClearFRon" Width="25" Grid.Row="2" Grid.Column="3">X</Button>
-            </Grid>
         </StackPanel>
 
+        <Grid Grid.Row="1" Margin="0, 10, 0, 5" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Grid.Row="0" Grid.Column="0">Male</TextBlock>
+            <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Male .ron file." IsReadOnly="True"  Grid.Row="0" Grid.Column="1"/>
+            <Button x:Name="RonMFileButton" Width="100" Margin="10,0" Grid.Row="0" Grid.Column="2">Browse</Button>
+            <Button x:Name="ClearMRon" Width="25" Grid.Row="0" Grid.Column="3">X</Button>
+
+            <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Grid.Row="2" Grid.Column="0">Female</TextBlock>
+            <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Grid.Row="2" Grid.Column="1"/>
+            <Button x:Name="RonFFileButton" Margin="10,0" Width="100" Grid.Row="2" Grid.Column="2" >Browse</Button>
+            <Button x:Name="ClearFRon" Width="25" Grid.Row="2" Grid.Column="3">X</Button>
+        </Grid>
+
         <!-- Apply -->
-        <Button Grid.Row="1" x:Name="Apply" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
+        <Button Grid.Row="2" x:Name="Apply" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
     </Grid>
 </UserControl>
