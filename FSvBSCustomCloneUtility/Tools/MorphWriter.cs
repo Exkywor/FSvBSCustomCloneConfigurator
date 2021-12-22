@@ -119,7 +119,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Get the export of the input resource
+        /// Get the export of the input name either from the current pcc, mod files, or global files
         /// </summary>
         /// <param name="name">
         /// Instantiated name of the resource
@@ -127,25 +127,6 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </param>
         /// <returns>The export of the resource in the dummies file; null if not found</returns>
         private IEntry GetResource(string name) {
-            string fileName = name.Substring(0, name.IndexOf('.'));
-
-            // We check if the resource is global to save time searching for the file
-            if (globalResources.ContainsKey(fileName)) {
-                return GetOrCloneResource(name, true);
-            } else {
-                return GetOrCloneResource(name);
-            }
-        }
-
-        /// <summary>
-        /// Get or clones the input resource
-        /// </summary>
-        /// <param name="name">
-        /// Instantiated name of the resource
-        /// Example: BIOG_HMF_HIR_PRO_HAIRMOD.Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
-        /// </param>
-        /// <returns>The export of the resource in the dummies file; null if not found</returns>
-        private IEntry GetOrCloneResource(string name, bool useGlobalPaths = false) {
             string fileName = name.Substring(0, name.IndexOf('.')); // BIOG_HMF_HIR_PRO_HAIRMOD
             string instancedName = name.Substring(name.IndexOf('.') + 1); // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff
 
@@ -155,31 +136,36 @@ namespace FSvBSCustomCloneUtility.Tools {
             if (res != null) { return res; }
 
             ExportEntry extRes = null;
-            int count = 0; // Used to verify that not more than one file contains the resource
 
-            if (useGlobalPaths) {
+            // Get a list of mod files that contain the export
+            // If export was found, also store it, but continue iterating to find if more than one file have it
+            List<string> resourcePccs = GetModdedResourcePaths(fileName)
+                .Where(file => {
+                    using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(file);
+                    IEnumerable<ExportEntry> exports = resourcePcc.Exports.Where(e => e.InstancedFullPath == instancedName);
+                    if (exports.Any()) { extRes = exports.First(); };
+                    return exports.Any();
+                }).ToList();
+
+            // The resource was not in a mod, so we check in the global files if the fileName is that of a global file
+            // We don't check for duplicates between mod files and global files, since mod files will override anyway
+            if (!resourcePccs.Any() && globalResources.ContainsKey(fileName)) {
                 using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
-                extRes = resourcePcc.FindExport(instancedName);
-                count++;
-            } else {
-                // Iterate through modded files that match the fileName
-                foreach (string resourcePath in GetModdedResourcePaths(fileName)) {
-                    using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(resourcePath);
-                    ExportEntry tmpRes = resourcePcc.FindExport(instancedName);
-                    if (tmpRes != null) { // The resource was found
-                        extRes = tmpRes;
-                        count++;
-                    }
+                IEnumerable<ExportEntry> exports = resourcePcc.Exports.Where(e => e.InstancedFullPath == instancedName);
+                if (exports.Any()) {
+                    extRes = exports.First();
+                    resourcePccs.Add(globalResources[fileName]);
                 }
             }
 
-            if (extRes == null) { return null; } // Resource not found
-
-            // Multiple files contain the resource. Store the instancedName and the paths that contain it
-            // Don't return null, since the resource was found
-            if (count > 1) {
+            if (!resourcePccs.Any()) { // Resource not found
+                return null;
+            } else if (resourcePccs.Count() > 1) { // Multiple files contain the resource
+                // Store the instancedName and the name of the mods that contain it
+                // Don't return null, since the resource was found
                 if (!resourceDuplicates.ContainsKey(instancedName)) {
-                    resourceDuplicates.Add(instancedName, GetModdedResourcePaths(fileName));
+                    resourceDuplicates.Add(instancedName,
+                        resourcePccs.Select(file => Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(file)))));
                 }
             }
 
@@ -405,12 +391,12 @@ namespace FSvBSCustomCloneUtility.Tools {
                         // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
                         dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key].ToArray()) + Environment.NewLine + Environment.NewLine;
                     }
-                    MessageBox.Show($"The following textures/hair were found in more than one file for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
+                    MessageBox.Show($"The following textures/hair were found in more than one mod for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
                         Environment.NewLine + Environment.NewLine +
                         $"{dupMsg}" +
-                        $"Make sure to only have one mod file containing the resource." +
+                        $"Make sure to only have one mod containing the resource." +
                         Environment.NewLine +
-                        $"You can remove the duplicate files while using this tool, and put them back in place afterwards.",
+                        $"You can disable conflicting mods while using this tool and enable them afterwards.",
                         "Duplicate resources found", MessageBoxButton.OK);
                     break;
                 default:

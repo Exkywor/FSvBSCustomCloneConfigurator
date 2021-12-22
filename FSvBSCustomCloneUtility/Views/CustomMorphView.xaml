@@ -21,6 +21,7 @@
         <StackPanel Grid.Row="0" Margin="0, 0, 0, 10">
             <TextBlock TextWrapping="Wrap">
                 2. Select either, or both, the male or female .ron headmorph files. They must be for the appropriate game.
+                   This will reset the file and only use the newly selected headmorphs.
             </TextBlock>
             <Grid Margin="0, 10, 0, 5" >
                 <Grid.ColumnDefinitions>
