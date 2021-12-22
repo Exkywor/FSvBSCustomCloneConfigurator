@@ -38,7 +38,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         private bool ME3PathChecked = false;
         private bool LE3PathChecked = false;
-        private bool IsME3 = false;
 
         private string _ME3ButtonColor = BUTTONDEFAULTCOLOR;
         private string _LE3ButtonColor = BUTTONDEFAULTCOLOR;
@@ -65,7 +64,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (!VerifyMod(MEGame.ME3)) { return; }
             
-            IsME3 = true;
             ME3ButtonColor = BUTTONSELECTEDCOLOR;
             LE3ButtonColor = BUTTONDEFAULTCOLOR;
             Notify("TargetGame", MEGame.ME3);
@@ -78,7 +76,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (!VerifyMod(MEGame.LE3)) { return; }
             
-            IsME3 = false;
             LE3ButtonColor = BUTTONSELECTEDCOLOR;
             ME3ButtonColor = BUTTONDEFAULTCOLOR;
             Notify("TargetGame", MEGame.LE3);
@@ -94,9 +91,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             observers.Add(ConditionalsControl);
 
             LoadViewAsync();
-
-            // ConditionalsManager.SetConditional(Gender.Male, false, targetFile);
-            // ConditionalsManager.SetConditional(Gender.Female, true, targetFile);
         } 
 
         /// <summary>

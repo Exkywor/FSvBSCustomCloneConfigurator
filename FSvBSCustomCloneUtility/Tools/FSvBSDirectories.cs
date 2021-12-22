@@ -66,7 +66,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Game to get the path for</param>
         /// <returns>Path to the coalesced binary file, null if the file is not found</returns>
         public static string GetBinPath(MEGame game) {
-            string file = Path.Combine(GetModPath(game), $@"Default_DLC_MOD_FSvBS{(game == MEGame.ME3 ? "" : "LE")}.bin");
+            string file = Path.Combine(GetModPath(game), $@"CookedPCConsole\Default_DLC_MOD_FSvBS{(game == MEGame.ME3 ? "" : "LE")}.bin");
             if (!File.Exists(file)) { return null; }
             else { return file; }
         }

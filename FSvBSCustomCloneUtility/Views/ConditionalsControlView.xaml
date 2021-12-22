@@ -32,9 +32,11 @@
             <TextBlock Text="Male" Margin="12,0,10,0" VerticalAlignment="Center"/>
             <Button x:Name="MaleDefault" Width="125" 
                     Background="{Binding MaleDefaultColor}"
+                    IsEnabled="{Binding IsTargetSet}"
                     Content="Default"/>
             <Button x:Name="MaleCustom" Width="125"
                     Background="{Binding MaleCustomColor}" 
+                    IsEnabled="{Binding IsTargetSet}"
                     Content="Custom"
             />
         </StackPanel>
@@ -44,9 +46,11 @@
             <TextBlock Text="Female" Margin="12,0,10,0" VerticalAlignment="Center"/>
             <Button x:Name="FemaleDefault" Width="125" 
                     Background="{Binding FemaleDefaultColor}"
+                    IsEnabled="{Binding IsTargetSet}"
                     Content="Default"/>
             <Button x:Name="FemaleCustom" Width="125"
                     Background="{Binding FemaleCustomColor}" 
+                    IsEnabled="{Binding IsTargetSet}"
                     Content="Custom"
             />
         </StackPanel>
