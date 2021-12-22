@@ -31,11 +31,11 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Grid.Row="2" Grid.Column="0">
             <TextBlock Text="Male" Margin="12,0,10,0" VerticalAlignment="Center"/>
             <Button x:Name="MaleDefault" Width="125" 
-                    Background="{Binding MaleDefaultColor}"
+                    Background="{Binding SetMaleDefaultColor}"
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Default"/>
             <Button x:Name="MaleCustom" Width="125"
-                    Background="{Binding MaleCustomColor}" 
+                    Background="{Binding SetMaleCustomColor}" 
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Custom"
             />
@@ -45,11 +45,11 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10" Grid.Row="2" Grid.Column="2">
             <TextBlock Text="Female" Margin="12,0,10,0" VerticalAlignment="Center"/>
             <Button x:Name="FemaleDefault" Width="125" 
-                    Background="{Binding FemaleDefaultColor}"
+                    Background="{Binding SetFemaleDefaultColor}"
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Default"/>
             <Button x:Name="FemaleCustom" Width="125"
-                    Background="{Binding FemaleCustomColor}" 
+                    Background="{Binding SetFemaleCustomColor}" 
                     IsEnabled="{Binding IsTargetSet}"
                     Content="Custom"
             />

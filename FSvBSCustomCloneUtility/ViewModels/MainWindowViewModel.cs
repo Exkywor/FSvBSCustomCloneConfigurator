@@ -85,8 +85,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             initCoreLib();
 
             // Create views and adds them to the observers
-            CustomMorph = new CustomMorphViewModel();
             ConditionalsControl = new ConditionalsControlViewModel();
+            CustomMorph = new CustomMorphViewModel(new List<ObserverControl> { ConditionalsControl });
             observers.Add(CustomMorph);
             observers.Add(ConditionalsControl);
 

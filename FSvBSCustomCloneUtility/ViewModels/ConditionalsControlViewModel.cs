@@ -66,26 +66,39 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         // BUTTON CONTROLS
-        public void MaleDefault() {
+        public void SetMaleDefault() {
             MaleDefaultColor = BUTTONSELECTEDCOLOR;
             MaleCustomColor = BUTTONDEFAULTCOLOR;
             ConditionalsManager.SetConditional(Gender.Male, false, (MEGame) TargetGame);
         }
-        public void MaleCustom() {
+        public void SetMaleCustom() {
             MaleDefaultColor = BUTTONDEFAULTCOLOR;
             MaleCustomColor = BUTTONSELECTEDCOLOR;
             ConditionalsManager.SetConditional(Gender.Male, true, (MEGame) TargetGame);
         }
 
-        public void FemaleDefault() {
+        public void SetFemaleDefault() {
             FemaleDefaultColor = BUTTONSELECTEDCOLOR;
             FemaleCustomColor = BUTTONDEFAULTCOLOR;
             ConditionalsManager.SetConditional(Gender.Female, false, (MEGame) TargetGame);
         }
-        public void FemaleCustom() {
+        public void SetFemaleCustom() {
             FemaleDefaultColor = BUTTONDEFAULTCOLOR;
             FemaleCustomColor = BUTTONSELECTEDCOLOR;
             ConditionalsManager.SetConditional(Gender.Female, true, (MEGame) TargetGame);
+        }
+
+        private void UpdateState() {
+            if (!IsTargetSet) { return; }
+
+            bool isMaleCustom = ConditionalsManager.CheckConditional(Gender.Male, (MEGame) TargetGame);
+            bool isFemaleCustom = ConditionalsManager.CheckConditional(Gender.Female, (MEGame) TargetGame);
+
+            if (isMaleCustom) { SetMaleCustom(); }
+            else { SetMaleDefault(); }
+
+            if (isFemaleCustom) { SetFemaleCustom(); }
+            else { SetFemaleDefault(); }
         }
 
         public override void Update<Type>(string name, Type value) {
@@ -93,15 +106,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 case "TargetGame":
                     TargetGame = (MEGame) Convert.ChangeType(value, typeof(MEGame));
                     IsTargetSet = true;
-
-                    bool isMaleCustom = ConditionalsManager.CheckConditional(Gender.Male, (MEGame) TargetGame);
-                    bool isFemaleCustom = ConditionalsManager.CheckConditional(Gender.Female, (MEGame) TargetGame);
-
-                    if (isMaleCustom) { MaleCustom(); }
-                    else { MaleDefault(); }
-
-                    if (isFemaleCustom) { FemaleCustom(); }
-                    else { FemaleDefault(); }
+                    UpdateState();
+                    
+                    break;
+                case "Apply":
+                    UpdateState();
 
                     break;
                 default:

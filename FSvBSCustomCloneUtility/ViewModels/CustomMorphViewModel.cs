@@ -19,6 +19,8 @@ using System.Windows.Controls;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class CustomMorphViewModel : ObserverControl {
+        private List<ObserverControl> observers = new();
+
         private bool _isValid = false;
         public bool IsValid {
             get { return _isValid; }
@@ -54,7 +56,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        public CustomMorphViewModel() {
+        public CustomMorphViewModel() { }
+        public CustomMorphViewModel(List<ObserverControl> observers) {
+            this.observers = observers;
             // DataContext = this;
 
             // MorphWriter writerMale = new(ronFile, targetFile, Gender.Male);
@@ -95,6 +99,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             IsValid = !(String.IsNullOrEmpty(RonMFile) && String.IsNullOrEmpty(RonFFile));
         }
 
+        public void Apply() {
+            Notify<bool>("Apply", true);
+        }
+
         public override void Update<Type>(string name, Type value) {
             switch (name) {
                 case "TargetGame":
@@ -103,6 +111,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void Notify<Type>(string name, Type value) {
+            foreach(ObserverControl observer in observers) {
+                observer.Update(name, value);
             }
         }
     }
