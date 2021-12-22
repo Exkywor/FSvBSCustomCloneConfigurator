@@ -68,6 +68,8 @@ namespace FSvBSCustomCloneUtility.Tools {
                     $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
                     "Error", MessageBoxButton.OK);
             } else {
+                MessageBox.Show($"The {(gender == Gender.Male ? "male" : "female")} headmorph was applied succesfully.",
+                    "Success", MessageBoxButton.OK);
                 pcc.Save();
             }
 
