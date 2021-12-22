@@ -30,7 +30,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        // BUTTON COLOR CONTROLS
         private string _maleDefaultColor = BUTTONDEFAULTCOLOR;
         private string _maleCustomColor = BUTTONDEFAULTCOLOR;
         public string MaleDefaultColor {
@@ -65,7 +64,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        // BUTTON CONTROLS
         public void SetMaleDefault() {
             MaleDefaultColor = BUTTONSELECTEDCOLOR;
             MaleCustomColor = BUTTONDEFAULTCOLOR;
@@ -88,6 +86,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             ConditionalsManager.SetConditional(Gender.Female, true, (MEGame) TargetGame);
         }
 
+        /// <summary>
+        /// Update the state of the UI to match the coalesced
+        /// </summary>
         private void UpdateState() {
             if (!IsTargetSet) { return; }
 

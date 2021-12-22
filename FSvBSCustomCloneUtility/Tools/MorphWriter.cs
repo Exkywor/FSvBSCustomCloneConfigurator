@@ -22,19 +22,13 @@ namespace FSvBSCustomCloneUtility.Tools {
     public class MorphWriter {
         private string pccPath; // Found path, for ease of use
         private IMEPackage pcc; // Opened package
-
         private MEGame targetGame; // Target game
-        private Gender gender;
+        private Gender gender; // Target gender
         private MorphHead morphSource; // Parsed headmorph
         private ExportEntry morphTarget; // Target morph export
-
-        // resources and globalResources only contain paths, to avoid opening unnecessary pccs
-        private Dictionary<string, string> resources = new(StringComparer.OrdinalIgnoreCase);
-        /// <summary> Global files name , Global files path </summary>
+        /// <summary> Global file name , Global file path </summary>
         private Dictionary<string, string> globalResources = new(StringComparer.OrdinalIgnoreCase);
-
-        // Resources not found. Used to tell user what they are missing
-        List<string> notFound = new();
+        private List<string> notFound = new();  // Resources not found. Used to tell user what they are missing
 
         /// <summary>
         /// Create an instance of MorphWriter

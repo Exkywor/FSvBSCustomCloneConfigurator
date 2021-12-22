@@ -16,9 +16,9 @@ namespace FSvBSCustomCloneUtility.Tools {
     /// Static methods to control the custom clone conditionals
     /// </summary>
     public static class ConditionalsManager {
-        private static CaseInsensitiveDictionary<string> coal = new();
-        private static XmlDocument BioGame = new();
-        private static XmlNode Property;
+        private static CaseInsensitiveDictionary<string> coal = new(); // Decompiled coalesced file
+        private static XmlDocument BioGame = new(); // Parsed coalesced file
+        private static XmlNode Property; // Property to add to coalesced
 
         /// <summary>
         /// Sets the state to toggle the custom clone appearance for the input game

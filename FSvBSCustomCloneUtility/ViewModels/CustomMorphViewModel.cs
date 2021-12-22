@@ -88,9 +88,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             CheckIfApply();
         }
 
+        /// <summary>
+        /// Set IsValid to true if the TargetGame has been set, and at least one morph file has been selected
+        /// </summary>
         private void CheckIfApply() {
-            // If both ron files are empty it will check as false, meaning the file is invalid
-            IsValid = TargetGame != null && !(String.IsNullOrEmpty(RonMFile) && String.IsNullOrEmpty(RonFFile));
+            IsValid = TargetGame != null && (RonMFile != "" || RonFFile != "");
         }
 
         public void Apply() {

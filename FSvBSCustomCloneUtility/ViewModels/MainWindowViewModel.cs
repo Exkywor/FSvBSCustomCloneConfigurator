@@ -107,6 +107,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             LegendaryExplorerCoreLib.InitLib(TaskScheduler.FromCurrentSynchronizationContext(), packageSaveFailed);
         }
 
+        /// <summary>
+        /// Prompt the user to point to the input game executabe, if it's not found
+        /// </summary>
+        /// <param name="game">Target game</param>
+        /// <returns></returns>
         private bool SetGamePath(MEGame game) {
             // Get the user to point to the game path if it's not found
             if (string.IsNullOrEmpty(MEDirectories.GetDefaultGamePath(game))) {
@@ -125,6 +130,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             return true;
         }
 
+        /// <summary>
+        /// Verify that the mod is installed in its compatible version for the input game
+        /// </summary>
+        /// <param name="game">Target game</param>
+        /// <returns></returns>
         private bool VerifyMod(MEGame game) {
             if (!FSvBSDirectories.IsModInstalled(game)) {
                 MessageBox.Show("The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.",
