@@ -30,8 +30,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        private MEGame _targetGame;
-        public MEGame TargetGame {
+        private MEGame? _targetGame;
+        public MEGame? TargetGame {
             get { return _targetGame; }
             set {
                 _targetGame = value;
@@ -90,17 +90,17 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         private void CheckIfApply() {
             // If both ron files are empty it will check as false, meaning the file is invalid
-            IsValid = !(String.IsNullOrEmpty(RonMFile) && String.IsNullOrEmpty(RonFFile));
+            IsValid = TargetGame != null && !(String.IsNullOrEmpty(RonMFile) && String.IsNullOrEmpty(RonFFile));
         }
 
         public void Apply() {
             if (!string.IsNullOrEmpty(RonMFile)) {
-                MorphWriter writerMale = new(RonMFile, TargetGame, Gender.Male);
+                MorphWriter writerMale = new(RonMFile, (MEGame) TargetGame, Gender.Male);
                 bool res = writerMale.ApplyMorph();
                 if (res) { Notify("Apply", "M"); }
             }
             if (!string.IsNullOrEmpty(RonFFile)) {
-                MorphWriter writerFemale = new(RonFFile, TargetGame, Gender.Female);
+                MorphWriter writerFemale = new(RonFFile, (MEGame) TargetGame, Gender.Female);
                 bool res = writerFemale.ApplyMorph();
                 if (res) { Notify("Apply", "F"); }
             }
