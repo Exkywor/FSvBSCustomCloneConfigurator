@@ -1,4 +1,5 @@
-﻿using FSvBSCustomCloneUtility.ViewModels;
+﻿using Caliburn.Micro;
+using FSvBSCustomCloneUtility.ViewModels;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
@@ -52,8 +53,8 @@ namespace FSvBSCustomCloneUtility.Tools {
             EditHair();
             EditMatOverrides();
 
-            if (resourcesNotFound.Count > 0) { DisplayErrors("resourcesNotFound"); }
-            else if (resourceDuplicates.Count > 0) { DisplayErrors("resourceDuplicates"); }
+            if (resourcesNotFound.Count > 0) { HandleErrors("resourcesNotFound"); }
+            else if (resourceDuplicates.Count > 0) { HandleErrors("resourceDuplicates"); }
             else {
                 MessageBox.Show($"The {(gender == Gender.Male ? "male" : "female")} headmorph was applied succesfully.",
                     "Success", MessageBoxButton.OK);
@@ -365,9 +366,20 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Show a message box for the input error type
         /// </summary>
         /// <param name="type">The error type</param>
-        private void DisplayErrors(string type) {
+        private void HandleErrors(string type) {
             switch(type) {
                 case "resourcesNotFound":
+                    ErrorDialogueViewModel errCtrl = new("Error",
+                        resourcesNotFound,
+                        $"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:",
+                        $"Make sure that any modded texture/hairs are installed, and that the names are spelled correctly in the headmorph file." +
+                        Environment.NewLine +
+                        $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
+                        ""
+                    );
+
+                    IWindowManager manager = new WindowManager();
+                    manager.ShowDialogAsync(errCtrl, null, null);
                     string errMsg = string.Join(Environment.NewLine, resourcesNotFound.ToArray());
                     MessageBox.Show($"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
                         Environment.NewLine + Environment.NewLine +
