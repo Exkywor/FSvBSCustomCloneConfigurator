@@ -16,7 +16,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private string _footer = "";
         public string Footer { get { return _footer; } set { _footer = value; } }
 
-        public string errFile = "";
+        private string _errFile = "";
+        public string ErrFile { get { return _errFile; } set { _errFile = value; } }
+
+        private List<string> _errors = new();
+        public List<string> Errors { get { return errors; } set { errors = value; } }
 
         /// <summary>
         /// Instantiate the ErrorDialogue window
@@ -31,7 +35,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             this.errors = errors;
             Header = header;
             Footer = footer;
-            this.errFile = errFile;
+            Errors = errors;
+            ErrFile = errFile;
         }
 
         public void Close() {

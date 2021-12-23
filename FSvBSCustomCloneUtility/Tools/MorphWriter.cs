@@ -262,7 +262,7 @@ namespace FSvBSCustomCloneUtility.Tools {
 
             ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
             if (hairMesh == null) {
-                resourcesNotFound.Add($" - HairMesh: {morphSource.HairMesh}");
+                resourcesNotFound.Add($"HairMesh: {morphSource.HairMesh}");
                 return;
             }
 
@@ -348,7 +348,7 @@ namespace FSvBSCustomCloneUtility.Tools {
                 IEntry texture = GetResource(textureName);
 
                 if (texture == null) {
-                    resourcesNotFound.Add($" - {parameter.Name}: {textureName}");
+                    resourcesNotFound.Add($"{parameter.Name}: {textureName}");
                     continue;
                 }
                 
