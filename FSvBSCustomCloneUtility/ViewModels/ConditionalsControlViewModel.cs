@@ -2,16 +2,9 @@
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Packages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class ConditionalsControlViewModel : ObserverControl {
-        private const string BUTTONSELECTEDCOLOR = "#5c5f72";
-        private const string BUTTONDEFAULTCOLOR = "#3e3d4b";
-
         private MEGame? _targetGame = null;
         public MEGame? TargetGame {
             get { return _targetGame; }
@@ -30,59 +23,59 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        private string _maleDefaultColor = BUTTONDEFAULTCOLOR;
-        private string _maleCustomColor = BUTTONDEFAULTCOLOR;
-        public string MaleDefaultColor {
-            get { return _maleDefaultColor; }
+        private bool _isMaleDefault = false;
+        public bool IsMaleDefault {
+            get { return _isMaleDefault; }
             set {
-                _maleDefaultColor = value;
-                NotifyOfPropertyChange(() => MaleDefaultColor);
+                _isMaleDefault = value;
+                NotifyOfPropertyChange(() => IsMaleDefault);
             }
         }
-        public string MaleCustomColor {
-            get { return _maleCustomColor; }
+        private bool _isMaleCustom = false;
+        public bool IsMaleCustom {
+            get { return _isMaleCustom; }
             set {
-                _maleCustomColor = value;
-                NotifyOfPropertyChange(() => MaleCustomColor);
+                _isMaleCustom = value;
+                NotifyOfPropertyChange(() => IsMaleCustom);
             }
         }
 
-        private string _femaleDefaultColor = BUTTONDEFAULTCOLOR;
-        private string _femaleCustomColor = BUTTONDEFAULTCOLOR;
-        public string FemaleDefaultColor {
-            get { return _femaleDefaultColor; }
+        private bool _isFemaleDefault = false;
+        public bool IsFemaleDefault {
+            get { return _isFemaleDefault; }
             set {
-                _femaleDefaultColor = value;
-                NotifyOfPropertyChange(() => FemaleDefaultColor);
+                _isFemaleDefault = value;
+                NotifyOfPropertyChange(() => IsFemaleDefault);
             }
         }
-        public string FemaleCustomColor {
-            get { return _femaleCustomColor; }
+        private bool _isFemaleCustom = false;
+        public bool IsFemaleCustom {
+            get { return _isFemaleCustom; }
             set {
-                _femaleCustomColor = value;
-                NotifyOfPropertyChange(() => FemaleCustomColor);
+                _isFemaleCustom = value;
+                NotifyOfPropertyChange(() => IsFemaleCustom);
             }
         }
 
         public void SetMaleDefault() {
-            MaleDefaultColor = BUTTONSELECTEDCOLOR;
-            MaleCustomColor = BUTTONDEFAULTCOLOR;
+            IsMaleDefault = true;
+            IsMaleCustom = false;
             ConditionalsManager.SetConditional(Gender.Male, false, (MEGame) TargetGame);
         }
         public void SetMaleCustom() {
-            MaleDefaultColor = BUTTONDEFAULTCOLOR;
-            MaleCustomColor = BUTTONSELECTEDCOLOR;
+            IsMaleDefault = false;
+            IsMaleCustom = true;
             ConditionalsManager.SetConditional(Gender.Male, true, (MEGame) TargetGame);
         }
 
         public void SetFemaleDefault() {
-            FemaleDefaultColor = BUTTONSELECTEDCOLOR;
-            FemaleCustomColor = BUTTONDEFAULTCOLOR;
+            IsFemaleDefault = true;
+            IsFemaleCustom = false;
             ConditionalsManager.SetConditional(Gender.Female, false, (MEGame) TargetGame);
         }
         public void SetFemaleCustom() {
-            FemaleDefaultColor = BUTTONDEFAULTCOLOR;
-            FemaleCustomColor = BUTTONSELECTEDCOLOR;
+            IsFemaleDefault = false;
+            IsFemaleCustom = true;
             ConditionalsManager.SetConditional(Gender.Female, true, (MEGame) TargetGame);
         }
 
@@ -109,6 +102,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     IsTargetSet = true;
                     UpdateState();
                     
+                    break;
+                case "ClearConds":
+                    SetMaleDefault();
+                    SetFemaleDefault();
+
                     break;
                 case "Apply":
                     string gender = (string) Convert.ChangeType(value, typeof(string));

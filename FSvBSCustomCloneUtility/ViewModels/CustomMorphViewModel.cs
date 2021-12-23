@@ -1,21 +1,8 @@
-﻿using Caliburn.Micro;
-using FSvBSCustomCloneUtility;
-using FSvBSCustomCloneUtility.Controls;
-using FSvBSCustomCloneUtility.ViewModels;
+﻿using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.Tools;
-using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Controls;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class CustomMorphViewModel : ObserverControl {
@@ -97,6 +84,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public void Apply() {
             FSvBSDirectories.ApplyCleanDummies((MEGame) TargetGame);
+            Notify("ClearConds", "");
 
             if (!string.IsNullOrEmpty(RonMFile)) {
                 MorphWriter writerMale = new(RonMFile, (MEGame) TargetGame, Gender.Male);

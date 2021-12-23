@@ -4,22 +4,9 @@ using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
-using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
@@ -33,28 +20,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public ObserverControl CustomMorph { get; set; }
         public ObserverControl ConditionalsControl { get; set; }
 
-        private const string BUTTONSELECTEDCOLOR = "#5c5f72";
-        private const string BUTTONDEFAULTCOLOR = "#3e3d4b";
-
+        // Prevent us from trying to set the path if it's already set
         private bool ME3PathChecked = false;
         private bool LE3PathChecked = false;
-
-        private string _ME3ButtonColor = BUTTONDEFAULTCOLOR;
-        private string _LE3ButtonColor = BUTTONDEFAULTCOLOR;
-        public string ME3ButtonColor {
-            get { return _ME3ButtonColor; }
-            set {
-                _ME3ButtonColor = value;
-                NotifyOfPropertyChange(() => ME3ButtonColor);
-            }
-        }
-        public string LE3ButtonColor {
-            get { return _LE3ButtonColor; }
-            set {
-                _LE3ButtonColor = value;
-                NotifyOfPropertyChange(() => LE3ButtonColor);
-            }
-        }
 
         public void TargetME3() {
             if (!ME3PathChecked) {
@@ -64,9 +32,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (!VerifyMod(MEGame.ME3)) { return; }
             
-            ME3ButtonColor = BUTTONSELECTEDCOLOR;
-            LE3ButtonColor = BUTTONDEFAULTCOLOR;
-            TargetPath = ME3Directory.GetExecutablePath();
+            SelectedTargetPath = ME3Directory.GetExecutablePath();
             Notify("TargetGame", MEGame.ME3);
         }
         public void TargetLE3() {
@@ -77,18 +43,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (!VerifyMod(MEGame.LE3)) { return; }
             
-            LE3ButtonColor = BUTTONSELECTEDCOLOR;
-            ME3ButtonColor = BUTTONDEFAULTCOLOR;
-            TargetPath = LE3Directory.GetExecutablePath();
+            SelectedTargetPath = LE3Directory.GetExecutablePath();
             Notify("TargetGame", MEGame.LE3);
         }
 
-        private string _targetPath = "";
-        public string TargetPath {
-            get { return _targetPath; }
+        private string _selectedTargetPath = "";
+        public string SelectedTargetPath {
+            get { return _selectedTargetPath; }
             set {
-                _targetPath = value;
-                NotifyOfPropertyChange(() => TargetPath);
+                _selectedTargetPath = value;
+                NotifyOfPropertyChange(() => SelectedTargetPath);
             }
         }
 

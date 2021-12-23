@@ -1,14 +1,8 @@
-﻿using FSvBSCustomCloneUtility.Tools;
-using FSvBSCustomCloneUtility.ViewModels;
+﻿using FSvBSCustomCloneUtility.ViewModels;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace FSvBSCustomCloneUtility.Tools {

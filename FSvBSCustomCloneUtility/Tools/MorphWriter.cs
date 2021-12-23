@@ -1,5 +1,4 @@
 ﻿using FSvBSCustomCloneUtility.ViewModels;
-using LegendaryExplorerCore;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;
@@ -10,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Vector = MassEffectModManagerCore.modmanager.save.game3.Vector;
 

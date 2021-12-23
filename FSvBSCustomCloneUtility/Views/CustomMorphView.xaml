@@ -19,13 +19,16 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">SELECT MORPH FILES</TextBlock>
-            <TextBlock TextWrapping="Wrap">Select either, or both, the male or female .ron headmorph files. They mus be for the appropriate game.
-                This will clear any previously apply headmorphs.
+            <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">MORPH FILES</TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                Select either, or both, male and female .ron headmorph files.
+                They must be for the appropriate game.
+                <LineBreak/>
+                Clicking on Apply will apply the headmorphs, and clear any previously applied headmorphs.
             </TextBlock>
         </StackPanel>
 
-        <Grid Grid.Row="1" Margin="0, 10, 0, 5" >
+        <Grid Grid.Row="1" Margin="0, 15, 0, 5" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="1*" />
@@ -39,17 +42,29 @@
             </Grid.RowDefinitions>
 
             <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Grid.Row="0" Grid.Column="0">Male</TextBlock>
-            <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Male .ron file." IsReadOnly="True"  Grid.Row="0" Grid.Column="1"/>
-            <Button x:Name="RonMFileButton" Width="100" Margin="10,0" Grid.Row="0" Grid.Column="2">Browse</Button>
-            <Button x:Name="ClearMRon" Width="25" Grid.Row="0" Grid.Column="3">X</Button>
+            <TextBox Text="{Binding RonMFile, Mode=OneWay}" ToolTip="Selected male .ron file." IsReadOnly="True" 
+                     Grid.Row="0" Grid.Column="1"/>
+            <Button x:Name="RonMFileButton" Content="Browse"
+                    ToolTip="Select the male .ron file"
+                    Width="100" Margin="10,0" Grid.Row="0" Grid.Column="2" />
+            <Button x:Name="ClearMRon" Content="X"
+                    ToolTip="Clear the male .ron file"
+                    Width="25" Grid.Row="0" Grid.Column="3" />
 
             <TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Grid.Row="2" Grid.Column="0">Female</TextBlock>
-            <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Female .ron file." IsReadOnly="True" Grid.Row="2" Grid.Column="1"/>
-            <Button x:Name="RonFFileButton" Margin="10,0" Width="100" Grid.Row="2" Grid.Column="2" >Browse</Button>
-            <Button x:Name="ClearFRon" Width="25" Grid.Row="2" Grid.Column="3">X</Button>
+            <TextBox Text="{Binding RonFFile, Mode=OneWay}" ToolTip="Selected female .ron file."
+                     IsReadOnly="True" Grid.Row="2" Grid.Column="1"/>
+            <Button x:Name="RonFFileButton" Content="Browse"
+                    ToolTip="Select the female .ron file"
+                    Margin="10,0" Width="100" Grid.Row="2" Grid.Column="2" />
+            <Button x:Name="ClearFRon" Content="X"
+                    ToolTip="Clear the female .ron file"
+                    Width="25" Grid.Row="2" Grid.Column="3" />
         </Grid>
 
         <!-- Apply -->
-        <Button Grid.Row="2" x:Name="Apply" IsEnabled="{Binding IsValid}" Margin="0,10,0,0" Content="Apply" Width="100" />
+        <Button Grid.Row="2" x:Name="Apply" IsEnabled="{Binding IsValid}"
+                ToolTip="Apply the headmorph(s) to the target game. This clears any previously applied headmorph."
+                Margin="0,15,0,0" Content="Apply" Width="100" />
     </Grid>
 </UserControl>

@@ -14,9 +14,9 @@
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="20" />
-            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.RowSpan="3" Grid.Column="0">
@@ -24,37 +24,39 @@
                 APPEARANCE
             </TextBlock>
             <TextBlock TextWrapping="Wrap">
-                This controls what appearance Shepard will have. You can toggle between the default or customized appearances.
+                Toggle the appearance for the male and female clones between the default iconic head or the custom headmorph.
             </TextBlock>
         </StackPanel>
 
-        <!-- Male toggle -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
-            <TextBlock Text="Male" Margin="0,0,10,0" VerticalAlignment="Center"/>
-            <Button x:Name="SetMaleDefault" Width="125" 
-                    Background="{Binding MaleDefaultColor}"
-                    IsEnabled="{Binding IsTargetSet}"
-                    Content="Default"/>
-            <Button x:Name="SetMaleCustom" Width="125"
-                    VerticalAlignment="Top"
-                    Background="{Binding MaleCustomColor}" 
-                    IsEnabled="{Binding IsTargetSet}"
-                    Content="Custom"
-            />
-        </StackPanel>
+        <Rectangle VerticalAlignment="Stretch" Fill="Gray" Width="1" Grid.RowSpan="3" Grid.Column="1"/>
 
-        <!-- Female toggle -->
-        <StackPanel VerticalAlignment="Top" Orientation="Horizontal" Grid.Row="2" Grid.Column="2">
-            <TextBlock Text="Female" Margin="0,0,10,0" VerticalAlignment="Center"/>
-            <Button x:Name="SetFemaleDefault" Width="125" 
-                    Background="{Binding FemaleDefaultColor}"
-                    IsEnabled="{Binding IsTargetSet}"
-                    Content="Default"/>
-            <Button x:Name="SetFemaleCustom" Width="125"
-                    Background="{Binding FemaleCustomColor}" 
-                    IsEnabled="{Binding IsTargetSet}"
-                    Content="Custom"
-            />
-        </StackPanel>
+        <Grid Margin="20,0" Grid.RowSpan="2" Grid.Column="2" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="15" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Male" FontWeight="Bold" Margin="0,0,10,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+            <RadioButton x:Name="SetMaleDefault" Content="Default" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsMaleDefault}"
+                         ToolTip="Set the male clone to use Broshep's head"
+                         GroupName="MaleCond" Margin="0,0,20,0" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
+            <RadioButton x:Name="SetMaleCustom" Content="Custom" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsMaleCustom}"
+                         ToolTip="Set the male clone to use headmorph"
+                         GroupName="MaleCond" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"/>
+
+            <TextBlock Text="Female" FontWeight="Bold" Margin="0,0,20,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+            <RadioButton x:Name="SetFemaleDefault" Content="Default" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsFemaleDefault}"
+                         ToolTip="Set the female clone to use Femshep's head"
+                         GroupName="FemCond" Margin="0,0,20,0" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center"/>
+            <RadioButton x:Name="SetFemaleCustom" Content="Custom" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsFemaleCustom}"
+                         ToolTip="Set the female clone to use headmorph"
+                         GroupName="FemCond" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center"/>
+        </Grid>
     </Grid>
 </UserControl>
