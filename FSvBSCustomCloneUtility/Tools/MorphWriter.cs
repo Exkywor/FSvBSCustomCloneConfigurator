@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using FSvBSCustomCloneUtility.Tools;
 using FSvBSCustomCloneUtility.ViewModels;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
@@ -90,15 +91,16 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="gender">Target Shepard</param>
         private void LoadMorphExport(Gender gender) {
-            IEnumerable<ExportEntry> stuntActors = pcc.Exports.Where(e => e.ClassName == "SFXStuntActor");
-            foreach (ExportEntry stuntActor in stuntActors) {
-                string targetTag = gender is Gender.Female ? "dummy_custom_female" : "dummy_custom_male";
-                NameProperty tag = stuntActor.GetProperty<NameProperty>("Tag");
+            IEnumerable<ExportEntry> exports = pcc.Exports.Where(e => {
+                if (e.ClassName == "SFXStuntActor") {
+                    NameProperty tag = e.GetProperty<NameProperty>("Tag");
+                    return (tag != null && tag.Value == $"dummy_custom_{(gender == Gender.Female ? "female" : "male")}");
+                } else { return false; }
+            });
 
-                if (tag != null && tag.Value == targetTag) {
-                    ExportEntry archetype = (ExportEntry)stuntActor.Archetype;
-                    morphTarget = (ExportEntry)pcc.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);
-                }
+            if (exports.Any()) {
+                ExportEntry archetype = (ExportEntry)exports.First().Archetype;
+                morphTarget = (ExportEntry)pcc.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);
             }
         }
 

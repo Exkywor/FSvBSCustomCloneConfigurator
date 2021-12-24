@@ -83,18 +83,27 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
+            FSvBSDirectories.ApplyCleanClone((MEGame) TargetGame);
             FSvBSDirectories.ApplyCleanDummies((MEGame) TargetGame);
             Notify("ClearConds", "");
 
             if (!string.IsNullOrEmpty(RonMFile)) {
                 MorphWriter writerMale = new(RonMFile, (MEGame) TargetGame, Gender.Male);
                 bool res = writerMale.ApplyMorph();
-                if (res) { Notify("Apply", "M"); }
+                if (res) {
+                    MorphRelinker relinker = new((MEGame)TargetGame, Gender.Male);
+                    relinker.RelinkMorph();
+                    Notify("Apply", "M");
+                }
             }
             if (!string.IsNullOrEmpty(RonFFile)) {
                 MorphWriter writerFemale = new(RonFFile, (MEGame) TargetGame, Gender.Female);
                 bool res = writerFemale.ApplyMorph();
-                if (res) { Notify("Apply", "F"); }
+                if (res) {
+                    MorphRelinker relinker = new((MEGame)TargetGame, Gender.Female);
+                    relinker.RelinkMorph();
+                    Notify("Apply", "F");
+                }
             }
         }
 
