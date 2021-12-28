@@ -195,5 +195,14 @@ namespace FSvBSCustomCloneUtility.Tools {
                 File.Copy(Path.Combine(GetCleanPath(game), $"{Path.GetFileNameWithoutExtension(file)}_Clean.pcc"), file, true);
             }
         }
+
+        /// <summary>
+        /// Replace all files that can be cleaned with clean versions
+        /// </summary>
+        /// <param name="game">Game to replace for</param>
+        public static void ApplyCleanFiles(MEGame game) {
+            ApplyCleanDummies(game);
+            ApplyCleanClone(game);
+        }
     }
 }

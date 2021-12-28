@@ -17,6 +17,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         private Gender gender;
         private ExportEntry archetype;
         private List<string> targetFiles = new();
+        private int GLOBAL_MAT_INDEX = 1000;
         /// <summary>
         /// Instantiate the Morph Relinker
         /// </summary>
@@ -51,7 +52,8 @@ namespace FSvBSCustomCloneUtility.Tools {
                     // TODO: Add check in case any get returns null
                     ExportEntry sourceHairSMC = GetHairSMC(clonedArchetype, pcc);
                     ExportEntry targetHairSMC = GetHairSMC(export, pcc);
-                    SetHairToSMC(sourceHairSMC, targetHairSMC);
+                    SetHairToSMC(pcc.GetUExport(clonedArchetype.GetProperty<ObjectProperty>("MorphHead").Value),
+                        targetHairSMC);
 
                     ExportEntry sourceHeadSMC = GetHeadSMC(clonedArchetype, pcc);
                     ExportEntry targetHeadSMC = GetHeadSMC(export, pcc);
@@ -167,9 +169,11 @@ namespace FSvBSCustomCloneUtility.Tools {
             if (targetMaterials == null) { targetMaterials = new ArrayProperty<ObjectProperty>("Materials"); }
 
             foreach (ObjectProperty material in materials) {
-                ExportEntry clonedMat = EntryCloner.CloneEntry(pcc.GetUExport(material.Value));
+                ExportEntry clonedMat = EntryCloner.CloneEntry(pcc.GetUExport(material.Value), null, true);
                 clonedMat.idxLink = SMC.UIndex;
-                targetMaterials.Add(new ObjectProperty(clonedMat.idxLink));
+                clonedMat.indexValue = GLOBAL_MAT_INDEX += 1;
+
+                targetMaterials.Add(new ObjectProperty(clonedMat.UIndex));
             }
 
             SMC.WriteProperty(targetMaterials);
@@ -199,15 +203,15 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="sourceSMC">Source SMC containing the hair to set</param>
         /// <param name="targetSMC">Target SMC</param>
-        private void SetHairToSMC(ExportEntry sourceSMC, ExportEntry targetSMC) {
-            ObjectProperty sourceHair = sourceSMC.GetProperty<ObjectProperty>("SkeletalMesh");
-            if (sourceHair == null) { return; } // No head mesh to reference
+        private void SetHairToSMC(ExportEntry morph, ExportEntry targetSMC) {
+            ObjectProperty morphHair = morph.GetProperty<ObjectProperty>("m_oHairMesh");
+            if (morphHair == null) { return; } // No head mesh to reference
 
             ObjectProperty targetHair = targetSMC.GetProperty<ObjectProperty>("SkeletalMesh");
             if (targetHair != null) {
-                targetHair.Value = sourceHair.Value; 
+                targetHair.Value = morphHair.Value; 
             } else {
-                targetHair = new ObjectProperty(sourceHair.Value, "SkeletalMesh");
+                targetHair = new ObjectProperty(morphHair.Value, "SkeletalMesh");
             }
 
             targetSMC.WriteProperty(targetHair);

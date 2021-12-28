@@ -83,8 +83,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
-            FSvBSDirectories.ApplyCleanClone((MEGame) TargetGame);
-            FSvBSDirectories.ApplyCleanDummies((MEGame) TargetGame);
+            FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame);
             Notify("ClearConds", "");
 
             if (!string.IsNullOrEmpty(RonMFile)) {

@@ -91,15 +91,8 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="gender">Target Shepard</param>
         private void LoadMorphExport(Gender gender) {
-            IEnumerable<ExportEntry> exports = pcc.Exports.Where(e => {
-                if (e.ClassName == "SFXStuntActor") {
-                    NameProperty tag = e.GetProperty<NameProperty>("Tag");
-                    return (tag != null && tag.Value == $"dummy_custom_{(gender == Gender.Female ? "female" : "male")}");
-                } else { return false; }
-            });
-
-            if (exports.Any()) {
-                ExportEntry archetype = (ExportEntry)exports.First().Archetype;
+            ExportEntry archetype = pcc.FindExport($"BioChar_CustomDummy.Archetypes.fsvbs_dummy_custom_{(gender == Gender.Male ? "male" : "female")}_Con");
+            if (archetype != null) {
                 morphTarget = (ExportEntry)pcc.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);
             }
         }
