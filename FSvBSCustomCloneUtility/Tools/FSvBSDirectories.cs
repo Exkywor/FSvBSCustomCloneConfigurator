@@ -38,7 +38,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <returns>Path to the FSvBS folder, null if the mod is not installed</returns>
         public static string GetModPath(MEGame game) {
             if (!IsModInstalled(game)) { return null; }
-            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game == MEGame.ME3 ? "" : "LE")}"); }
+            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}"); }
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <returns>Path to the FSvBS CookedPCConsole folder, null if the mod is not installed</returns>
         public static string GetCookedPath(MEGame game) {
             if (!IsModInstalled(game)) { return null; }
-            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game == MEGame.ME3 ? "" : "LE")}\CookedPCConsole"); }
+            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}\CookedPCConsole"); }
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Game to get the path for</param>
         /// <returns>Path to the coalesced binary file, null if the file is not found</returns>
         public static string GetBinPath(MEGame game) {
-            string file = Path.Combine(GetCookedPath(game), $@"Default_DLC_MOD_FSvBS{(game == MEGame.ME3 ? "" : "LE")}.bin");
+            string file = Path.Combine(GetCookedPath(game), $@"Default_DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}.bin");
             if (!File.Exists(file)) { return null; }
             else { return file; }
         }
@@ -159,7 +159,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Game to check for</param>
         /// <returns>True if the mod is installed</returns>
         public static bool IsModInstalled(MEGame game) {
-            if (!Directory.Exists(Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game == MEGame.ME3 ? "" : "LE")}"))) {
+            if (!Directory.Exists(Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}"))) {
                 return false;
             } else { return true; }
         }
@@ -173,7 +173,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         public static bool IsValidDummies(MEGame game, string dummies) {
             using IMEPackage file = MEPackageHandler.OpenMEPackage(dummies);
             // File does not contain the identifier, meaning it's from an older version of the mod
-            if (!file.Names.Contains($"FSvBS_{(game == MEGame.ME3 ? "ME3" : "LE3")}_DummiesFile")) {
+            if (!file.Names.Contains($"FSvBS_{(game.IsOTGame() ? "ME3" : "LE3")}_DummiesFile")) {
                 return false;
             } else { return true; }
         }

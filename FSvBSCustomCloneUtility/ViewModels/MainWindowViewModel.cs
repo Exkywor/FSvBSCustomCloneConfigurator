@@ -10,11 +10,6 @@ using System.Windows;
 using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
-    public enum Gender {
-        Male,
-        Female
-    }
-
     public class MainWindowViewModel : Conductor<ObserverControl> {
         private List<ObserverControl> observers = new();
         public ObserverControl CustomMorph { get; set; }
@@ -91,11 +86,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             // Get the user to point to the game path if it's not found
             if (string.IsNullOrEmpty(MEDirectories.GetDefaultGamePath(game))) {
                 string file = Misc.PromptForFile("MassEffect3.exe|MassEffect3.exe",
-                                                 $"Select Mass Effect 3 {(game.IsGame3() ? "" : "LE ")}executable");
+                                                 $"Select Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}executable");
 
                 if (string.IsNullOrEmpty(file)) { return false; } // User didn't select a file
 
-                if (game == MEGame.ME3) {
+                if (game.IsOTGame()) {
                     ME3Directory.DefaultGamePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));
                 } else {
                     LE3Directory.DefaultGamePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));

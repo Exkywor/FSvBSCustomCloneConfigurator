@@ -3,6 +3,7 @@ using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Packages;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class CustomMorphViewModel : ObserverControl {
@@ -93,6 +94,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     MorphRelinker relinker = new((MEGame)TargetGame, Gender.Male);
                     relinker.RelinkMorph();
                     Notify("Apply", "M");
+                    MessageBox.Show("The male headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
                 }
             }
             if (!string.IsNullOrEmpty(RonFFile)) {
@@ -102,6 +104,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     MorphRelinker relinker = new((MEGame)TargetGame, Gender.Female);
                     relinker.RelinkMorph();
                     Notify("Apply", "F");
+                    MessageBox.Show("The female headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
                 }
             }
         }

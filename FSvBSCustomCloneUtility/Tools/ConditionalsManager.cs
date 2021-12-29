@@ -53,8 +53,8 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="gender">Gender to check for</param>
         /// <returns>True if the custom condition is set for the input gender</returns>
         private static bool CheckConditional(Gender gender) {
-            return gender is Gender.Male ? Property.InnerXml.Contains("71174570")
-                                         : Property.InnerXml.Contains("71174571");
+            return gender.IsMale() ? Property.InnerXml.Contains("71174570")
+                                   : Property.InnerXml.Contains("71174571");
         }
         /// <summary>
         /// Checks the state of the conditional for the input gender and the selected game
@@ -64,8 +64,8 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <returns>True if the custom condition is set for the input gender</returns>
         public static bool CheckConditional(Gender gender, MEGame game) {
             LoadResources(game);
-            return gender is Gender.Male ? Property.InnerXml.Contains("71174570")
-                                         : Property.InnerXml.Contains("71174571");
+            return gender.IsMale() ? Property.InnerXml.Contains("71174570")
+                                   : Property.InnerXml.Contains("71174571");
 
         }
 
@@ -74,7 +74,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="gender">Gender to check for</param>
         private static void AddConditional(Gender gender) {
-            string plotBool = gender is Gender.Male ? "71174570" : "71174571";
+            string plotBool = gender.IsMale() ? "71174570" : "71174571";
             if (Property.InnerXml.Contains("Value")) {
                 Property.AppendChild(CreateVal(plotBool));
             } else {
@@ -90,7 +90,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="gender">Gender to check for</param>
         private static void RemoveConditional(Gender gender) {
-            string targetBool = gender is Gender.Male ? "71174570" : "71174571";
+            string targetBool = gender.IsMale() ? "71174570" : "71174571";
             foreach (XmlElement child in Property.ChildNodes) {
                 if (child.InnerXml.ToString().Contains(targetBool)) {
                     Property.RemoveChild(child);
