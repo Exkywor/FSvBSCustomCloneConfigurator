@@ -32,7 +32,7 @@ namespace FSvBSCustomCloneUtility.Tools {
             this.targetFiles = FSvBSDirectories.GetCloneInstancesPaths(game);
 
             using IMEPackage pcc = MEPackageHandler.OpenMEPackage(FSvBSDirectories.GetDummiesPath(game));
-            this.archetype = pcc.FindExport($"BioChar_CustomDummy.Archetypes.fsvbs_dummy_custom_{(gender == Gender.Male ? "male" : "female")}_Con");
+            this.archetype = pcc.FindExport($"BioChar_CustomDummy.Archetypes.fsvbs_dummy_custom_{(gender.IsMale() ? "male" : "female")}_Con");
         }
 
         public void RelinkMorph() {
@@ -40,33 +40,32 @@ namespace FSvBSCustomCloneUtility.Tools {
                 using IMEPackage pcc = MEPackageHandler.OpenMEPackage(file);
 
                 // Skip gender specific files if gender doesn't match
-                if (pcc.FileNameNoExtension == "BioD_Cit004_273FemClone" && gender == Gender.Male) { continue; }
-                else if (pcc.FileNameNoExtension == "BioD_Cit004_272MaleClone" && gender == Gender.Female) { continue; }
+                if (pcc.FileNameNoExtension == "BioD_Cit004_273FemClone" && gender.IsMale()) { continue; }
+                else if (pcc.FileNameNoExtension == "BioD_Cit004_272MaleClone" && gender.IsFemale()) { continue; }
 
                 ExportEntry clonedArchetype = CloneDummyArchetype(archetype, file);
 
-                IEnumerable<ExportEntry> targetExports = GetTargetExports(pcc); // Some files contain multiple exports to relink
-                if (targetExports == null) { return; } // No exports found
+                List<ExportEntry> targetExports = GetTargetExports(pcc); // Some files contain multiple exports to relink
+                if (!targetExports.Any()) { return; } // No exports found
 
-                foreach(ExportEntry export in targetExports.ToList()) {
+                foreach(ExportEntry export in targetExports) {
                     // TODO: Add check in case any get returns null
-                    ExportEntry sourceHairSMC = GetHairSMC(clonedArchetype, pcc);
-                    ExportEntry targetHairSMC = GetHairSMC(export, pcc);
-                    SetHairToSMC(pcc.GetUExport(clonedArchetype.GetProperty<ObjectProperty>("MorphHead").Value),
-                        targetHairSMC);
+                    ExportEntry sourceHairSMC = SMCTools.GetHairSMC(clonedArchetype, pcc);
+                    ExportEntry targetHairSMC = SMCTools.GetHairSMC(export, pcc);
+                    SMCTools.SetHairToSMC(sourceHairSMC, targetHairSMC);
 
-                    ExportEntry sourceHeadSMC = GetHeadSMC(clonedArchetype, pcc);
-                    ExportEntry targetHeadSMC = GetHeadSMC(export, pcc);
-                    SetHeadToSMC(sourceHeadSMC, targetHeadSMC);
+                    ExportEntry sourceHeadSMC = SMCTools.GetHeadSMC(clonedArchetype, pcc);
+                    ExportEntry targetHeadSMC = SMCTools.GetHeadSMC(export, pcc);
+                    SMCTools.SetHeadToSMC(sourceHeadSMC, targetHeadSMC);
 
                     ArrayProperty<ObjectProperty> hairMaterials = sourceHairSMC.GetProperty<ArrayProperty<ObjectProperty>>("Materials");
                     if (hairMaterials != null) {
-                        CloneMaterialsToSMC(hairMaterials, targetHairSMC, pcc);
+                        GLOBAL_MAT_INDEX = SMCTools.CloneMaterialsToSMC(hairMaterials, targetHairSMC, pcc, GLOBAL_MAT_INDEX);
                     }
 
                     ArrayProperty<ObjectProperty> headMaterials = sourceHeadSMC.GetProperty<ArrayProperty<ObjectProperty>>("Materials");
                     if (headMaterials != null) {
-                        CloneMaterialsToSMC(headMaterials, targetHeadSMC, pcc);
+                        GLOBAL_MAT_INDEX = SMCTools.CloneMaterialsToSMC(headMaterials, targetHeadSMC, pcc, GLOBAL_MAT_INDEX);
                     }
 
                     SetMorphToTarget(pcc.GetUExport(clonedArchetype.GetProperty<ObjectProperty>("MorphHead").Value), export);
@@ -92,129 +91,48 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="pcc">Pcc containing the target</param>
         /// <returns>Target exports; null if not found</returns>
-        private IEnumerable<ExportEntry> GetTargetExports(IMEPackage pcc) {
+        private List<ExportEntry> GetTargetExports(IMEPackage pcc) {
             switch (pcc.FileNameNoExtension) {
                 case "BioD_Cit002_700Exit":
-                    IEnumerable<ExportEntry> exports700 = pcc.Exports.Where(e => {
-                        if (e.ClassName == "SFXStuntActor") {
-                            NameProperty tag = e.GetProperty<NameProperty>("Tag");
-                            return (tag != null && tag.Value == $"fakeclone_{(gender == Gender.Female ? "female" : "male")}");
-                        } else { return false; }
-                    });
-                    if (exports700.Any()) { return exports700; }
-                    break;
+                    List<ExportEntry> exports700 = new();
+                    ExportEntry export700 = pcc.FindExport($"TheWorld.PersistentLevel.SFXStuntActor_{(gender.IsFemale() ? 73 : 82)}");
+                    if (export700 != null) { exports700.Add(export700); }
+                    return exports700;
                 case "BioD_Cit004_210CICIntro":
-                    IEnumerable<ExportEntry> exports210 = pcc.Exports.Where(e =>
-                        e.ClassName == "SFXStuntActor" && e.ObjectName == $"cit_evilclone_{(gender == Gender.Male ? "male" : "female")}_fatigue_Con");
-                    if (exports210.Any()) { return exports210; }
-                    break;
-                case "BioD_Cit004_272MaleClone":
-                    IEnumerable<ExportEntry> exports272 = pcc.Exports.Where(e =>
-                           e.ObjectName == "CloneShepardMale_Conv" || e.ObjectName == "CloneShepardMale"
-                        || e.ObjectName == "CloneM_Combat" || e.ObjectName == "CloneM_Conversation");
-                    if (exports272.Any()) { return exports272; }
-                    break;
-                case "BioD_Cit004_273FemClone":
-                    IEnumerable<ExportEntry> exports273 = pcc.Exports.Where(e =>
-                           e.ObjectName == "CloneShepardFemale_Conv" || e.ObjectName == "CloneShepardFemale"
-                        || e.ObjectName == "CloneF_Combat" || e.ObjectName == "CloneF_Conversation");
-                    if (exports273.Any()) { return exports273; }
-                    break;
+                    List<ExportEntry> exports210 = new();
+                    ExportEntry export210 = pcc.FindExport($"BioChar_CitGlobal.Archetypes.cit_evilclone_{(gender.IsFemale() ? "female" : "male")}_fatigue_Con");
+                    if (export210 != null) { exports210.Add(export210); }
+                    return exports210;
+                case "BioD_Cit004_272MaleClone": {
+                        List<ExportEntry> exports272 = new();
+                        ExportEntry exportA = pcc.FindExport($"Char_Enemies_Citadel.Bosses.CloneShepardMale_Conv");
+                        if (exportA != null) { exports272.Add(exportA); }
+                        ExportEntry exportB = pcc.FindExport($"Char_Enemies_Citadel.Bosses.CloneShepardMale");
+                        if (exportB != null) { exports272.Add(exportB); }
+                        ExportEntry exportC = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneM_Combat");
+                        if (exportC != null) { exports272.Add(exportC); }
+                        ExportEntry exportD = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneM_Conversation");
+                        if (exportD != null) { exports272.Add(exportD); }
+                        return exports272;
+                    }
+                case "BioD_Cit004_273FemClone": {
+                        List<ExportEntry> exports273 = new();
+                        ExportEntry exportA = pcc.FindExport($"Char_Enemies_Citadel.Bosses.CloneShepardFemale_Conv");
+                        if (exportA != null) { exports273.Add(exportA); }
+                        ExportEntry exportB = pcc.FindExport($"Char_Enemies_Citadel.Bosses.CloneShepardFemale");
+                        if (exportB != null) { exports273.Add(exportB); }
+                        ExportEntry exportC = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneF_Combat");
+                        if (exportC != null) { exports273.Add(exportC); }
+                        ExportEntry exportD = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneF_Conversation");
+                        if (exportD != null) { exports273.Add(exportD); }
+                        return exports273;
+                    }
                 default:
-                    IEnumerable<ExportEntry> exports = pcc.Exports.Where(e =>
-                        e.ClassName == "SFXStuntActor" && e.ObjectName == $"cit_evilclone_{(gender == Gender.Male ? "male" : "female")}_Con");
-                    if (exports.Any()) { return exports; }
-                    break;
+                    List<ExportEntry> exports = new();
+                    ExportEntry export = pcc.FindExport($"BioChar_CitGlobal.Archetypes.cit_evilclone_{(gender.IsFemale() ? "female" : "male")}_Con");
+                    if (export != null) { exports.Add(export); }
+                    return exports;
             }
-            return null;
-        }
-
-        /// <summary>
-        /// Get the hair SMC from the target
-        /// </summary>
-        /// <param name="target">Export to get the hair SMC from</param>
-        /// <param name="pcc">Pcc to find export in</param>
-        /// <returns>Hair SMC export; null if no mesh was found </returns>
-        private ExportEntry GetHairSMC(ExportEntry target, IMEPackage pcc) {
-            ObjectProperty hairIndex = target.GetProperty<ObjectProperty>("HairMesh");
-            if (hairIndex != null) { return pcc.GetUExport(hairIndex.Value); }
-
-            // Some of the exports use m_oHairMesh
-            hairIndex = target.GetProperty<ObjectProperty>("m_oHairMesh");
-            if (hairIndex != null) { return pcc.GetUExport(hairIndex.Value); }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get the head SMC from the target
-        /// </summary>
-        /// <param name="target">Export to get the head SMC from</param>
-        /// <param name="pcc">Pcc to find export in</param>
-        /// <returns>Head SMC export</returns>
-        private ExportEntry GetHeadSMC(ExportEntry target, IMEPackage pcc) {
-            ObjectProperty headIndex = target.GetProperty<ObjectProperty>("HeadMesh");
-            if (headIndex != null) { return pcc.GetUExport(headIndex.Value); }
-            return null;
-        }
-
-        /// <summary>
-        /// Clone the input materials into the target SkeletalMeshComponent
-        /// </summary>
-        /// <param name="materials">Materials to clone</param>
-        /// <param name="SMC">Target SkeletalMeshComponent</param>
-        /// <param name="pcc">Pcc to clone materials from and into</param>
-        private void CloneMaterialsToSMC(ArrayProperty<ObjectProperty> materials, ExportEntry SMC, IMEPackage pcc) {
-            ArrayProperty<ObjectProperty> targetMaterials = SMC.GetProperty<ArrayProperty<ObjectProperty>>("Materials");
-            if (targetMaterials == null) { targetMaterials = new ArrayProperty<ObjectProperty>("Materials"); }
-
-            foreach (ObjectProperty material in materials) {
-                ExportEntry clonedMat = EntryCloner.CloneEntry(pcc.GetUExport(material.Value), null, true);
-                clonedMat.idxLink = SMC.UIndex;
-                clonedMat.indexValue = GLOBAL_MAT_INDEX += 1;
-
-                targetMaterials.Add(new ObjectProperty(clonedMat.UIndex));
-            }
-
-            SMC.WriteProperty(targetMaterials);
-        }
-
-        /// <summary>
-        /// Set the input headMesh to the target SkeletalMeshComponent
-        /// </summary>
-        /// <param name="sourceSMC">Source SMC containing the head to set</param>
-        /// <param name="targetSMC">Target SMC</param>
-        private void SetHeadToSMC(ExportEntry sourceSMC, ExportEntry targetSMC) {
-            ObjectProperty sourceHead = sourceSMC.GetProperty<ObjectProperty>("SkeletalMesh");
-            if (sourceHead == null) { return; } // No head mesh to reference
-
-            ObjectProperty targetHead = targetSMC.GetProperty<ObjectProperty>("SkeletalMesh");
-            if (targetHead != null) {
-                targetHead.Value = sourceHead.Value; 
-            } else {
-                targetHead = new ObjectProperty(sourceHead.Value, "SkeletalMesh");
-            }
-
-            targetSMC.WriteProperty(targetHead);
-        }
-
-        /// <summary>
-        /// Set the input hairMesh to the target SkeletalMeshComponent
-        /// </summary>
-        /// <param name="sourceSMC">Source SMC containing the hair to set</param>
-        /// <param name="targetSMC">Target SMC</param>
-        private void SetHairToSMC(ExportEntry morph, ExportEntry targetSMC) {
-            ObjectProperty morphHair = morph.GetProperty<ObjectProperty>("m_oHairMesh");
-            if (morphHair == null) { return; } // No head mesh to reference
-
-            ObjectProperty targetHair = targetSMC.GetProperty<ObjectProperty>("SkeletalMesh");
-            if (targetHair != null) {
-                targetHair.Value = morphHair.Value; 
-            } else {
-                targetHair = new ObjectProperty(morphHair.Value, "SkeletalMesh");
-            }
-
-            targetSMC.WriteProperty(targetHair);
         }
 
         /// <summary>

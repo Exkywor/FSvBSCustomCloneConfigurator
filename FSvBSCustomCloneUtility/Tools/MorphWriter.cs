@@ -25,13 +25,15 @@ namespace FSvBSCustomCloneUtility.Tools {
         private Gender gender; // Target gender
         private MorphHead morphSource; // Parsed headmorph
         private ExportEntry morphTarget; // Target morph export
+        private ExportEntry archetype; // Target archetype for hair and materials
 
         /// <summary> Global file name , Global file path </summary>
         private Dictionary<string, string> globalResources = new(StringComparer.OrdinalIgnoreCase);
 
-        private List<string> resourcesNotFound = new();  // Resources not found.
+        /// <summary>Resource's parameter, path resource</summary>
+        private Dictionary<string, string> resourcesNotFound = new(); // Resources not found
         /// <summary> Resource's instanced name, paths to duplicates </summary>
-        private Dictionary<string, IEnumerable<String>> resourceDuplicates = new(); // Resources in multiple files.
+        private Dictionary<string, IEnumerable<string>> resourceDuplicates = new(); // Resources in multiple files.
 
         /// <summary>
         /// Create an instance of MorphWriter
@@ -48,19 +50,12 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <returns>True if there were no errors</returns>
         public bool ApplyMorph() {
-            EditMorphFeatures();
-            EditBones();
-            EditLODVertices();
+            EditHead();
             EditHair();
-            EditMatOverrides();
 
             if (resourcesNotFound.Count > 0) { HandleErrors("resourcesNotFound"); }
             else if (resourceDuplicates.Count > 0) { HandleErrors("resourceDuplicates"); }
-            else {
-                MessageBox.Show($"The {(gender == Gender.Male ? "male" : "female")} headmorph was applied succesfully.",
-                    "Success", MessageBoxButton.OK);
-                pcc.Save();
-            }
+            else { pcc.Save(); }
 
             pcc.Release();
             pcc.Dispose();
@@ -74,13 +69,13 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Target game</param>
         /// <param name="gender">Target Shepard</param>
         private void Load(string ronFile, MEGame game, Gender gender) {
-            pccPath = FSvBSDirectories.GetDummiesPath(MEGame.ME3);
+            pccPath = FSvBSDirectories.GetDummiesPath(game);
             pcc = MEPackageHandler.OpenMEPackage(pccPath);
             targetGame = game;
             this.gender = gender;
 
             morphSource = RONConverter.ConvertRON(ronFile);
-            LoadMorphExport(gender);
+            LoadMorphAndArchetypeExports(gender);
 
             SetGlobalPaths();
         }
@@ -90,8 +85,8 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// INVARIANT: The pcc does contain a dummy_custom export with an assigned BioMorphFace.
         /// </summary>
         /// <param name="gender">Target Shepard</param>
-        private void LoadMorphExport(Gender gender) {
-            ExportEntry archetype = pcc.FindExport($"BioChar_CustomDummy.Archetypes.fsvbs_dummy_custom_{(gender == Gender.Male ? "male" : "female")}_Con");
+        private void LoadMorphAndArchetypeExports(Gender gender) {
+            archetype = pcc.FindExport($"BioChar_CustomDummy.Archetypes.fsvbs_dummy_custom_{(gender.IsMale() ? "male" : "female")}_Con");
             if (archetype != null) {
                 morphTarget = (ExportEntry)pcc.GetEntry(archetype.GetProperty<ObjectProperty>("MorphHead").Value);
             }
@@ -178,6 +173,23 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
+        /// Apply all head propertys from the headmorph to the morphTarget
+        /// </summary>
+        private void EditHead() {
+            EditBones();
+            EditMorphFeatures();
+            EditLODVertices();
+
+            // Remove material overrides since we'll apply those to the archetype
+            if (morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides") != null) {
+                morphTarget.RemoveProperty("m_oMaterialOverrides");
+            }
+
+            ExportEntry headSMC = SMCTools.GetHeadSMC(archetype, pcc);
+            ApplyOverridesToSMC(headSMC);
+        }
+
+        /// <summary>
         /// Apply the bones property from the headmorph to the morphTarget
         /// </summary>
         private void EditBones() {
@@ -204,7 +216,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Apply the morh features property from the headmorph to the morphTarget
+        /// Apply the morph features property from the headmorph to the morphTarget
         /// </summary>
         private void EditMorphFeatures() {
             morphTarget.RemoveProperty("m_aMorphFeatures");
@@ -247,66 +259,88 @@ namespace FSvBSCustomCloneUtility.Tools {
         private void EditHair() {
             string hairName = morphSource.HairMesh.ToString();
 
-            if (hairName is "None" or "") {
-                // Remove the hair property in case it exists
-                if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null) {
-                    morphTarget.RemoveProperty("m_oHairMesh");
+            // Remove the hair property in case it exists, since it'll be set to the hairSMC directly
+            if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null) {
+                morphTarget.RemoveProperty("m_oHairMesh");
+            }
+
+            if (hairName is "None" or "") { return; }
+
+            ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
+            if (hairMesh == null) {
+                if (!resourcesNotFound.ContainsKey("HairMesh")) {
+                    resourcesNotFound.Add("HairMesh", $"HairMesh: {morphSource.HairMesh}");
                 }
                 return;
             }
 
-            ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
-            if (hairMesh == null) {
-                resourcesNotFound.Add($" - HairMesh: {morphSource.HairMesh}");
-                return;
-            }
+            ExportEntry hairSMC = SMCTools.GetHairSMC(archetype, pcc);
 
-            ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
-            if (hairProp != null) {
-                hairProp.Value = hairMesh.UIndex;
+            ObjectProperty hairSMCMesh = hairSMC.GetProperty<ObjectProperty>("SkeletalMesh");
+            if (hairSMCMesh == null) {
+                hairSMCMesh = new ObjectProperty(hairMesh.UIndex, "SkeletalMesh");
             } else {
-                hairProp = new ObjectProperty(hairMesh.UIndex, "m_oHairMesh");
+                hairSMCMesh.Value = hairMesh.UIndex;
             }
-            morphTarget.WriteProperty(hairProp);
+            
+            hairSMC.WriteProperty(hairSMCMesh);
+            ApplyOverridesToSMC(hairSMC);
+        }
+
+
+        /// <summary>
+        /// Apply the material overrides from the ron file to the materials of the input SkeletalMeshComponent
+        /// </summary>
+        /// <param name="SMC">SkeletalMeshComponent containing the materials</param>
+        private void ApplyOverridesToSMC(ExportEntry SMC) {
+            ArrayProperty<ObjectProperty> materials = SMC.GetProperty<ArrayProperty<ObjectProperty>>("Materials");
+            if (materials == null) { return; }
+
+            foreach (ObjectProperty material in materials) {
+                ApplyOverridesToMatInstance(pcc.GetUExport(material.Value));
+            }
+
+            SMC.WriteProperty(materials);
         }
 
         /// <summary>
-        /// Apply the material overrides property from the headmorph to the morphTarget
+        /// Apply the material overrides from the ron file to the input material instance 
         /// </summary>
-        private void EditMatOverrides() {
-            ExportEntry matOverride = (ExportEntry) pcc.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
+        /// <param name="matInstance">Material instance to apply parameters to</param>
+        private void ApplyOverridesToMatInstance(ExportEntry matInstance) {
+            matInstance.RemoveProperty("VectorParameterValues");
+            matInstance.RemoveProperty("ScalarParameterValues");
+            matInstance.RemoveProperty("TextureParameterValues");
 
-            matOverride.RemoveProperty("m_aScalarOverrides");
-            matOverride.WriteProperty(GenerateScalarOverrides());
-            matOverride.RemoveProperty("m_aColorOverrides");
-            matOverride.WriteProperty(GenerateColorOverrides());
-            matOverride.RemoveProperty("m_aTextureOverrides");
-            matOverride.WriteProperty(GenerateTextureOverride());
+            matInstance.WriteProperty(GenerateVectorParameterValues());
+            matInstance.WriteProperty(GenerateScalarParameterValues());
+            matInstance.WriteProperty(GenerateTextureParameterValues());
         }
 
         /// <summary>
-        /// Generate a scalar overrides property with the morphSource values
+        /// Generate a ScalarParameterValues property with the morphSource values
         /// </summary>
-        /// <returns>A scalar overrides property</returns>
-        private ArrayProperty<StructProperty> GenerateScalarOverrides() {
-            ArrayProperty<StructProperty> m_aScalarOverrides = new("m_aScalarOverrides");
+        /// <returns>A ScalarParameterValues property</returns>
+        private ArrayProperty<StructProperty> GenerateScalarParameterValues() {
+            ArrayProperty<StructProperty> ScalarParameterValues = new("ScalarParameterValues");
             foreach (MorphHead.ScalarParameter parameter in morphSource.ScalarParameters) {
-                PropertyCollection props = new PropertyCollection();
+                PropertyCollection props = new();
 
-                props.Add(new NameProperty(parameter.Name, "nName"));
-                props.Add(new FloatProperty(parameter.Value, "sValue"));
+                props.Add(GenerateExpressionGUID());
+                props.Add(new NameProperty(parameter.Name, "ParameterName"));
+                props.Add(new FloatProperty(parameter.Value, "ParameterValue"));
 
-                m_aScalarOverrides.Add(new StructProperty("ScalarParameter", props));
+                ScalarParameterValues.Add(new StructProperty("ScalarParameter", props));
             }
-            return m_aScalarOverrides;
+            return ScalarParameterValues;
         }
 
         /// <summary>
-        /// Generate a color overrides property with the morphSource values
+        /// Generate a VectorParameterValues property with the morphSource values
         /// </summary>
-        /// <returns>A color overrides property</returns>
-        private ArrayProperty<StructProperty> GenerateColorOverrides() {
-            ArrayProperty<StructProperty> m_aColorOverrides = new("m_aColorOverrides");
+        /// <returns>A VectorParameterValues property</returns>
+        private ArrayProperty<StructProperty> GenerateVectorParameterValues() {
+            ArrayProperty<StructProperty> VectorParameterValues = new("VectorParameterValues");
             foreach (MorphHead.VectorParameter parameter in morphSource.VectorParameters) {
                 PropertyCollection props = new();
 
@@ -316,24 +350,24 @@ namespace FSvBSCustomCloneUtility.Tools {
                 color.Add(new FloatProperty(parameter.Value.B, "B"));
                 color.Add(new FloatProperty(parameter.Value.A, "A"));
 
-                StructProperty cValue = new("LinearColor", color, "cValue", true);
+                StructProperty ParameterValue = new("LinearColor", color, "ParameterValue", true);
 
-                props.Add(cValue);
-                props.Add(new NameProperty(parameter.Name, "nName"));
+                props.Add(GenerateExpressionGUID());
+                props.Add(ParameterValue);
+                props.Add(new NameProperty(parameter.Name, "ParameterName"));
 
-                m_aColorOverrides.Add(new StructProperty("ColorParameter", props));
+                VectorParameterValues.Add(new StructProperty("VectorParameterValue", props));
             }
 
-            return m_aColorOverrides;
+            return VectorParameterValues;
         }
 
         /// <summary>
-        /// Generate a texture overrides property with the morphSource values
+        /// Generate a TextureParameterValues property with the morphSource values
         /// </summary>
-        /// <returns>A texture overrides property</returns>
-        private ArrayProperty<StructProperty> GenerateTextureOverride() {
-            ArrayProperty<StructProperty> m_aTextureOverrides = new("m_aTextureOverrides");
-
+        /// <returns>A TextureParameterValues property</returns>
+        private ArrayProperty<StructProperty> GenerateTextureParameterValues() {
+            ArrayProperty<StructProperty> TextureParameterValues = new("TextureParameterValues");
             foreach (MorphHead.TextureParameter parameter in morphSource.TextureParameters) {
                 string textureName = parameter.Value.Remove(parameter.Value.Length - 1).Substring(1);
 
@@ -343,18 +377,35 @@ namespace FSvBSCustomCloneUtility.Tools {
                 IEntry texture = GetResource(textureName);
 
                 if (texture == null) {
-                    resourcesNotFound.Add($" - {parameter.Name}: {textureName}");
+                    if (!resourcesNotFound.ContainsKey(parameter.Name)) {
+                        resourcesNotFound.Add(parameter.Name, $" - {parameter.Name}: {textureName}");
+                    }
                     continue;
                 }
-                
-                props.Add(new NameProperty(parameter.Name, "nName"));
-                props.Add(new ObjectProperty(texture.UIndex, "m_pTexture"));
+
+                props.Add(GenerateExpressionGUID());
+                props.Add(new NameProperty(parameter.Name, "ParameterName"));
+                props.Add(new ObjectProperty(texture.UIndex, "ParameterValue"));
 
 
-                m_aTextureOverrides.Add(new StructProperty("TextureParameter", props));
+                TextureParameterValues.Add(new StructProperty("TextureParameterValue", props));
             }
 
-            return m_aTextureOverrides;
+            return TextureParameterValues;
+        }
+        
+        /// <summary>
+        /// Generate a default ExpressionGUID
+        /// </summary>
+        /// <returns>ExpressionGUID StructProperty</returns>
+        private StructProperty GenerateExpressionGUID() {
+            PropertyCollection props = new PropertyCollection();
+            props.Add(new IntProperty(0, "A"));
+            props.Add(new IntProperty(0, "B"));
+            props.Add(new IntProperty(0, "C"));
+            props.Add(new IntProperty(0, "D"));
+
+            return new StructProperty("Guid", props, "ExpressionGUID", true);
         }
 
         /// <summary>
@@ -364,19 +415,10 @@ namespace FSvBSCustomCloneUtility.Tools {
         private void HandleErrors(string type) {
             switch(type) {
                 case "resourcesNotFound":
-                    ErrorDialogueViewModel errCtrl = new("Error",
-                        resourcesNotFound,
-                        $"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:",
-                        $"Make sure that any modded texture/hairs are installed, and that the names are spelled correctly in the headmorph file." +
-                        Environment.NewLine +
-                        $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
-                        ""
-                    );
-
-                    IWindowManager manager = new WindowManager();
-                    manager.ShowDialogAsync(errCtrl, null, null);
-                    string errMsg = string.Join(Environment.NewLine, resourcesNotFound.ToArray());
-                    MessageBox.Show($"The following textures/hair could not be found for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
+                    // IWindowManager manager = new WindowManager();
+                    // manager.ShowDialogAsync(errCtrl, null, null);
+                    string errMsg = string.Join(Environment.NewLine, resourcesNotFound.Values.ToArray());
+                    MessageBox.Show($"The following textures/hair could not be found for the {(gender.IsMale() ? "male" : "female")} headmorph:" +
                         Environment.NewLine + Environment.NewLine +
                         $"{errMsg}"
                         + Environment.NewLine + Environment.NewLine +
@@ -395,7 +437,7 @@ namespace FSvBSCustomCloneUtility.Tools {
                         // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
                         dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key].ToArray()) + Environment.NewLine + Environment.NewLine;
                     }
-                    MessageBox.Show($"The following textures/hair were found in more than one mod for the {(gender == Gender.Male ? "male" : "female")} headmorph:" +
+                    MessageBox.Show($"The following textures/hair were found in more than one mod for the {(gender.IsMale() ? "male" : "female")} headmorph:" +
                         Environment.NewLine + Environment.NewLine +
                         $"{dupMsg}" +
                         $"Make sure to only have one mod containing the resource." +
