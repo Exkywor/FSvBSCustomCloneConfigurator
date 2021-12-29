@@ -264,7 +264,9 @@ namespace FSvBSCustomCloneUtility.Tools {
                 morphTarget.RemoveProperty("m_oHairMesh");
             }
 
-            if (hairName is "None" or "") { return; }
+            if (hairName.Equals("None", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(hairName.Trim())) {
+                return;
+            }
 
             ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
             if (hairMesh == null) {
@@ -371,7 +373,9 @@ namespace FSvBSCustomCloneUtility.Tools {
             foreach (MorphHead.TextureParameter parameter in morphSource.TextureParameters) {
                 string textureName = parameter.Value.Remove(parameter.Value.Length - 1).Substring(1);
 
-                if (textureName is "None" or "") { continue; }
+                if (textureName.Equals("None", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(textureName.Trim())) {
+                    continue;
+                }
 
                 PropertyCollection props = new PropertyCollection();
                 IEntry texture = GetResource(textureName);
