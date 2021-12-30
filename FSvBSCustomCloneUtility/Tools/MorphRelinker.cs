@@ -112,6 +112,10 @@ namespace FSvBSCustomCloneUtility.Tools {
                         if (exportC != null) { exports272.Add(exportC); }
                         ExportEntry exportD = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneM_Conversation");
                         if (exportD != null) { exports272.Add(exportD); }
+                        ExportEntry exportE = pcc.FindExport($"Char_Henchmen.Archetypes.Kaidan.VariantA.CloneM_Combat");
+                        if (exportE != null) { exports272.Add(exportE); }
+                        ExportEntry exportF = pcc.FindExport($"Char_Henchmen.Archetypes.Kaidan.VariantA.CloneM_Conversation");
+                        if (exportF != null) { exports272.Add(exportF); }
                         return exports272;
                     }
                 case "BioD_Cit004_273FemClone": {
@@ -120,10 +124,14 @@ namespace FSvBSCustomCloneUtility.Tools {
                         if (exportA != null) { exports273.Add(exportA); }
                         ExportEntry exportB = pcc.FindExport($"Char_Enemies_Citadel.Bosses.CloneShepardFemale");
                         if (exportB != null) { exports273.Add(exportB); }
-                        ExportEntry exportC = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneF_Combat");
+                        ExportEntry exportC = pcc.FindExport($"Char_Henchmen.Archetypes.CloneF.VariantA.CloneF_Combat");
                         if (exportC != null) { exports273.Add(exportC); }
-                        ExportEntry exportD = pcc.FindExport($"Char_Henchmen.Archetypes.CloneM.VariantA.CloneF_Conversation");
+                        ExportEntry exportD = pcc.FindExport($"Char_Henchmen.Archetypes.CloneF.VariantA.CloneF_Conversation");
                         if (exportD != null) { exports273.Add(exportD); }
+                        ExportEntry exportE = pcc.FindExport($"Char_Henchmen.Archetypes.Ashley.VariantA.CloneF_Combat");
+                        if (exportE != null) { exports273.Add(exportE); }
+                        ExportEntry exportF = pcc.FindExport($"Char_Henchmen.Archetypes.Ashley.VariantA.CloneF_Conversation");
+                        if (exportF != null) { exports273.Add(exportF); }
                         return exports273;
                     }
                 default:
