@@ -1,5 +1,6 @@
 ﻿using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,30 @@ namespace FSvBSCustomCloneUtility.Tools {
         };
 
         /// <summary>
+        /// Check if the mod is the Vanilla vs version
+        /// </summary>
+        /// <param name="game">Game to search for</param>
+        /// <returns>True if mo is the vanilla vs version</returns>
+        public static bool IsVvs(MEGame game) {
+            IEnumerable<string> dirs = Directory.EnumerateDirectories(Path.Combine(MEDirectories.GetBioGamePath(game), "DLC"));
+            foreach (string dir in dirs) {
+                if (dir.Contains($"DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}_V", StringComparison.OrdinalIgnoreCase)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Get the name of the mod dir, accounting for game version and mod version
+        /// </summary>
+        /// <param name="game">Game to check for</param>
+        /// <returns>Mod dir name</returns>
+        public static string GetModDirName(MEGame game) {
+            return $"DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}{(IsVvs(game) ? "_V" : "")}";
+        }
+
+        /// <summary>
         /// Gets the path to the FSvBS folder for ME3
         /// </summary>
         public static string ME3ModPath => GetModPath(MEGame.ME3);
@@ -38,7 +63,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <returns>Path to the FSvBS folder, null if the mod is not installed</returns>
         public static string GetModPath(MEGame game) {
             if (!IsModInstalled(game)) { return null; }
-            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}"); }
+            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetModDirName(game)}"); }
         }
 
         /// <summary>
@@ -56,7 +81,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <returns>Path to the FSvBS CookedPCConsole folder, null if the mod is not installed</returns>
         public static string GetCookedPath(MEGame game) {
             if (!IsModInstalled(game)) { return null; }
-            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}\CookedPCConsole"); }
+            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetModDirName(game)}\CookedPCConsole"); }
         }
 
         /// <summary>
@@ -74,7 +99,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Game to get the path for</param>
         /// <returns>Path to the coalesced binary file, null if the file is not found</returns>
         public static string GetBinPath(MEGame game) {
-            string file = Path.Combine(GetCookedPath(game), $@"Default_DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}.bin");
+            string file = Path.Combine(GetCookedPath(game), $@"Default_{GetModDirName(game)}.bin");
             if (!File.Exists(file)) { return null; }
             else { return file; }
         }
@@ -159,7 +184,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="game">Game to check for</param>
         /// <returns>True if the mod is installed</returns>
         public static bool IsModInstalled(MEGame game) {
-            if (!Directory.Exists(Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}"))) {
+            if (!Directory.Exists(Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetModDirName(game)}"))) {
                 return false;
             } else { return true; }
         }
@@ -203,6 +228,15 @@ namespace FSvBSCustomCloneUtility.Tools {
         public static void ApplyCleanFiles(MEGame game) {
             ApplyCleanDummies(game);
             ApplyCleanClone(game);
+        }
+
+        /// <summary>
+        /// TOCs the mod files
+        /// </summary>
+        /// <param name="game">Game to toc</param>
+        public static void TOCMod(MEGame game) {
+            MemoryStream toc = TOCCreator.CreateDLCTOCForDirectory(GetModPath(game), game);
+            File.WriteAllBytes(Path.Combine(GetModPath(game), "PCConsoleTOC.bin"), toc.ToArray());
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Packages;
+using LegendaryExplorerCore.Unreal;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -84,6 +85,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
+            bool tocced = false;
             FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame);
             Notify("ClearConds", "");
 
@@ -93,6 +95,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 if (res) {
                     MorphRelinker relinker = new((MEGame)TargetGame, Gender.Male);
                     relinker.RelinkMorph();
+
+                    FSvBSDirectories.TOCMod((MEGame)TargetGame);
+                    tocced = true;
+
                     Notify("Apply", "M");
                     MessageBox.Show("The male headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
                 }
@@ -103,10 +109,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 if (res) {
                     MorphRelinker relinker = new((MEGame)TargetGame, Gender.Female);
                     relinker.RelinkMorph();
+
+                    FSvBSDirectories.TOCMod((MEGame)TargetGame);
+                    tocced = true;
+
                     Notify("Apply", "F");
                     MessageBox.Show("The female headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
                 }
             }
+
+            if (!tocced) { FSvBSDirectories.TOCMod((MEGame)TargetGame); }
         }
 
         public override void Update<Type>(string name, Type value) {
