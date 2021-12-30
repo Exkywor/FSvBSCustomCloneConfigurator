@@ -49,7 +49,6 @@ namespace FSvBSCustomCloneUtility.Tools {
                 if (!targetExports.Any()) { return; } // No exports found
 
                 foreach(ExportEntry export in targetExports) {
-                    // TODO: Add check in case any get returns null
                     ExportEntry sourceHairSMC = SMCTools.GetHairSMC(clonedArchetype, pcc);
                     ExportEntry targetHairSMC = SMCTools.GetHairSMC(export, pcc);
                     SMCTools.SetHairToSMC(sourceHairSMC, targetHairSMC);

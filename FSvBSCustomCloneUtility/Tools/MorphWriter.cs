@@ -286,7 +286,7 @@ namespace FSvBSCustomCloneUtility.Tools {
             }
             
             hairSMC.WriteProperty(hairSMCMesh);
-            ApplyOverridesToSMC(hairSMC);
+            ApplyOverridesToSMC(hairSMC, true, pcc.GetUExport(hairMesh.UIndex));
         }
 
 
@@ -294,12 +294,18 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Apply the material overrides from the ron file to the materials of the input SkeletalMeshComponent
         /// </summary>
         /// <param name="SMC">SkeletalMeshComponent containing the materials</param>
-        private void ApplyOverridesToSMC(ExportEntry SMC) {
+        /// <param name="isHair">Is hair material</param>
+        /// <param name="sourceHairMesh">Optional hair mesh to get material parent from</param>
+        private void ApplyOverridesToSMC(ExportEntry SMC, bool isHair = false, ExportEntry sourceHairMesh = null) {
             ArrayProperty<ObjectProperty> materials = SMC.GetProperty<ArrayProperty<ObjectProperty>>("Materials");
             if (materials == null) { return; }
 
             foreach (ObjectProperty material in materials) {
-                ApplyOverridesToMatInstance(pcc.GetUExport(material.Value));
+                if (isHair) {
+                    ApplyOverridesToMatInstance(pcc.GetUExport(material.Value), true, sourceHairMesh);
+                } else {
+                    ApplyOverridesToMatInstance(pcc.GetUExport(material.Value));
+                }
             }
 
             SMC.WriteProperty(materials);
@@ -309,7 +315,9 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Apply the material overrides from the ron file to the input material instance 
         /// </summary>
         /// <param name="matInstance">Material instance to apply parameters to</param>
-        private void ApplyOverridesToMatInstance(ExportEntry matInstance) {
+        /// <param name="isHair">Is hair material</param>
+        /// <param name="sourceHairMesh">Optional hair mesh to get material parent from</param>
+        private void ApplyOverridesToMatInstance(ExportEntry matInstance, bool isHair = false, ExportEntry sourceHairMesh = null) {
             matInstance.RemoveProperty("VectorParameterValues");
             matInstance.RemoveProperty("ScalarParameterValues");
             matInstance.RemoveProperty("TextureParameterValues");
@@ -317,6 +325,16 @@ namespace FSvBSCustomCloneUtility.Tools {
             matInstance.WriteProperty(GenerateVectorParameterValues());
             matInstance.WriteProperty(GenerateScalarParameterValues());
             matInstance.WriteProperty(GenerateTextureParameterValues());
+
+            // Change the material parent of the matInstance
+            if (isHair) {
+                if (sourceHairMesh == null) { return; }
+                ObjectProperty parentProp = matInstance.GetProperty<ObjectProperty>("Parent");
+                SkeletalMesh sourceHairBin = ObjectBinary.From<SkeletalMesh>(sourceHairMesh);
+                int parentMatID = sourceHairBin.Materials[0];
+                parentProp.Value = parentMatID;
+                matInstance.WriteProperty(parentProp);
+            }
         }
 
         /// <summary>
