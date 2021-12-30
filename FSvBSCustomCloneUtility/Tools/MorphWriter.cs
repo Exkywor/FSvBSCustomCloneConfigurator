@@ -75,6 +75,7 @@ namespace FSvBSCustomCloneUtility.Tools {
             this.gender = gender;
 
             morphSource = RONConverter.ConvertRON(ronFile);
+            HandleSpecialMorphTextureCases();
             LoadMorphAndArchetypeExports(gender);
 
             SetGlobalPaths();
@@ -414,6 +415,24 @@ namespace FSvBSCustomCloneUtility.Tools {
             }
 
             return TextureParameterValues;
+        }
+
+        /// <summary>
+        /// Handle special morph texture cases, such as HED_Addn which overrides HED_Brow
+        /// </summary>
+        private void HandleSpecialMorphTextureCases() {
+            HandleAddBrowCase();
+        }
+
+        /// <summary>
+        /// Handle case where HED_Addn and HED_Brow are both in the morph
+        /// </summary>
+        private void HandleAddBrowCase() {
+            int addnIndex = morphSource.TextureParameters.FindIndex(tp => tp.Name == "HED_Addn");
+            int browIndex = morphSource.TextureParameters.FindIndex(tp => tp.Name == "HED_Brow");
+            if (addnIndex >= 0 && browIndex >= 0) {
+                morphSource.TextureParameters[addnIndex].Value = morphSource.TextureParameters[browIndex].Value;
+            }
         }
         
         /// <summary>
