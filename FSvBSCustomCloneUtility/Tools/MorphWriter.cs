@@ -259,16 +259,22 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         private void EditHair() {
             string hairName = morphSource.HairMesh.ToString();
+            ExportEntry hairSMC = SMCTools.GetHairSMC(archetype, pcc);
 
             // Remove the hair property in case it exists, since it'll be set to the hairSMC directly
             if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null) {
                 morphTarget.RemoveProperty("m_oHairMesh");
             }
 
+            // Stop if no hair is set in the headmorph, and remove the skeletal mesh from the smc in case it contains one
             if (hairName.Equals("None", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(hairName.Trim())) {
+                if (hairSMC.GetProperty<ObjectProperty>("SkeletalMesh") != null) {
+                    hairSMC.RemoveProperty("SkeletalMesh");
+                }
                 return;
             }
 
+            // Try to get the resource. Add it to not found if null
             ExportEntry hairMesh = (ExportEntry) GetResource(morphSource.HairMesh);
             if (hairMesh == null) {
                 if (!resourcesNotFound.ContainsKey("HairMesh")) {
@@ -277,8 +283,7 @@ namespace FSvBSCustomCloneUtility.Tools {
                 return;
             }
 
-            ExportEntry hairSMC = SMCTools.GetHairSMC(archetype, pcc);
-
+            // Set the hair mesh
             ObjectProperty hairSMCMesh = hairSMC.GetProperty<ObjectProperty>("SkeletalMesh");
             if (hairSMCMesh == null) {
                 hairSMCMesh = new ObjectProperty(hairMesh.UIndex, "SkeletalMesh");
@@ -409,7 +414,6 @@ namespace FSvBSCustomCloneUtility.Tools {
                 props.Add(GenerateExpressionGUID());
                 props.Add(new NameProperty(parameter.Name, "ParameterName"));
                 props.Add(new ObjectProperty(texture.UIndex, "ParameterValue"));
-
 
                 TextureParameterValues.Add(new StructProperty("TextureParameterValue", props));
             }
