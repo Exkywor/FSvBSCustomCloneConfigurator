@@ -131,18 +131,18 @@ namespace FSvBSCustomCloneUtility.Tools {
             List<string> resourcePccs = GetModdedResourcePaths(fileName)
                 .Where(file => {
                     using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(file);
-                    IEnumerable<ExportEntry> exports = resourcePcc.Exports.Where(e => e.InstancedFullPath == instancedName);
-                    if (exports.Any()) { extRes = exports.First(); };
-                    return exports.Any();
+                    ExportEntry export = resourcePcc.FindExport(instancedName);
+                    if (export != null) { extRes = export; }
+                    return export != null;
                 }).ToList();
 
             // The resource was not in a mod, so we check in the global files if the fileName is that of a global file
             // We don't check for duplicates between mod files and global files, since mod files will override anyway
             if (!resourcePccs.Any() && globalResources.ContainsKey(fileName)) {
                 using IMEPackage resourcePcc = MEPackageHandler.OpenMEPackage(globalResources[fileName]);
-                IEnumerable<ExportEntry> exports = resourcePcc.Exports.Where(e => e.InstancedFullPath == instancedName);
-                if (exports.Any()) {
-                    extRes = exports.First();
+                ExportEntry export = resourcePcc.FindExport(instancedName);
+                if (export != null) {
+                    extRes = export;
                     resourcePccs.Add(globalResources[fileName]);
                 }
             }
