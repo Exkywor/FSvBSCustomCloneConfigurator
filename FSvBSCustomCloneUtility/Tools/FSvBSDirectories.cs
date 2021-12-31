@@ -27,15 +27,13 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Check if the mod is the Vanilla vs version
         /// </summary>
         /// <param name="game">Game to search for</param>
-        /// <returns>True if mo is the vanilla vs version</returns>
+        /// <returns>True if mod is the Vanilla vs version</returns>
         public static bool IsVvs(MEGame game) {
-            IEnumerable<string> dirs = Directory.EnumerateDirectories(Path.Combine(MEDirectories.GetBioGamePath(game), "DLC"));
-            foreach (string dir in dirs) {
-                if (dir.Contains($"DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}_V", StringComparison.OrdinalIgnoreCase)) {
-                    return true;
-                }
-            }
-            return false;
+            // Check that the alternate mod dir exists and that it is not disabled
+            IEnumerable<string> dirs = Directory.EnumerateDirectories(Path.Combine(MEDirectories.GetBioGamePath(game), "DLC"))
+                .Where(dir => dir.Contains($"DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}_V", StringComparison.OrdinalIgnoreCase)
+                              && !dir.Contains($"xDLC"));
+            return dirs.Any();
         }
 
         /// <summary>
