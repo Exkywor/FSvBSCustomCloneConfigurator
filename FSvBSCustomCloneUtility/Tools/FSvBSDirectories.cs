@@ -225,9 +225,12 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Replace all files that can be cleaned with clean versions
         /// </summary>
         /// <param name="game">Game to replace for</param>
-        public static void ApplyCleanFiles(MEGame game) {
+        /// <param name="cleanClone">True to clean the clone files</param>
+        public static void ApplyCleanFiles(MEGame game, bool cleanClone = true) {
             ApplyCleanDummies(game);
-            ApplyCleanClone(game);
+            if (cleanClone) {
+                ApplyCleanClone(game);
+            }
         }
 
         /// <summary>

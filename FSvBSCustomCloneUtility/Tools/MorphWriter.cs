@@ -19,6 +19,7 @@ namespace FSvBSCustomCloneUtility.Tools {
     /// Writer to apply a headmorph to the dummies file
     /// </summary>
     public class MorphWriter {
+        private readonly bool applyToActor; // Whether to apply the morph as a morph or the actor directly
         private string pccPath; // Found path, for ease of use
         private IMEPackage pcc; // Opened package
         private MEGame targetGame; // Target game
@@ -41,7 +42,8 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <param name="ronFile">Path to headmorph</param>
         /// <param name="game">Target game</param>
         /// <param name="gender">Target Shepard</param>
-        public MorphWriter(string ronFile, MEGame game, Gender gender) {
+        public MorphWriter(string ronFile, MEGame game, Gender gender, bool applyToActor = true) {
+            this.applyToActor = applyToActor;
             Load(ronFile, game, gender);
         }
 
@@ -181,13 +183,17 @@ namespace FSvBSCustomCloneUtility.Tools {
             EditMorphFeatures();
             EditLODVertices();
 
-            // Remove material overrides since we'll apply those to the archetype
-            if (morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides") != null) {
-                morphTarget.RemoveProperty("m_oMaterialOverrides");
-            }
+            if (applyToActor) {
+                // Remove material overrides since we'll apply those to the archetype
+                if (morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides") != null) {
+                    morphTarget.RemoveProperty("m_oMaterialOverrides");
+                }
 
-            ExportEntry headSMC = SMCTools.GetHeadSMC(archetype, pcc);
-            ApplyOverridesToSMC(headSMC);
+                ExportEntry headSMC = SMCTools.GetHeadSMC(archetype, pcc);
+                ApplyOverridesToSMC(headSMC);
+            } else {
+                ApplyOverridesToMorph();
+            }
         }
 
         /// <summary>
@@ -255,21 +261,31 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Apply the hair property from the headmorph to the morphTarget
+        /// Apply the hair property from the headmorph to the archetype or morphTarget
         /// </summary>
         private void EditHair() {
             string hairName = morphSource.HairMesh.ToString();
             ExportEntry hairSMC = SMCTools.GetHairSMC(archetype, pcc);
 
-            // Remove the hair property in case it exists, since it'll be set to the hairSMC directly
-            if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null) {
-                morphTarget.RemoveProperty("m_oHairMesh");
+            if (applyToActor) {
+                // Remove the hair property in case it exists, since it'll be set to the hairSMC directly
+                if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null) {
+                    morphTarget.RemoveProperty("m_oHairMesh");
+                }
             }
 
             // Stop if no hair is set in the headmorph, and remove the skeletal mesh from the smc in case it contains one
             if (hairName.Equals("None", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(hairName.Trim())) {
-                if (hairSMC.GetProperty<ObjectProperty>("SkeletalMesh") != null) {
-                    hairSMC.RemoveProperty("SkeletalMesh");
+                if (applyToActor) {
+                    if (hairSMC.GetProperty<ObjectProperty>("SkeletalMesh") != null) {
+                        hairSMC.RemoveProperty("SkeletalMesh");
+                    }
+                } else {
+                    // Remove the hair property in case it exists
+                    if (morphTarget.GetProperty<ObjectProperty>("m_oHairMesh") != null) {
+                        morphTarget.RemoveProperty("m_oHairMesh");
+                    }
+                    return;
                 }
                 return;
             }
@@ -283,18 +299,26 @@ namespace FSvBSCustomCloneUtility.Tools {
                 return;
             }
 
-            // Set the hair mesh
-            ObjectProperty hairSMCMesh = hairSMC.GetProperty<ObjectProperty>("SkeletalMesh");
-            if (hairSMCMesh == null) {
-                hairSMCMesh = new ObjectProperty(hairMesh.UIndex, "SkeletalMesh");
-            } else {
-                hairSMCMesh.Value = hairMesh.UIndex;
-            }
-            
-            hairSMC.WriteProperty(hairSMCMesh);
-            ApplyOverridesToSMC(hairSMC, true, pcc.GetUExport(hairMesh.UIndex));
-        }
+            if (applyToActor) {
+                ObjectProperty hairSMCMesh = hairSMC.GetProperty<ObjectProperty>("SkeletalMesh");
+                if (hairSMCMesh == null) {
+                    hairSMCMesh = new ObjectProperty(hairMesh.UIndex, "SkeletalMesh");
+                } else {
+                    hairSMCMesh.Value = hairMesh.UIndex;
+                }
 
+                hairSMC.WriteProperty(hairSMCMesh);
+                ApplyOverridesToSMC(hairSMC, true, pcc.GetUExport(hairMesh.UIndex));
+            } else {
+                ObjectProperty hairProp = morphTarget.GetProperty<ObjectProperty>("m_oHairMesh");
+                if (hairProp != null) {
+                    hairProp.Value = hairMesh.UIndex;
+                } else {
+                    hairProp = new ObjectProperty(hairMesh.UIndex, "m_oHairMesh");
+                }
+                morphTarget.WriteProperty(hairProp);
+            }
+        }
 
         /// <summary>
         /// Apply the material overrides from the ron file to the materials of the input SkeletalMeshComponent
@@ -328,9 +352,9 @@ namespace FSvBSCustomCloneUtility.Tools {
             matInstance.RemoveProperty("ScalarParameterValues");
             matInstance.RemoveProperty("TextureParameterValues");
 
-            matInstance.WriteProperty(GenerateVectorParameterValues());
-            matInstance.WriteProperty(GenerateScalarParameterValues());
-            matInstance.WriteProperty(GenerateTextureParameterValues());
+            matInstance.WriteProperty(GenerateVectorValues());
+            matInstance.WriteProperty(GenerateScalarValues());
+            matInstance.WriteProperty(GenerateTextureValues());
 
             // Change the material parent of the matInstance
             if (isHair) {
@@ -344,29 +368,45 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
-        /// Generate a ScalarParameterValues property with the morphSource values
+        /// Apply the material overrides form the ron file to the morphTarget
         /// </summary>
-        /// <returns>A ScalarParameterValues property</returns>
-        private ArrayProperty<StructProperty> GenerateScalarParameterValues() {
-            ArrayProperty<StructProperty> ScalarParameterValues = new("ScalarParameterValues");
-            foreach (MorphHead.ScalarParameter parameter in morphSource.ScalarParameters) {
-                PropertyCollection props = new();
+        private void ApplyOverridesToMorph() {
+            ExportEntry matOverride = (ExportEntry)pcc.GetEntry(morphTarget.GetProperty<ObjectProperty>("m_oMaterialOverrides").Value);
 
-                props.Add(GenerateExpressionGUID());
-                props.Add(new NameProperty(parameter.Name, "ParameterName"));
-                props.Add(new FloatProperty(parameter.Value, "ParameterValue"));
-
-                ScalarParameterValues.Add(new StructProperty("ScalarParameter", props));
-            }
-            return ScalarParameterValues;
+            matOverride.RemoveProperty("m_aScalarOverrides");
+            matOverride.WriteProperty(GenerateScalarValues());
+            matOverride.RemoveProperty("m_aColorOverrides");
+            matOverride.WriteProperty(GenerateVectorValues());
+            matOverride.RemoveProperty("m_aTextureOverrides");
+            matOverride.WriteProperty(GenerateTextureValues());
         }
 
         /// <summary>
-        /// Generate a VectorParameterValues property with the morphSource values
+        /// Generate a Scalar values property with the morphSource values
         /// </summary>
-        /// <returns>A VectorParameterValues property</returns>
-        private ArrayProperty<StructProperty> GenerateVectorParameterValues() {
-            ArrayProperty<StructProperty> VectorParameterValues = new("VectorParameterValues");
+        /// <returns>A Scalar values property</returns>
+        private ArrayProperty<StructProperty> GenerateScalarValues() {
+            ArrayProperty<StructProperty> ScalarValues = new($"{(applyToActor ? "ScalarParameterValues" : "m_aScalarOverrides")}");
+            foreach (MorphHead.ScalarParameter parameter in morphSource.ScalarParameters) {
+                PropertyCollection props = new();
+
+                if (applyToActor) {
+                    props.Add(GenerateExpressionGUID());
+                }
+                props.Add(new NameProperty(parameter.Name, $"{(applyToActor ? "ParameterName" : "nName")}"));
+                props.Add(new FloatProperty(parameter.Value, $"{(applyToActor ? "ParameterValue" : "sValue")}"));
+
+                ScalarValues.Add(new StructProperty("ScalarParameter", props));
+            }
+            return ScalarValues;
+        }
+
+        /// <summary>
+        /// Generate a Vector values property with the morphSource values
+        /// </summary>
+        /// <returns>A Vector values property</returns>
+        private ArrayProperty<StructProperty> GenerateVectorValues() {
+            ArrayProperty<StructProperty> VectorValues = new($"{(applyToActor ? "VectorParameterValues" : "m_aColorOverrides")}");
             foreach (MorphHead.VectorParameter parameter in morphSource.VectorParameters) {
                 PropertyCollection props = new();
 
@@ -376,24 +416,26 @@ namespace FSvBSCustomCloneUtility.Tools {
                 color.Add(new FloatProperty(parameter.Value.B, "B"));
                 color.Add(new FloatProperty(parameter.Value.A, "A"));
 
-                StructProperty ParameterValue = new("LinearColor", color, "ParameterValue", true);
+                StructProperty ParameterValue = new("LinearColor", color, $"{(applyToActor ? "ParameterValue" : "cValue")}", true);
 
-                props.Add(GenerateExpressionGUID());
+                if (applyToActor) {
+                    props.Add(GenerateExpressionGUID());
+                }
                 props.Add(ParameterValue);
-                props.Add(new NameProperty(parameter.Name, "ParameterName"));
+                props.Add(new NameProperty(parameter.Name, $"{(applyToActor ? "ParameterName" : "nName")}"));
 
-                VectorParameterValues.Add(new StructProperty("VectorParameterValue", props));
+                VectorValues.Add(new StructProperty($"{(applyToActor ? "VectorParameterValue" : "ColorParameter")}", props));
             }
 
-            return VectorParameterValues;
+            return VectorValues;
         }
 
         /// <summary>
-        /// Generate a TextureParameterValues property with the morphSource values
+        /// Generate a Texture values property with the morphSource values
         /// </summary>
-        /// <returns>A TextureParameterValues property</returns>
-        private ArrayProperty<StructProperty> GenerateTextureParameterValues() {
-            ArrayProperty<StructProperty> TextureParameterValues = new("TextureParameterValues");
+        /// <returns>A Texture values property</returns>
+        private ArrayProperty<StructProperty> GenerateTextureValues() {
+            ArrayProperty<StructProperty> TextureValues = new($"{(applyToActor ? "TextureParameterValues" : "m_aTextureOverrides")}");
             foreach (MorphHead.TextureParameter parameter in morphSource.TextureParameters) {
                 string textureName = parameter.Value.Remove(parameter.Value.Length - 1).Substring(1);
 
@@ -411,14 +453,16 @@ namespace FSvBSCustomCloneUtility.Tools {
                     continue;
                 }
 
-                props.Add(GenerateExpressionGUID());
-                props.Add(new NameProperty(parameter.Name, "ParameterName"));
-                props.Add(new ObjectProperty(texture.UIndex, "ParameterValue"));
+                if (applyToActor) {
+                    props.Add(GenerateExpressionGUID());
+                }
+                props.Add(new NameProperty(parameter.Name, $"{(applyToActor ? "ParameterName" : "nName")}"));
+                props.Add(new ObjectProperty(texture.UIndex, $"{(applyToActor ? "ParameterValue" : "m_pTexture")}"));
 
-                TextureParameterValues.Add(new StructProperty("TextureParameterValue", props));
+                TextureValues.Add(new StructProperty($"{(applyToActor ? "TextureParameterValue" : "TextureParameter")}", props));
             }
 
-            return TextureParameterValues;
+            return TextureValues;
         }
 
         /// <summary>

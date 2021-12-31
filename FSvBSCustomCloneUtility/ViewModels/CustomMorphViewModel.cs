@@ -10,6 +10,15 @@ namespace FSvBSCustomCloneUtility.ViewModels {
     public class CustomMorphViewModel : ObserverControl {
         private List<ObserverControl> observers = new();
 
+        private bool _applyToActor = true;
+        public bool ApplyToActor {
+            get { return _applyToActor; }
+            set {
+                _applyToActor = value;
+                NotifyOfPropertyChange(() => ApplyToActor);
+            }
+        }
+
         private bool _isValid = false;
         public bool IsValid {
             get { return _isValid; }
@@ -86,39 +95,27 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public void Apply() {
             bool tocced = false;
-            FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame);
+            FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame, ApplyToActor);
             Notify("ClearConds", "");
 
-            if (!string.IsNullOrEmpty(RonMFile)) {
-                MorphWriter writerMale = new(RonMFile, (MEGame) TargetGame, Gender.Male);
-                bool res = writerMale.ApplyMorph();
-                if (res) {
-                    MorphRelinker relinker = new((MEGame)TargetGame, Gender.Male);
+            if (!string.IsNullOrEmpty(RonMFile)) { ApplyMorph(Gender.Male, RonMFile); }
+            if (!string.IsNullOrEmpty(RonFFile)) { ApplyMorph(Gender.Female, RonFFile); }
+
+            FSvBSDirectories.TOCMod((MEGame)TargetGame);
+        }
+
+        private void ApplyMorph(Gender gender, string ronFile) {
+            MorphWriter writer = new(ronFile, (MEGame)TargetGame, gender, ApplyToActor);
+            bool res = writer.ApplyMorph();
+            if (res) {
+                if (ApplyToActor) {
+                    MorphRelinker relinker = new((MEGame)TargetGame, gender);
                     relinker.RelinkMorph();
-
-                    FSvBSDirectories.TOCMod((MEGame)TargetGame);
-                    tocced = true;
-
-                    Notify("Apply", "M");
-                    MessageBox.Show("The male headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
                 }
+
+                Notify("Apply", $"{(gender.IsFemale() ? "F" : "M")}");
+                MessageBox.Show($"The {(gender.IsFemale() ? "female" : "male")} headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
             }
-            if (!string.IsNullOrEmpty(RonFFile)) {
-                MorphWriter writerFemale = new(RonFFile, (MEGame) TargetGame, Gender.Female);
-                bool res = writerFemale.ApplyMorph();
-                if (res) {
-                    MorphRelinker relinker = new((MEGame)TargetGame, Gender.Female);
-                    relinker.RelinkMorph();
-
-                    FSvBSDirectories.TOCMod((MEGame)TargetGame);
-                    tocced = true;
-
-                    Notify("Apply", "F");
-                    MessageBox.Show("The female headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
-                }
-            }
-
-            if (!tocced) { FSvBSDirectories.TOCMod((MEGame)TargetGame); }
         }
 
         public override void Update<Type>(string name, Type value) {
