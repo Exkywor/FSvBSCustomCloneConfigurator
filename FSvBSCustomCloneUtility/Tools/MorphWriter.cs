@@ -470,6 +470,9 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         private void HandleSpecialMorphTextureCases() {
             HandleAddBrowCase();
+            if (targetGame.IsLEGame()) {
+                HandleEyeEmisScalarLECase();
+            }
         }
 
         /// <summary>
@@ -480,6 +483,16 @@ namespace FSvBSCustomCloneUtility.Tools {
             int browIndex = morphSource.TextureParameters.FindIndex(tp => tp.Name == "HED_Brow");
             if (addnIndex >= 0 && browIndex >= 0) {
                 morphSource.TextureParameters[addnIndex].Value = morphSource.TextureParameters[browIndex].Value;
+            }
+        }
+
+        /// <summary>
+        /// Handle case where eye emis scalar is named after the OT convention, which won't work in the LE
+        /// </summary>
+        private void HandleEyeEmisScalarLECase() {
+            int emisScalar = morphSource.ScalarParameters.FindIndex(sp => sp.Name == "HED_Emis_Intensity");
+            if (emisScalar >= 0) {
+                morphSource.ScalarParameters[emisScalar].Name = "Emis_Scalar";
             }
         }
         
