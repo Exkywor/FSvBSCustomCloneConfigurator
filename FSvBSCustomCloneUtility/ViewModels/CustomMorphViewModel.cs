@@ -94,7 +94,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void Apply() {
-            bool tocced = false;
             FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame, ApplyToActor);
             Notify("ClearConds", "");
 

@@ -24,7 +24,8 @@ namespace FSvBSCustomCloneUtility
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
-            MessageBox.Show(e.Exception.ToString(), "Error", MessageBoxButton.OK);;
+            IWindowManager manager = new WindowManager();
+            manager.ShowDialogAsync(new ExceptionHandlerViewModel(e.Exception), null, null);;
             e.Handled = true;
         }
     }
