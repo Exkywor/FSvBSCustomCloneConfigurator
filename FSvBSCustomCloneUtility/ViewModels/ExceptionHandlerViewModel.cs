@@ -1,59 +1,46 @@
-﻿using System;
-// Code copied from
+﻿// Code adaptded from
 // https://github.com/ME3Tweaks/LegendaryExplorer/blob/Beta/LegendaryExplorer/LegendaryExplorer/Dialogs/ExceptionHandlerDialog.xaml.cs
 
 using Caliburn.Micro;
+using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Helpers;
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     /// <summary>
     /// Interaction logic for ExceptionHandlerDialogWPF.xaml
     /// </summary>
     public class ExceptionHandlerViewModel : Screen {
-        private string _exceptionStackTrace = "Exception message goes here.";
-        public string ExceptionStackTrace {
-            get { return _exceptionStackTrace; }
-            set {
-                _exceptionStackTrace = value;
-                NotifyOfPropertyChange(() => ExceptionStackTrace);
-            }
-        }
-        private string _exceptionMessage = "Object instance not set to a reference.";
-        public string ExceptionMessage {
-            get { return _exceptionMessage; }
-            set {
-                _exceptionMessage = value;
-                NotifyOfPropertyChange(() => ExceptionMessage);
-            }
-        }
+        public string ExceptionStackTrace { get; set; }
+        public string ExceptionMessage { get; set; }
+        public string WindowHeight { get; set; }
+        public string ExceptionHeight { get; set; }
 
         public ExceptionHandlerViewModel(Exception exception) {
             string flattened = exception.FlattenException();
             ExceptionStackTrace = flattened;
             ExceptionMessage = exception.Message;
+
+            Size errSize = Misc.MeasureString(ExceptionStackTrace, "Consolas", 12);
+            ExceptionHeight = Math.Min(450, errSize.Height + 100).ToString();
+            WindowHeight = (Convert.ToDouble(ExceptionHeight) + 200).ToString();
         }
 
-        public void Quit(object sender, RoutedEventArgs e) {
+        public void Quit() {
             Environment.Exit(1);
         }
 
-        public void Continue(object sender, RoutedEventArgs e) {
+        public void Continue() {
             TryCloseAsync();
         }
 
-        public void Copy(object sender, RoutedEventArgs e) {
-            try {
-                Clipboard.SetText(ExceptionStackTrace);
-            } catch (Exception) {
-                //what are we going to do. Crash on the error dialog?
-            }
+        public void Copy() {
+            try { Clipboard.SetText(ExceptionStackTrace); }
+            catch (Exception) { }
         }
     }
 }

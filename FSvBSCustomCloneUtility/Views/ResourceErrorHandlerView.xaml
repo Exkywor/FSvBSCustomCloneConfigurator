@@ -1,0 +1,45 @@
+﻿<Window x:Class="FSvBSCustomCloneUtility.Views.ResourceErrorHandlerView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:local="clr-namespace:FSvBSCustomCloneUtility.Views"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="{Binding WindowTitle}" Height="{Binding WindowHeight, Mode=TwoWay}" MinHeight="{Binding WindowHeight, Mode=TwoWay}" Width="610" MinWidth="610">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
+    </Window.Style>
+
+    <Grid Margin="20,15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0">
+            <fa5:ImageAwesome Icon="{Binding ErrIcon}" Foreground="white" Width="50" Height="48" Margin="0,10,20,0" VerticalAlignment="Top"/>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                <TextBlock x:Name="ErrDescription" HorizontalAlignment="Stretch" TextWrapping="Wrap" Width="490"/>
+                <TextBlock x:Name="ErrInstructions" HorizontalAlignment="Stretch"  Margin="0,10,0,5" TextWrapping="Wrap" Width="490"/>
+            </StackPanel>
+        </StackPanel>
+        <Grid Margin="0,15" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="90"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Copy" Width="75" Grid.Column="0" HorizontalAlignment="Left" x:Name="Copy"
+                    ToolTip="Copy the list of resources to the clipboard" />
+            <Button Content="OK" Width="80" Grid.Column="3" HorizontalAlignment="Right" x:Name="OK"
+                    ToolTip="Close this window"/>
+        </Grid>
+        <ScrollViewer Height="{Binding ErrHeight}" MaxHeight="400" Grid.Row="2" VerticalAlignment="Top">
+            <TextBox Text="{Binding Errors}" TextWrapping="Wrap" FontFamily="Consolas" VerticalAlignment="Top" TextAlignment="Left"/>
+        </ScrollViewer>
+    </Grid>
+</Window>

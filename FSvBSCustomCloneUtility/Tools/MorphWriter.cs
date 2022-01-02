@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using FSvBSCustomCloneUtility.Enums;
 using FSvBSCustomCloneUtility.Tools;
 using FSvBSCustomCloneUtility.ViewModels;
 using LegendaryExplorerCore.GameFilesystem;
@@ -448,7 +449,7 @@ namespace FSvBSCustomCloneUtility.Tools {
 
                 if (texture == null) {
                     if (!resourcesNotFound.ContainsKey(parameter.Name)) {
-                        resourcesNotFound.Add(parameter.Name, $" - {parameter.Name}: {textureName}");
+                        resourcesNotFound.Add(parameter.Name, $"{parameter.Name}: {textureName}");
                     }
                     continue;
                 }
@@ -515,19 +516,11 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="type">The error type</param>
         private void HandleErrors(string type) {
+            IWindowManager manager = new WindowManager();
             switch(type) {
                 case "resourcesNotFound":
-                    // IWindowManager manager = new WindowManager();
-                    // manager.ShowDialogAsync(errCtrl, null, null);
                     string errMsg = string.Join(Environment.NewLine, resourcesNotFound.Values.ToArray());
-                    MessageBox.Show($"The following textures/hair could not be found for the {(gender.IsMale() ? "male" : "female")} headmorph:" +
-                        Environment.NewLine + Environment.NewLine +
-                        $"{errMsg}"
-                        + Environment.NewLine + Environment.NewLine +
-                        $"Make sure that any modded texture/hairs are installed, and that the names are spelled correctly in the headmorph file." +
-                        Environment.NewLine +
-                        $"If you cannot install the modded resources, you can remove the lines from the headmorph file.",
-                        "Error", MessageBoxButton.OK);
+                    manager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.NotFound, gender, errMsg), null, null);
                     break;
                 case "resourceDuplicates":
                     string dupMsg = "";
@@ -539,13 +532,7 @@ namespace FSvBSCustomCloneUtility.Tools {
                         // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
                         dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key].ToArray()) + Environment.NewLine + Environment.NewLine;
                     }
-                    MessageBox.Show($"The following textures/hair were found in more than one mod for the {(gender.IsMale() ? "male" : "female")} headmorph:" +
-                        Environment.NewLine + Environment.NewLine +
-                        $"{dupMsg}" +
-                        $"Make sure to only have one mod containing the resource." +
-                        Environment.NewLine +
-                        $"You can disable conflicting mods while using this tool and enable them afterwards.",
-                        "Duplicate resources found", MessageBoxButton.OK);
+                    manager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.Duplicates, gender, dupMsg), null, null);
                     break;
                 default:
                     break;

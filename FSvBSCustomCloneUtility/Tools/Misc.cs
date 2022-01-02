@@ -1,4 +1,7 @@
 ﻿using Microsoft.Win32;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Media;
 
 namespace FSvBSCustomCloneUtility.Tools {
     /// <summary>
@@ -20,6 +23,27 @@ namespace FSvBSCustomCloneUtility.Tools {
             } else {
                 return dlg.FileName;
             }
+        }
+
+        /// <summary>
+        /// Measure the width and height of an input text based on the input typeFace and input fontSize
+        /// </summary>
+        /// <param name="text">Input text to measure</param>
+        /// <param name="typeFace">Input type face</param>
+        /// <param name="fontSize">Input fontSize</param>
+        /// <returns>The Size of the measured text</returns>
+        public static Size MeasureString(string text,  string typeFace, int fontSize) {
+            FormattedText formattedText = new(
+                text,
+                CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface(typeFace),
+                fontSize,
+                Brushes.Black,
+                new NumberSubstitution(),
+                1);
+
+            return new Size(formattedText.Width, formattedText.Height);
         }
     }
 }

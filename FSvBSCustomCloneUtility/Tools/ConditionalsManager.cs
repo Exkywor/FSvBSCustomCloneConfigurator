@@ -1,4 +1,4 @@
-﻿using FSvBSCustomCloneUtility.ViewModels;
+﻿using FSvBSCustomCloneUtility.Enums;
 using LegendaryExplorerCore.Coalesced;
 using LegendaryExplorerCore.Misc;
 using LegendaryExplorerCore.Packages;

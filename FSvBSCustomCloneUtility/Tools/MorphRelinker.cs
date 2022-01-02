@@ -1,4 +1,4 @@
-﻿using FSvBSCustomCloneUtility.Tools;
+﻿using FSvBSCustomCloneUtility.Enums;
 using FSvBSCustomCloneUtility.ViewModels;
 using LegendaryExplorerCore.Packages;
 using LegendaryExplorerCore.Packages.CloningImportingAndRelinking;

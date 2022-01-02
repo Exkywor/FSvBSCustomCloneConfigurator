@@ -1,4 +1,5 @@
 ﻿using FSvBSCustomCloneUtility.Controls;
+using FSvBSCustomCloneUtility.Enums;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Packages;
 using System;

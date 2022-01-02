@@ -16,8 +16,8 @@ namespace FSvBSCustomCloneUtility.Views {
     /// <summary>
     /// Interaction logic for ErrorControl.xaml
     /// </summary>
-    public partial class ErrorDialogueView : Window {
-        public ErrorDialogueView() {
+    public partial class ResourceErrorHandlerView : Window {
+        public ResourceErrorHandlerView() {
             InitializeComponent();
         }
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FSvBSCustomCloneUtility.Tools {
+namespace FSvBSCustomCloneUtility.Enums {
     /// <summary>
     /// Indicates a character's gender in a ME3 game
     /// </summary>
@@ -21,14 +21,14 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Is gender male
         /// </summary>
         /// <param name="gender">Input gender</param>
-        /// <returns></returns>
+        /// <returns>True if gender is male</returns>
         public static bool IsMale(this Gender gender) => gender is Gender.Male;
 
         /// <summary>
         /// Is gender female
         /// </summary>
         /// <param name="gender">Input gender</param>
-        /// <returns></returns>
+        /// <returns>True if gender is female</returns>
         public static bool IsFemale(this Gender gender) => gender is Gender.Female;
     }
 }

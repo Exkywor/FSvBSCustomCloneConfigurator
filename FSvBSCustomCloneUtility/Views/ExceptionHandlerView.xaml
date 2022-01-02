@@ -8,32 +8,35 @@
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility.Views"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="Unhandled Exception" Height="auto" Width="600">
+        Title="Unhandled Exception" Height="{Binding WindowHeight, Mode=TwoWay}" MinHeight="{Binding WindowHeight, Mode=TwoWay}" Width="650" MinWidth="650">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
 
     <DockPanel LastChildFill="True" Margin="20,15">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" DockPanel.Dock="Top">
-            <fa5:ImageAwesome Icon="Solid_ExclamationCircle" Foreground="red" Width="48" Height="48" Margin="10,10,15,0" VerticalAlignment="Top"/>
+            <fa5:ImageAwesome Icon="Solid_ExclamationCircle" Foreground="white" Width="50" Height="48" Margin="0,10,20,0" VerticalAlignment="Top"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="An unhandled exception has occured. You may click Continue to attempt continuing execution of the program, but the last operation may not have completed. Press Copy to copy the stack trace, or Quit to exit the application." Width="422.25"/>
-                <TextBlock Text="{Binding ExceptionMessage}" HorizontalAlignment="Stretch"  Margin="0,10,0,5" TextWrapping="Wrap" Width="422.25"/>
+                <TextBlock HorizontalAlignment="Stretch" TextWrapping="Wrap" Text="An unhandled exception has occured. You may click Continue to attempt continuing execution of the program, but the last operation may not have completed. Press Copy to copy the stack trace, or Quit to exit the application." Width="490"/>
+                <TextBlock Text="{Binding ExceptionMessage}" HorizontalAlignment="Stretch"  Margin="0,10,0,5" TextWrapping="Wrap" Width="490"/>
             </StackPanel>
         </StackPanel>
-        <Grid Margin="0,10" DockPanel.Dock="Top">
+        <Grid Margin="0,15" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="90"/>
                 <ColumnDefinition Width="90"/>
             </Grid.ColumnDefinitions>
-            <Button Content="Copy" Width="75" Grid.Column="0" HorizontalAlignment="Left" x:Name="Copy"/>
-            <Button Content="Continue" Width="80" Grid.Column="2" HorizontalAlignment="Right" x:Name="Continue"/>
-            <Button Content="Quit" Width="80" Grid.Column="3" HorizontalAlignment="Right" x:Name="Quit"/>
+            <Button Content="Copy" Width="75" Grid.Column="0" HorizontalAlignment="Left" x:Name="Copy"
+                    ToolTip="Copy the exception message to the clipboard" />
+            <Button Content="Continue" Width="80" Grid.Column="2" HorizontalAlignment="Right" x:Name="Continue"
+                    ToolTip="Continue the execution of the application"/>
+            <Button Content="Quit" Width="80" Grid.Column="3" HorizontalAlignment="Right" x:Name="Quit"
+                    ToolTip="Quit the application"/>
         </Grid>
-        <ScrollViewer>
-            <TextBox Text="{Binding ExceptionStackTrace}" TextWrapping="Wrap" FontFamily="Consolas" />
+        <ScrollViewer VerticalScrollBarVisibility="Visible" Height="{Binding ExceptionHeight}" MaxHeight="450" VerticalAlignment="Top">
+            <TextBox Text="{Binding ExceptionStackTrace}" TextWrapping="Wrap" FontFamily="Consolas" TextAlignment="Left"/>
         </ScrollViewer>
     </DockPanel>
 </Window>
