@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class StatusBarViewModel : ObserverControl {
-        private string _statusMessage = "This is a test message";
+        private string _statusMessage = "";
         public string StatusMessage {
             get { return _statusMessage; }
             set {

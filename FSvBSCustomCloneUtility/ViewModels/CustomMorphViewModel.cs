@@ -1,4 +1,5 @@
-﻿using FSvBSCustomCloneUtility.Controls;
+﻿using Caliburn.Micro;
+using FSvBSCustomCloneUtility.Controls;
 using FSvBSCustomCloneUtility.Enums;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Packages;
@@ -10,6 +11,7 @@ using System.Windows;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class CustomMorphViewModel : ObserverControl {
+        private IWindowManager windowManager = new WindowManager();
         private List<ObserverControl> _observers = new();
 
         private bool _applyToActor = true;
@@ -133,7 +135,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 }
 
                 Notify("Apply", $"{(gender.IsFemale() ? "F" : "M")}");
-                MessageBox.Show($"The {(gender.IsFemale() ? "female" : "male")} headmorph was applied succesfully.", "Success", MessageBoxButton.OK);
+                await windowManager.ShowWindowAsync(new CustomMessageBoxViewModel(
+                        $"The {(gender.IsFemale() ? "female" : "male")} headmorph was applied succesfully.", "Success", "OK"),
+                    null, null);
                 Notify("SetStatus", $"Applied {(gender.IsFemale() ? "female" : "male")} headmorph");
             } else {
                 Notify("SetStatus", "Aborted morph application");

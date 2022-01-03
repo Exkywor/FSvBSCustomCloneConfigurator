@@ -20,6 +20,8 @@ namespace FSvBSCustomCloneUtility.Tools {
     /// Writer to apply a headmorph to the dummies file
     /// </summary>
     public class MorphWriter {
+        private IWindowManager windowManager = new WindowManager();
+
         private readonly bool applyToActor; // Whether to apply the morph as a morph or the actor directly
         private string pccPath; // Found path, for ease of use
         private IMEPackage pcc; // Opened package
@@ -516,11 +518,10 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// </summary>
         /// <param name="type">The error type</param>
         private void HandleErrors(string type) {
-            IWindowManager manager = new WindowManager();
             switch(type) {
                 case "resourcesNotFound":
                     string errMsg = string.Join(Environment.NewLine, resourcesNotFound.Values.ToArray());
-                    manager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.NotFound, gender, errMsg), null, null);
+                    windowManager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.NotFound, gender, errMsg), null, null);
                     break;
                 case "resourceDuplicates":
                     string dupMsg = "";
@@ -532,7 +533,7 @@ namespace FSvBSCustomCloneUtility.Tools {
                         // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
                         dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key].ToArray()) + Environment.NewLine + Environment.NewLine;
                     }
-                    manager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.Duplicates, gender, dupMsg), null, null);
+                    windowManager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.Duplicates, gender, dupMsg), null, null);
                     break;
                 default:
                     break;

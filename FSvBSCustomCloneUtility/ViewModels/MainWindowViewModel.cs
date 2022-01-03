@@ -11,6 +11,7 @@ using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class MainWindowViewModel : Conductor<ObserverControl> {
+        private static IWindowManager windowManager = new WindowManager();
         private List<ObserverControl> _observers = new();
         public ObserverControl CustomMorph { get; set; }
         public ObserverControl ConditionalsControl { get; set; }
@@ -88,7 +89,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             static void packageSaveFailed(string message) {
                 // I'm not sure if this requires ui thread since it's win32 but i'll just make sure
                 Application.Current.Dispatcher.Invoke(() => {
-                    MessageBox.Show(message);
+                    windowManager.ShowDialogAsync(message);
                 });
             }
  
@@ -125,12 +126,14 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// <returns></returns>
         private bool VerifyMod(MEGame game) {
             if (!FSvBSDirectories.IsModInstalled(game)) {
-                MessageBox.Show("The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.",
-                    "Error", MessageBoxButton.OK);
+                windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(
+                        "The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.", "Error", "OK"),
+                    null, null);
                 return false;
             } else if (!FSvBSDirectories.IsValidDummies(game, FSvBSDirectories.GetDummiesPath(game))) {
-                MessageBox.Show("The FeemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.",
-                    "Error", MessageBoxButton.OK);
+                windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(
+                        "The FemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.", "Error", "OK"),
+                    null, null);
                 return false;
             } else { return true; }
         }
