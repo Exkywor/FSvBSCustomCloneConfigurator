@@ -14,13 +14,14 @@
         Title="FemShep v BroShep Utility Tool"
         WindowStartupLocation="CenterScreen"
         Width="720" Height="550"
-        MinWidth="720" MinHeight="550">
+        MinWidth="720" MinHeight="600">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -85,5 +86,6 @@
 
         <ContentControl Margin="10,20,10,10" Grid.Row="2" Grid.Column="1" x:Name="ConditionalsControl" />
         <ContentControl Margin="10,20,10,10" Grid.Row="3" Grid.Column="1" x:Name="CustomMorph" />
+        <ContentControl Margin="10,20,10,10" Grid.Row="4" Grid.Column="1" x:Name="StatusBar"/>
     </Grid>
 </Window>

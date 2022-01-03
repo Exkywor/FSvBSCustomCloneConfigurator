@@ -11,35 +11,51 @@ using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class MainWindowViewModel : Conductor<ObserverControl> {
-        private List<ObserverControl> observers = new();
+        private List<ObserverControl> _observers = new();
         public ObserverControl CustomMorph { get; set; }
         public ObserverControl ConditionalsControl { get; set; }
+        public ObserverControl StatusBar { get; set; }
 
         // Prevent us from trying to set the path if it's already set
         private bool ME3PathChecked = false;
         private bool LE3PathChecked = false;
 
         public void TargetME3() {
-            if (!ME3PathChecked) {
-                if (!SetGamePath(MEGame.ME3)) { return; }
-                else { ME3PathChecked = true; }
-            }
-
-            if (!VerifyMod(MEGame.ME3)) { return; }
-            
-            SelectedTargetPath = ME3Directory.GetExecutablePath();
-            Notify("TargetGame", MEGame.ME3);
+            TargetGame(MEGame.ME3);
         }
         public void TargetLE3() {
-            if (!LE3PathChecked) {
-                if (!SetGamePath(MEGame.LE3)) { return; }
-                else { LE3PathChecked = true; }
+            TargetGame(MEGame.LE3);
+        }
+
+        private void TargetGame(MEGame game) {
+            // Verify game is installed
+            if (game.IsOTGame()) {
+                if (!ME3PathChecked) {
+                    if (!SetGamePath(game)) {
+                        Notify("SetStatus", "Error: ME3 game path not set");
+                        return;
+                    } else { ME3PathChecked = true; }
+                }
+
+            } else {
+                if (!LE3PathChecked) {
+                    if (!SetGamePath(game)) {
+                        Notify("SetStatus", "Error: LE3 game path not set");
+                        return;
+                    } else { LE3PathChecked = true; }
+                }
+
             }
 
-            if (!VerifyMod(MEGame.LE3)) { return; }
+            // Verify mod installation
+            if (!VerifyMod(game)) {
+                Notify("SetStatus", "Error: Mod not installed or invalid");
+                return;
+            }
             
-            SelectedTargetPath = LE3Directory.GetExecutablePath();
-            Notify("TargetGame", MEGame.LE3);
+            SelectedTargetPath = MEDirectories.GetExecutablePath(game);
+            Notify("TargetGame", game);
+            Notify("SetStatus", $"Selected Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}as the game target");
         }
 
         private string _selectedTargetPath = "";
@@ -55,10 +71,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             initCoreLib();
 
             // Create views and adds them to the observers
-            ConditionalsControl = new ConditionalsControlViewModel();
-            CustomMorph = new CustomMorphViewModel(new List<ObserverControl> { ConditionalsControl });
-            observers.Add(CustomMorph);
-            observers.Add(ConditionalsControl);
+            StatusBar = new StatusBarViewModel();
+            ConditionalsControl = new ConditionalsControlViewModel(new List<ObserverControl> { StatusBar });
+            CustomMorph = new CustomMorphViewModel(new List<ObserverControl> { ConditionalsControl, StatusBar });
+            _observers.Add(StatusBar);
+            _observers.Add(ConditionalsControl);
+            _observers.Add(CustomMorph);
 
             LoadViewAsync();
         } 
@@ -118,13 +136,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         private async Task LoadViewAsync() {
-            foreach (ObserverControl observer in observers) {
+            foreach (ObserverControl observer in _observers) {
                 await ActivateItemAsync(observer);
             }
         }
 
         private void Notify<Type>(string name, Type value) {
-            foreach(ObserverControl observer in observers) {
+            foreach(ObserverControl observer in _observers) {
                 observer.Update(name, value);
             }
         }

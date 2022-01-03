@@ -3,9 +3,12 @@ using FSvBSCustomCloneUtility.Enums;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Packages;
 using System;
+using System.Collections.Generic;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class ConditionalsControlViewModel : ObserverControl {
+        private List<ObserverControl> _observers = new();
+
         private MEGame? _targetGame = null;
         public MEGame? TargetGame {
             get { return _targetGame; }
@@ -58,26 +61,36 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
+        public ConditionalsControlViewModel() { }
+
+        public ConditionalsControlViewModel(List<ObserverControl> observers) {
+            _observers = observers;
+        }
+
         public void SetMaleDefault() {
             IsMaleDefault = true;
             IsMaleCustom = false;
             ConditionalsManager.SetConditional(Gender.Male, false, (MEGame) TargetGame);
+            Notify("SetStatus", "Set male clone to default appearance");
         }
         public void SetMaleCustom() {
             IsMaleDefault = false;
             IsMaleCustom = true;
             ConditionalsManager.SetConditional(Gender.Male, true, (MEGame) TargetGame);
+            Notify("SetStatus", "Set male clone to custom appearance");
         }
 
         public void SetFemaleDefault() {
             IsFemaleDefault = true;
             IsFemaleCustom = false;
             ConditionalsManager.SetConditional(Gender.Female, false, (MEGame) TargetGame);
+            Notify("SetStatus", "Set female clone to default appearance");
         }
         public void SetFemaleCustom() {
             IsFemaleDefault = false;
             IsFemaleCustom = true;
             ConditionalsManager.SetConditional(Gender.Female, true, (MEGame) TargetGame);
+            Notify("SetStatus", "Set female clone to custom appearance");
         }
 
         /// <summary>
@@ -94,6 +107,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (isFemaleCustom) { SetFemaleCustom(); }
             else { SetFemaleDefault(); }
+        }
+
+        private void Notify<Type>(string name, Type value) {
+            foreach(ObserverControl observer in _observers) {
+                observer.Update(name, value);
+            }
         }
 
         public override void Update<Type>(string name, Type value) {
@@ -114,8 +133,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     if (gender == "M") { SetMaleCustom(); }
                     else if (gender == "F") { SetFemaleCustom(); }
 
-                    break;
-                default:
                     break;
             }
         }
