@@ -5,6 +5,7 @@ using LegendaryExplorerCore;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using Path = System.IO.Path;
@@ -66,6 +67,23 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 _selectedTargetPath = value;
                 NotifyOfPropertyChange(() => SelectedTargetPath);
             }
+        }
+
+        public void VisitME3() {
+            VisitModSite(MEGame.ME3);
+        }
+
+        public void VisitLE3() {
+            VisitModSite(MEGame.LE3);
+        }
+
+        public void VisitModSite(MEGame game) {
+            string gameSite = game.IsLEGame() ? "masseffectlegendaryedition" : "masseffect3";
+            string modNumber = game.IsLEGame() ? "850" : "975";
+            Process.Start(new ProcessStartInfo {
+                FileName = @$"http://www.nexusmods.com/{gameSite}/mods/{modNumber}",
+                UseShellExecute = true
+            });
         }
 
         public MainWindowViewModel() {

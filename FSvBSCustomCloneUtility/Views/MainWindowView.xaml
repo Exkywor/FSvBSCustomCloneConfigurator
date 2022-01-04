@@ -34,16 +34,27 @@
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <Grid.Background>
                 <ImageBrush ImageSource="../images/main_banner.png" Stretch="UniformToFill"/>
             </Grid.Background>
 
-            <Image Grid.Column="1" Source="../images/logo.png" Width="400" Margin="{adonisUi:Space}"/>
+            <Button Grid.Column="2" Grid.Row="0" x:Name="VisitME3"
+                    Content="Visit ME3 mod site" ToolTip="Visit the ME3 mod on NexusMods"
+                    VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,15,0,0" Width="150" Height="auto"/>
+            <Button Grid.Column="2" Grid.Row="1" x:Name="VisitLE3" 
+                    Content="Visit LE3 mod site" ToolTip="Visit the LE3 mod on NexusMods"
+                    VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="auto" />
+            <Image VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="1" Source="../images/logo.png" MaxWidth="400" Margin="10"/>
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="1" Margin="10,20,10,10">
