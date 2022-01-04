@@ -16,6 +16,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
+        protected override void SetButtonsState() {} // Yes, I know this is refused bequest
+
         public override void Update<Type>(string name, Type value) {
             switch (name) {
                 case "SetStatus":

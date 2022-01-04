@@ -5,6 +5,31 @@ namespace FSvBSCustomCloneUtility.Controls {
     /// Abstract class for observable controls that need to access NotifyOnPropertyChange
     /// </summary>
     public abstract class ObserverControl : PropertyChangedBase {
+        protected IWindowManager windowManager = new WindowManager();
+
+        private bool _isBusy = false;
+        protected bool IsBusy {
+            get { return _isBusy; }
+            set {
+                _isBusy = value;
+                SetButtonsState();
+            }
+        }
+
+        private bool _buttonsEnabled = false;
+        public bool ButtonsEnabled {
+            get { return _buttonsEnabled; }
+            set {
+                _buttonsEnabled = value;
+                NotifyOfPropertyChange(() => ButtonsEnabled);
+            }
+        }
+
+        /// <summary>
+        /// Set state of the buttons
+        /// </summary>
+        protected abstract void SetButtonsState();
+
         /// <summary>
         /// Inform the observer that the observable has had an update
         /// </summary>

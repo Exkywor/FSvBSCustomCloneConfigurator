@@ -43,18 +43,18 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Male" FontWeight="Bold" Margin="0,0,10,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-            <RadioButton x:Name="SetMaleDefault" Content="Default" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsMaleDefault}"
+            <RadioButton x:Name="SetMaleDefault" Content="Default" IsEnabled="{Binding ButtonsEnabled}" IsChecked="{Binding IsMaleDefault}"
                          ToolTip="Set the male clone to use Broshep's head"
                          GroupName="MaleCond" Margin="0,0,20,0" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
-            <RadioButton x:Name="SetMaleCustom" Content="Custom" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsMaleCustom}"
+            <RadioButton x:Name="SetMaleCustom" Content="Custom" IsEnabled="{Binding ButtonsEnabled}" IsChecked="{Binding IsMaleCustom}"
                          ToolTip="Set the male clone to use headmorph"
                          GroupName="MaleCond" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"/>
 
             <TextBlock Text="Female" FontWeight="Bold" Margin="0,0,20,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
-            <RadioButton x:Name="SetFemaleDefault" Content="Default" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsFemaleDefault}"
+            <RadioButton x:Name="SetFemaleDefault" Content="Default" IsEnabled="{Binding ButtonsEnabled}" IsChecked="{Binding IsFemaleDefault}"
                          ToolTip="Set the female clone to use Femshep's head"
                          GroupName="FemCond" Margin="0,0,20,0" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center"/>
-            <RadioButton x:Name="SetFemaleCustom" Content="Custom" IsEnabled="{Binding IsTargetSet}" IsChecked="{Binding IsFemaleCustom}"
+            <RadioButton x:Name="SetFemaleCustom" Content="Custom" IsEnabled="{Binding ButtonsEnabled}" IsChecked="{Binding IsFemaleCustom}"
                          ToolTip="Set the female clone to use headmorph"
                          GroupName="FemCond" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center"/>
         </Grid>

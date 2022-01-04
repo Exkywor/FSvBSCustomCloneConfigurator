@@ -18,15 +18,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
-        private bool _isTargetSet = false;
-        public bool IsTargetSet {
-            get { return _isTargetSet; }
-            set {
-                _isTargetSet = value;
-                NotifyOfPropertyChange(() => IsTargetSet);
-            }
-        }
-
         private bool _isMaleDefault = false;
         public bool IsMaleDefault {
             get { return _isMaleDefault; }
@@ -70,34 +61,42 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public void SetMaleDefault() {
             IsMaleDefault = true;
             IsMaleCustom = false;
+            Notify("ProcessUpdate", true);
             ConditionalsManager.SetConditional(Gender.Male, false, (MEGame) TargetGame);
             Notify("SetStatus", "Set male clone to default appearance");
+            Notify("ProcessUpdate", false);
         }
         public void SetMaleCustom() {
             IsMaleDefault = false;
             IsMaleCustom = true;
+            Notify("ProcessUpdate", true);
             ConditionalsManager.SetConditional(Gender.Male, true, (MEGame) TargetGame);
             Notify("SetStatus", "Set male clone to custom appearance");
+            Notify("ProcessUpdate", false);
         }
 
         public void SetFemaleDefault() {
             IsFemaleDefault = true;
             IsFemaleCustom = false;
+            Notify("ProcessUpdate", true);
             ConditionalsManager.SetConditional(Gender.Female, false, (MEGame) TargetGame);
             Notify("SetStatus", "Set female clone to default appearance");
+            Notify("ProcessUpdate", false);
         }
         public void SetFemaleCustom() {
             IsFemaleDefault = false;
             IsFemaleCustom = true;
+            Notify("ProcessUpdate", true);
             ConditionalsManager.SetConditional(Gender.Female, true, (MEGame) TargetGame);
             Notify("SetStatus", "Set female clone to custom appearance");
+            Notify("ProcessUpdate", false);
         }
 
         /// <summary>
         /// Update the state of the UI to match the coalesced
         /// </summary>
         private void UpdateState() {
-            if (!IsTargetSet) { return; }
+            if (TargetGame == null) { return; }
 
             bool isMaleCustom = ConditionalsManager.CheckConditional(Gender.Male, (MEGame) TargetGame);
             bool isFemaleCustom = ConditionalsManager.CheckConditional(Gender.Female, (MEGame) TargetGame);
@@ -107,6 +106,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (isFemaleCustom) { SetFemaleCustom(); }
             else { SetFemaleDefault(); }
+        }
+
+        protected override void SetButtonsState() {
+            ButtonsEnabled = TargetGame != null && !IsBusy;
         }
 
         private void Notify<Type>(string name, Type value) {
@@ -119,20 +122,20 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             switch (name) {
                 case "TargetGame":
                     TargetGame = (MEGame) Convert.ChangeType(value, typeof(MEGame));
-                    IsTargetSet = true;
                     UpdateState();
-                    
+                    SetButtonsState();
                     break;
                 case "ClearConds":
                     SetMaleDefault();
                     SetFemaleDefault();
-
                     break;
                 case "Apply":
                     string gender = (string) Convert.ChangeType(value, typeof(string));
                     if (gender == "M") { SetMaleCustom(); }
                     else if (gender == "F") { SetFemaleCustom(); }
-
+                    break;
+                case "ProcessUpdate":
+                    IsBusy = (bool) Convert.ChangeType(value, typeof(bool));
                     break;
             }
         }

@@ -63,7 +63,7 @@
         </Grid>
 
         <!-- Apply -->
-        <Button Grid.Row="2" x:Name="Apply" IsEnabled="{Binding IsValid}"
+        <Button Grid.Row="2" x:Name="Apply" IsEnabled="{Binding ButtonsEnabled}"
                 ToolTip="Apply the headmorph(s) to the target game. This clears any previously applied headmorph."
                 Margin="0,15,0,0" Content="Apply" Width="100" />
     </Grid>

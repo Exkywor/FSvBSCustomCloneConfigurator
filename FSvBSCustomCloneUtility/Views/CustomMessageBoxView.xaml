@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility.Views"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         Title="{Binding WindowTitle}" SizeToContent="Height"  Width="450">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>

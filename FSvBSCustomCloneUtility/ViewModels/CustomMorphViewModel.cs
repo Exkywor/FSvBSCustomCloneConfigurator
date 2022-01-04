@@ -11,7 +11,6 @@ using System.Windows;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
     public class CustomMorphViewModel : ObserverControl {
-        private IWindowManager windowManager = new WindowManager();
         private List<ObserverControl> _observers = new();
 
         private bool _applyToActor = true;
@@ -20,15 +19,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             set {
                 _applyToActor = value;
                 NotifyOfPropertyChange(() => ApplyToActor);
-            }
-        }
-
-        private bool _isValid = false;
-        public bool IsValid {
-            get { return _isValid; }
-            set {
-                _isValid = value;
-                NotifyOfPropertyChange(() => IsValid);
             }
         }
 
@@ -68,7 +58,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (!string.IsNullOrEmpty(file)) {
                 RonMFile = file;
-                CheckIfApply();
+                SetButtonsState();
             }
 
             Notify("SetStatus", "Added male headmorph file");
@@ -78,7 +68,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             if (!string.IsNullOrEmpty(file)) {
                 RonFFile = file;
-                CheckIfApply();
+                SetButtonsState();
             }
 
             Notify("SetStatus", "Added female headmorph file");
@@ -86,21 +76,21 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public void ClearMRon() {
             RonMFile = "";
-            CheckIfApply();
+            SetButtonsState();
             Notify("SetStatus", "Removed male headmorph file");
         }
 
         public void ClearFRon() {
             RonFFile = "";
-            CheckIfApply();
+            SetButtonsState();
             Notify("SetStatus", "Removed female headmorph file");
         }
 
         /// <summary>
-        /// Set IsValid to true if the TargetGame has been set, and at least one morph file has been selected
+        /// Set ButtonsEnabled to true if the TargetGame has been set, at least one morph file has been selected, and no process is running
         /// </summary>
-        private void CheckIfApply() {
-            IsValid = TargetGame != null && (RonMFile != "" || RonFFile != "");
+        protected override void SetButtonsState() {
+            ButtonsEnabled = TargetGame != null && (RonMFile != "" || RonFFile != "") && !IsBusy;
         }
 
         public async void Apply() {
@@ -124,13 +114,18 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         private async void ApplyMorph(Gender gender, string ronFile) {
-            MorphWriter writer = new(ronFile, (MEGame)TargetGame, gender, ApplyToActor);
+            // Since we don't disable target buttons, we use a copy just in case
+            MEGame? tempTargetGame = TargetGame;
+
+            Notify("ProcessUpdate", true);
+            await Task.Delay(1000);
+            MorphWriter writer = new(ronFile, (MEGame)tempTargetGame, gender, ApplyToActor);
             bool res = writer.ApplyMorph();
             if (res) {
                 if (ApplyToActor) {
                     Notify("SetStatus", "Cloning and linking the headmorph to the clone's files");
                     await Task.Delay(1000);
-                    MorphRelinker relinker = new((MEGame)TargetGame, gender);
+                    MorphRelinker relinker = new((MEGame)tempTargetGame, gender);
                     relinker.RelinkMorph();
                 }
 
@@ -139,8 +134,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                         $"The {(gender.IsFemale() ? "female" : "male")} headmorph was applied succesfully.", "Success", "OK"),
                     null, null);
                 Notify("SetStatus", $"Applied {(gender.IsFemale() ? "female" : "male")} headmorph");
+                Notify("ProcessUpdate", false);
             } else {
                 Notify("SetStatus", "Aborted morph application");
+                Notify("ProcessUpdate", false);
             }
         }
 
@@ -148,7 +145,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             switch (name) {
                 case "TargetGame":
                     TargetGame = (MEGame) Convert.ChangeType(value, typeof(MEGame));
-                    CheckIfApply();
+                    SetButtonsState();
+                    break;
+                case "ProcessUpdate":
+                    IsBusy = (bool) Convert.ChangeType(value, typeof(bool));
                     break;
             }
         }
