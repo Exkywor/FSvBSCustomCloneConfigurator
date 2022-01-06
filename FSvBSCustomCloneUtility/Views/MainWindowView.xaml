@@ -13,15 +13,14 @@
         mc:Ignorable="d"
         Title="FemShep v BroShep Utility Tool"
         WindowStartupLocation="CenterScreen"
-        Width="720" Height="590"
-        MinWidth="720" MinHeight="590">
+        Width="720" Height="500"
+        MinWidth="720" MinHeight="500">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100" />
-            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -57,46 +56,8 @@
             <Image VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="1" Source="../images/logo.png" MaxWidth="400" Margin="10"/>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="1" Margin="10,20,10,10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="15"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Row="0" Grid.Column="0">
-                <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">GAME TARGET</TextBlock>
-                <TextBlock TextWrapping="Wrap">Select the game to apply changes to.</TextBlock>
-            </StackPanel>
-
-            <Rectangle VerticalAlignment="Stretch" Fill="Gray" Width="1" Grid.Row="0" Grid.Column="1"/>
-
-            <Grid Grid.Row="0" Grid.Column="2" Margin="20,0" VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-
-                <RadioButton x:Name="TargetME3" Content="Mass Effect 3" GroupName="Target"
-                             ToolTip="Set Mass Effect 3 as the target"
-                             HorizontalAlignment="Center" Grid.Column="0"/>
-                <RadioButton x:Name="TargetLE3" Content="Mass Effect 3 LE" GroupName="Target"
-                             ToolTip="Set Mass Effect 3 LE as the target"
-                             HorizontalAlignment="Center" Grid.Column="1"/>
-            </Grid>
-
-            <TextBox Text="{Binding SelectedTargetPath, Mode=OneWay}" IsReadOnly="True"
-                     ToolTip="Selected target game path"
-                     Grid.Row="2" Grid.ColumnSpan="3"/>
-        </Grid>
-
-        <ContentControl Margin="10,20,10,10" Grid.Row="2" Grid.Column="1" x:Name="ConditionalsControl" />
-        <ContentControl Margin="10,20,10,10" Grid.Row="3" Grid.Column="1" x:Name="CustomMorph" />
-        <ContentControl Margin="10" Grid.Row="4" Grid.Column="1" x:Name="StatusBar"/>
+        <ContentControl Margin="10,20,10,10" Grid.Row="2" Grid.Column="1" x:Name="MorphControl" />
+        <ContentControl Margin="10" Grid.Row="3" Grid.Column="1" x:Name="StatusBar"/>
     </Grid>
 </Window>

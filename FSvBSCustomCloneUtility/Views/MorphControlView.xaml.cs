@@ -15,10 +15,10 @@ using System.Windows.Shapes;
 
 namespace FSvBSCustomCloneUtility.Views {
     /// <summary>
-    /// Interaction logic for ConditionalsControlView.xaml
+    /// Interaction logic for MorphControlView.xaml
     /// </summary>
-    public partial class ConditionalsControlView : UserControl {
-        public ConditionalsControlView() {
+    public partial class MorphControlView : UserControl {
+        public MorphControlView() {
             InitializeComponent();
         }
     }
