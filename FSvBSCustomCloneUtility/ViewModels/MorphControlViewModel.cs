@@ -6,6 +6,7 @@ using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,7 +24,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             set {
                 _isBusy = value;
 
-                NotifyOfPropertyChange(() => CanApply);
+                NotifyOfPropertyChange(() => CanSetGameTarget);
+                NotifyOfPropertyChange(() => CanApplyAsync);
                 NotifyOfPropertyChange(() => CanSetDefaultAppearance);
                 NotifyOfPropertyChange(() => CanSetCustomAppearance);
                 NotifyOfPropertyChange(() => MaleBoxEnabled);
@@ -56,7 +58,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             set {
                 _targetGame = value;
                 NotifyOfPropertyChange(() => TargetGame);
-                NotifyOfPropertyChange(() => CanApply);
+                NotifyOfPropertyChange(() => CanApplyAsync);
                 NotifyOfPropertyChange(() => CanSetDefaultAppearance);
                 NotifyOfPropertyChange(() => CanSetCustomAppearance);
             }
@@ -91,7 +93,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             set {
                 _ronMFile = value;
                 NotifyOfPropertyChange(() => RonMFile);
-                NotifyOfPropertyChange(() => CanApply);
+                NotifyOfPropertyChange(() => CanApplyAsync);
             }
         }
         
@@ -101,7 +103,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             set {
                 _ronFFile = value;
                 NotifyOfPropertyChange(() => RonFFile);
-                NotifyOfPropertyChange(() => CanApply);
+                NotifyOfPropertyChange(() => CanApplyAsync);
             }
         }
 
@@ -117,6 +119,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         // GAME TARGET METHODS
+        public bool CanSetGameTarget {
+            get { return !IsBusy; }
+        }
+
         public void SetGameTarget(MEGame game) {
             // Get game path only if we haven't gotten it already
             if (game.IsOTGame()) {
@@ -234,60 +240,118 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             statusBar.UpdateStatus($"Added {(gender.IsFemale() ? "Female" : "Male")} headmorph file. The clone will be set to custom appearance");
         }
 
-        public bool CanApply {
-            get { return TargetGame != null && (RonMFile != "" || RonFFile != "") && !IsBusy; }
+        public bool CanApplyAsync {
+            get { return TargetGame != null && (RonMFile != "" || RonFFile != "" || !SetMaleCustom || !SetFemaleCustom) && !IsBusy; }
         }
 
-        public void Apply() {
-            List<Gender> targets = new(); // Aggregation of targets
-            IsBusy = true;
-            Thread.Sleep(2000);
+        public void ApplyAsync() {
+            BackgroundWorker worker = new();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += Apply;
+            worker.ProgressChanged += Apply_ProgressChanged;
+            worker.RunWorkerCompleted += Apply_RunWokerCompleted;
 
+            worker.RunWorkerAsync();
+
+            // IsBusy = true;
+
+            // IsBusy = false;
+        }
+
+        private void Apply(object sender, DoWorkEventArgs e) {
+            (sender as BackgroundWorker).ReportProgress(0, "Busy");
+            List<Gender> targets = new(); // Aggregation of targets
+
+            // Since the files are reset, we set the bool for non-headmorphs to default to avoid issues
             if (SetMaleCustom) {
                 targets.Add(Gender.Male);
             } else {
                 ConditionalsManager.SetConditional(Gender.Male, false, (MEGame) TargetGame);
-                statusBar.UpdateStatus("Set default appearance for the male clone");
+                (sender as BackgroundWorker).ReportProgress(0, "SetMaleDefault");
+                Thread.Sleep(1000);
             }
 
             if (SetFemaleCustom) {
                 targets.Add(Gender.Female);
             } else {
                 ConditionalsManager.SetConditional(Gender.Female, false, (MEGame) TargetGame);
-                statusBar.UpdateStatus("Set default appearance for the female clone");
+                (sender as BackgroundWorker).ReportProgress(0, "SetFemaleDefault");
+                Thread.Sleep(1000);
             }
 
             if (targets.Count > 0) {
-                ApplyCustomApperance(targets);
+                ApplyCustomApperance(sender, targets);
             }
-            IsBusy = false;
         }
 
-        private void ApplyCustomApperance(List<Gender> targets) {
+        private void ApplyCustomApperance(object sender, List<Gender> targets) {
+            (sender as BackgroundWorker).ReportProgress(0, "Cleaning");
             FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame);
-            // statusBar.UpdateStatus("Cleared clone files");
+            (sender as BackgroundWorker).ReportProgress(0, "Cleaned");
             foreach (Gender gender in targets) {
-                ApplyMorph(gender, gender.IsFemale() ? RonFFile : RonMFile);
+                ApplyMorph(sender, gender, gender.IsFemale() ? RonFFile : RonMFile);
                 ConditionalsManager.SetConditional(gender, true, (MEGame) TargetGame);
             }
         }
 
-        private void ApplyMorph(Gender gender, string ronFile) {
-            statusBar.UpdateStatus($"Applying {(gender.IsFemale() ? "female" : "male")} headmorph");
+        private void ApplyMorph(object sender, Gender gender, string ronFile) {
+            (sender as BackgroundWorker).ReportProgress(0, $"Applying;{(gender.IsFemale() ? "female" : "male")}");
             MorphWriter writer = new(ronFile, (MEGame)TargetGame, gender);
             bool res = writer.ApplyMorph();
             if (res) {
                 if (_applyToActor) {
-                    statusBar.UpdateStatus("Cloning and linking the headmorph to the clone's files");
+                    (sender as BackgroundWorker).ReportProgress(0, "Linking");
                     MorphRelinker relinker = new((MEGame)TargetGame, gender);
                     relinker.RelinkMorph();
                 }
 
-                MessageBox.Show($"The {(gender.IsFemale() ? "female" : "male")} headmorph was applied succesfully.",
-                                "Success", MessageBoxButton.OK);
-                statusBar.UpdateStatus($"Applied {(gender.IsFemale() ? "female" : "male")} headmorph");
+                (sender as BackgroundWorker).ReportProgress(0, $"Applied;{(gender.IsFemale() ? "female" : "male")}");
             } else {
                 statusBar.UpdateStatus($"Aborted {(gender.IsFemale() ? "female" : "male")} morph application");
+            }
+        }
+
+        private void Apply_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+            string[] status = e.UserState.ToString().Split(";");
+
+            switch (status[0]) {
+                case "Busy":
+                    IsBusy = true;
+                    break;
+                case "Cleaning":
+                    statusBar.UpdateStatus("Cleaning the clone files");
+                    break;
+                case "Cleaned":
+                    statusBar.UpdateStatus("Clone files cleaned");
+                    break;
+                case "Applying":
+                    statusBar.UpdateStatus($"Applying {status[1]} headmorph");
+                    break;
+                case "Linking":
+                    statusBar.UpdateStatus("Cloning and linking the headmorph to the clone's files");
+                    break;
+                case "SetMaleDefault":
+                    statusBar.UpdateStatus("Default appearance for the male clone set");
+                    break;
+                case "SetFemaleDefault":
+                    statusBar.UpdateStatus("Default appearance for the female clone set");
+                    break;
+                case "Applied":
+                    statusBar.UpdateStatus($"Applied {status[1]} headmorph");
+                    windowManager.ShowWindowAsync(new CustomMessageBoxViewModel($"The {status[1]} headmorph was applied succesfully.",
+                        "Success", "OK"), null, null);
+                    break;
+            }
+        }
+
+        private void Apply_RunWokerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (e.Error != null) {
+                // Catch error
+            } else if (e.Cancelled) {
+                // Cancelled
+
+            } else {
+                IsBusy = false;
             }
         }
     }

@@ -116,7 +116,7 @@
 
             <!-- Apply -->
             <Button Content="Apply"
-                    cal:Message.Attach="Apply"
+                    cal:Message.Attach="ApplyAsync"
                     ToolTip="Apply the headmorph(s) to the target game. This clears any previously applied headmorph."
                     Margin="0,30,0,0" Grid.Row="3" Grid.ColumnSpan="5" Width="100" />
 
