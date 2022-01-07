@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.IO;
 using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
@@ -206,7 +207,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// <returns></returns>
         private bool GetGamePath(MEGame game) {
             // Get the user to point to the game path if it's not found
-            if (string.IsNullOrEmpty(MEDirectories.GetDefaultGamePath(game))) {
+            string dir = MEDirectories.GetDefaultGamePath(game);
+            if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) {
                 string file = Misc.PromptForFile("MassEffect3.exe|MassEffect3.exe",
                                                  $"Select Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}executable");
 
