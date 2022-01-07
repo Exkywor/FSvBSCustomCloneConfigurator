@@ -473,9 +473,45 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// Handle special morph texture cases, such as HED_Addn which overrides HED_Brow
         /// </summary>
         private void HandleSpecialMorphTextureCases() {
+            HandleNoScarsCase();
             HandleAddBrowCase();
             if (targetGame.IsLEGame()) {
                 HandleEyeEmisScalarLECase();
+            }
+        }
+
+        /// <summary>
+        /// Handle there case where there are no chose scars, setting blank scars to avoid the default Scars_03 used by the material
+        /// </summary>
+        private void HandleNoScarsCase() {
+            int alignmentEmisIndex = morphSource.TextureParameters.FindIndex(tp => tp.Name == "HED_Face_Alignment_Emis");
+            int alignmentNormIndex = morphSource.TextureParameters.FindIndex(tp => tp.Name == "HED_Face_Alignment_Norm");
+
+            if (alignmentEmisIndex == -1) {
+                MorphHead.TextureParameter defaultEmis = new();
+                defaultEmis.Name = "HED_Face_Alignment_Emis";
+                defaultEmis.Value = @"\BIOG_Humanoid_MASTER_MTR_R.GBL_ARM_ALL_Black\";
+                morphSource.TextureParameters.Add(defaultEmis);
+            } else if (alignmentEmisIndex >= 0) {
+                string alignmentEmisValue = morphSource.TextureParameters[alignmentEmisIndex].Value;
+                alignmentEmisValue = alignmentEmisValue.Remove(alignmentEmisValue.Length - 1).Substring(1);
+                if (alignmentEmisValue.Equals("None", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(alignmentEmisValue.Trim())) {
+                    morphSource.TextureParameters[alignmentEmisIndex].Value = @"\BIOG_Humanoid_MASTER_MTR_R.GBL_ARM_ALL_Black\";
+                }
+            }
+
+            if (alignmentNormIndex == -1) {
+                MorphHead.TextureParameter defaultNorm = new();
+                defaultNorm.Name = "HED_Face_Alignment_Norm";
+                defaultNorm.Value = @"\BIOG_Humanoid_MASTER_MTR_R.GBL_Norm_Alpha\";
+                morphSource.TextureParameters.Add(defaultNorm);
+
+            } else if (alignmentNormIndex >= 0) {
+                string alignmentNormValue = morphSource.TextureParameters[alignmentNormIndex].Value;
+                alignmentNormValue = alignmentNormValue.Remove(alignmentNormValue.Length - 1).Substring(1);
+                if (alignmentNormValue.Equals("None", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(alignmentNormValue.Trim())) {
+                    morphSource.TextureParameters[alignmentNormIndex].Value = @"\BIOG_Humanoid_MASTER_MTR_R.GBL_Norm_Alpha\";
+                }
             }
         }
 
