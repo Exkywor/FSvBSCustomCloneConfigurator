@@ -38,6 +38,22 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private bool ME3PathChecked = false;
         private bool LE3PathChecked = false;
 
+        private bool _isME3 = false;
+        public bool IsME3 {
+            get { return _isME3; }
+            set {
+                _isME3 = value;
+                NotifyOfPropertyChange(() => IsME3);
+            }
+        }
+        private bool _isLE3 = false;
+        public bool IsLE3 {
+            get { return _isLE3; }
+            set {
+                _isLE3 = value;
+                NotifyOfPropertyChange(() => IsLE3);
+            }
+        }
 
         private string _targetPath = "";
         public string TargetPath {
@@ -65,21 +81,41 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         // CONDITIONALS PROPERTIES
-        private bool _setMaleCustom = false;
-        public bool SetMaleCustom {
-            get { return _setMaleCustom; }
+        private bool _isMaleDefault = true;
+        public bool IsMaleDefault {
+            get { return _isMaleDefault; }
             set {
-                _setMaleCustom = value;
-                NotifyOfPropertyChange(() => SetMaleCustom);
+                _isMaleDefault = value;
+                if (value) { RonMFile = ""; }
+                NotifyOfPropertyChange(() => IsMaleDefault);
                 NotifyOfPropertyChange(() => MaleBoxEnabled);
             }
         }
-        private bool _setFemaleCustom = false;
-        public bool SetFemaleCustom {
-            get { return _setFemaleCustom; }
+        private bool _isMaleCustom = false;
+        public bool IsMaleCustom {
+            get { return _isMaleCustom; }
             set {
-                _setFemaleCustom = value;
-                NotifyOfPropertyChange(() => SetFemaleCustom);
+                _isMaleCustom = value;
+                NotifyOfPropertyChange(() => IsMaleCustom);
+                NotifyOfPropertyChange(() => MaleBoxEnabled);
+            }
+        }
+        private bool _isFemaleDefault = true;
+        public bool IsFemaleDefault {
+            get { return _isFemaleDefault; }
+            set {
+                _isFemaleDefault = value;
+                if (value) { RonFFile = ""; }
+                NotifyOfPropertyChange(() => IsFemaleDefault);
+                NotifyOfPropertyChange(() => FemaleBoxEnabled);
+            }
+        }
+        private bool _isFemaleCustom = false;
+        public bool IsFemaleCustom {
+            get { return _isFemaleCustom; }
+            set {
+                _isFemaleCustom = value;
+                NotifyOfPropertyChange(() => IsFemaleCustom);
                 NotifyOfPropertyChange(() => FemaleBoxEnabled);
             }
         }
@@ -108,10 +144,10 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public bool MaleBoxEnabled {
-            get { return SetMaleCustom && !IsBusy; }
+            get { return IsMaleCustom && !IsBusy; }
         }
         public bool FemaleBoxEnabled {
-            get { return SetFemaleCustom && !IsBusy; }
+            get { return IsFemaleCustom && !IsBusy; }
         }
 
         public MorphControlViewModel(StatusBar statusBar) {
@@ -131,6 +167,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                         statusBar.UpdateStatus("Error: ME3 game path not set");
                         TargetGame = null;
                         TargetPath = "";
+                        IsME3 = false;
                         return;
                     } else { ME3PathChecked = true; }
                 }
@@ -140,6 +177,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                         statusBar.UpdateStatus("Error: LE3 game path not set");
                         TargetGame = null;
                         TargetPath = "";
+                        IsLE3 = false;
                         return;
                     } else { LE3PathChecked = true; }
                 }
@@ -150,12 +188,14 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 statusBar.UpdateStatus("Error: Mod not installed or invalid");
                 TargetGame = null;
                 TargetPath = "";
+                if (game.IsOTGame()) { IsME3 = false; } else { IsLE3 = false; }
                 return;
             }
 
             TargetPath = MEDirectories.GetExecutablePath(game);
             TargetGame = game;
             statusBar.UpdateStatus($"Selected Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}as the game target");
+            if (game.IsOTGame()) { IsME3 = true; } else { IsLE3 = true; }
             return;
         }
 
@@ -214,7 +254,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void SetDefaultAppearance(Gender gender) {
-            if (gender.IsFemale()) { SetFemaleCustom = false; } else { SetMaleCustom = false; }
+            if (gender.IsFemale()) {
+                IsFemaleCustom = false;
+                IsFemaleDefault = true;
+            } else {
+                IsMaleCustom = false;
+                IsMaleDefault = true;
+            }
 
             statusBar.UpdateStatus($"{(gender.IsFemale() ? "Female" : "Male")} clone will be set to default appearance");
         }
@@ -223,23 +269,25 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             string file = Misc.PromptForFile("Ron files (.ron)|*.ron", $"Select the {(gender.IsFemale() ? "female" : "male")} headmorph");
 
             if (string.IsNullOrEmpty(file)) {
-                if (gender.IsFemale()) { SetFemaleCustom = false; } else { SetMaleCustom = true; }
+                if (gender.IsFemale()) { IsFemaleDefault = true; } else { IsMaleDefault = true; }
                 return;
             }
 
             if (gender.IsFemale()) {
                 RonFFile = file;
-                SetFemaleCustom = true;
+                IsFemaleCustom = true;
+                IsFemaleDefault = false;
             } else {
                 RonMFile = file;
-                SetMaleCustom = true;
+                IsMaleCustom = true;
+                IsMaleDefault = false;
             }
 
             statusBar.UpdateStatus($"Added {(gender.IsFemale() ? "Female" : "Male")} headmorph file. The clone will be set to custom appearance");
         }
 
         public bool CanApplyAsync {
-            get { return TargetGame != null && (RonMFile != "" || RonFFile != "" || !SetMaleCustom || !SetFemaleCustom) && !IsBusy; }
+            get { return TargetGame != null && (RonMFile != "" || RonFFile != "" || !IsMaleCustom || !IsFemaleCustom) && !IsBusy; }
         }
 
         public void ApplyAsync() {
@@ -258,7 +306,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             List<Gender> targets = new(); // Aggregation of targets
 
             // Since the files are reset, we set the bool for non-headmorphs to default to avoid issues
-            if (SetMaleCustom) {
+            if (IsMaleCustom) {
                 targets.Add(Gender.Male);
             } else {
                 ConditionalsManager.SetConditional(Gender.Male, false, (MEGame)TargetGame);
@@ -266,7 +314,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 Thread.Sleep(1000);
             }
 
-            if (SetFemaleCustom) {
+            if (IsFemaleCustom) {
                 targets.Add(Gender.Female);
             } else {
                 ConditionalsManager.SetConditional(Gender.Female, false, (MEGame)TargetGame);
@@ -401,7 +449,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     break;
                 case "Applied":
                     statusBar.UpdateStatus($"Applied {status[1]} headmorph");
-                    windowManager.ShowWindowAsync(new CustomMessageBoxViewModel($"The {status[1]} headmorph was applied succesfully.",
+                    windowManager.ShowDialogAsync(new CustomMessageBoxViewModel($"The {status[1]} headmorph was applied succesfully.",
                         "Success", "OK"), null, null);
                     break;
                 case "ResourcesNotFound":

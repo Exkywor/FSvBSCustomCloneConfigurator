@@ -43,11 +43,13 @@
                 </Grid.ColumnDefinitions>
 
                 <RadioButton Content="Mass Effect 3" GroupName="Target"
+                             IsChecked="{Binding IsME3}"
                              cal:Message.Attach="SetGameTarget('ME3')"
                              ToolTip="Set Mass Effect 3 as the target"
                              HorizontalAlignment="Center" Grid.Column="0"/>
 
                 <RadioButton Content="Mass Effect 3 LE" GroupName="Target"
+                             IsChecked="{Binding IsLE3}"
                              cal:Message.Attach="SetGameTarget('LE3')"
                              ToolTip="Set Mass Effect 3 LE as the target"
                              HorizontalAlignment="Center" Grid.Column="1"/>
@@ -86,11 +88,11 @@
 
             <TextBlock Text="Male" FontWeight="Bold" Margin="0,0,10,0" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
             <Rectangle VerticalAlignment="Stretch" Fill="Gray" Margin="5,0,20,0" Width="1" Grid.Row="0" Grid.Column="1"/>
-            <RadioButton Content="Default"
+            <RadioButton Content="Default" IsChecked="{Binding IsMaleDefault}"
                          cal:Message.Attach="SetDefaultAppearance('Male')"
                          ToolTip="Set the male clone to use Broshep's head"
                          GroupName="MaleCond" Margin="0,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" />
-            <RadioButton Content="Custom"
+            <RadioButton Content="Custom" IsChecked="{Binding IsMaleCustom}"
                          cal:Message.Attach="SetCustomAppearance('Male')"
                          ToolTip="Set the male clone to use headmorph"
                          Margin="0,0,10,0" GroupName="MaleCond" Grid.Row="0" Grid.Column="3"  HorizontalAlignment="Center"/>
@@ -101,11 +103,11 @@
 
             <TextBlock Text="Female" FontWeight="Bold" Margin="0,0,10,0" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
             <Rectangle VerticalAlignment="Stretch" Fill="Gray" Margin="5,0,20,0" Width="1" Grid.Row="2" Grid.Column="1"/>
-            <RadioButton Content="Default"
+            <RadioButton Content="Default" IsChecked="{Binding IsFemaleDefault}"
                          cal:Message.Attach="SetDefaultAppearance('Female')"
                          ToolTip="Set the female clone to use Broshep's head"
                          GroupName="FemaleCond" Margin="0,0,20,0" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" />
-            <RadioButton Content="Custom"
+            <RadioButton Content="Custom" IsChecked="{Binding IsFemaleCustom}"
                          cal:Message.Attach="SetCustomAppearance('Female')"
                          ToolTip="Set the female clone to use headmorph"
                          Margin="0,0,10,0" GroupName="FemaleCond" Grid.Row="2" Grid.Column="3"  HorizontalAlignment="Center"/>
