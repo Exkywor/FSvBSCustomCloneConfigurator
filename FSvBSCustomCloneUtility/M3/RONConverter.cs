@@ -154,7 +154,7 @@ namespace MassEffectModManagerCore.modmanager.save.game3
         private static KeyValuePair<string, float> getKeyedScalar(string[] keyValSplit)
         {
             var fn = keyValSplit[0].Trim().Trim('"');
-            var off = float.Parse(keyValSplit[1].Trim().Trim(','));
+            var off = float.Parse(keyValSplit[1].Trim().Trim(','), System.Globalization.CultureInfo.InvariantCulture);
             return new KeyValuePair<string, float>(fn, off);
         }
 
@@ -164,10 +164,10 @@ namespace MassEffectModManagerCore.modmanager.save.game3
             var vectStr = keyValSplit[1].Trim().Trim('(', ')', ',').Split(',');
             return new KeyValuePair<string, LinearColor>(fn, new LinearColor()
             {
-                R = float.Parse(vectStr[0]),
-                G = float.Parse(vectStr[1]),
-                B = float.Parse(vectStr[2]),
-                A = float.Parse(vectStr[3]),
+                R = float.Parse(vectStr[0], System.Globalization.CultureInfo.InvariantCulture),
+                G = float.Parse(vectStr[1], System.Globalization.CultureInfo.InvariantCulture),
+                B = float.Parse(vectStr[2], System.Globalization.CultureInfo.InvariantCulture),
+                A = float.Parse(vectStr[3], System.Globalization.CultureInfo.InvariantCulture),
             });
         }
 
