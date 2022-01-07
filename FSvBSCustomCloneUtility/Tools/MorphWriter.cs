@@ -53,18 +53,19 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <summary>
         /// Apply the headmorph 
         /// </summary>
-        /// <returns>True if there were no errors</returns>
-        public bool ApplyMorph() {
+        /// <returns>A tuple containing resourcesNotFound and resourceDuplicates</returns>
+        public (Dictionary<string, string>, Dictionary<string, IEnumerable<string>>) ApplyMorph() {
             EditHead();
             EditHair();
 
-            if (resourcesNotFound.Count > 0) { HandleErrors("resourcesNotFound"); }
-            else if (resourceDuplicates.Count > 0) { HandleErrors("resourceDuplicates"); }
-            else { pcc.Save(); }
+            if (!(resourcesNotFound.Count > 0 || resourceDuplicates.Count > 0)) {
+                pcc.Save();
+            }
 
             pcc.Release();
             pcc.Dispose();
-            return (resourcesNotFound.Count == 0 && resourceDuplicates.Count == 0);
+
+            return (resourcesNotFound, resourceDuplicates);
         }
 
         /// <summary>
@@ -511,33 +512,6 @@ namespace FSvBSCustomCloneUtility.Tools {
             props.Add(new IntProperty(0, "D"));
 
             return new StructProperty("Guid", props, "ExpressionGUID", true);
-        }
-
-        /// <summary>
-        /// Show a message box for the input error type
-        /// </summary>
-        /// <param name="type">The error type</param>
-        private void HandleErrors(string type) {
-            switch(type) {
-                case "resourcesNotFound":
-                    string errMsg = string.Join(Environment.NewLine, resourcesNotFound.Values.ToArray());
-                    windowManager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.NotFound, gender, errMsg), null, null);
-                    break;
-                case "resourceDuplicates":
-                    string dupMsg = "";
-                    foreach (string key in resourceDuplicates.Keys) {
-                        // Example:
-                        //
-                        // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff:
-                        // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIR\CookedPCConsole\BioD_MOD_HAIR1.pcc
-                        // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
-                        dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key].ToArray()) + Environment.NewLine + Environment.NewLine;
-                    }
-                    windowManager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.Duplicates, gender, dupMsg), null, null);
-                    break;
-                default:
-                    break;
-            }
         }
     }
 }

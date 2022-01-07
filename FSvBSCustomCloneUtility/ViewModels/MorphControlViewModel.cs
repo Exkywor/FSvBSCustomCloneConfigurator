@@ -86,7 +86,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         // MORPH PROPERTIES
         private bool _applyToActor = true;
-        
+
         private string _ronMFile = "";
         public string RonMFile {
             get { return _ronMFile; }
@@ -96,7 +96,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 NotifyOfPropertyChange(() => CanApplyAsync);
             }
         }
-        
+
         private string _ronFFile = "";
         public string RonFFile {
             get { return _ronFFile; }
@@ -152,7 +152,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 TargetPath = "";
                 return;
             }
-            
+
             TargetPath = MEDirectories.GetExecutablePath(game);
             TargetGame = game;
             statusBar.UpdateStatus($"Selected Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}as the game target");
@@ -214,18 +214,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void SetDefaultAppearance(Gender gender) {
-            if (gender.IsFemale()) { SetFemaleCustom = false; }
-            else { SetMaleCustom = false; }
-          
+            if (gender.IsFemale()) { SetFemaleCustom = false; } else { SetMaleCustom = false; }
+
             statusBar.UpdateStatus($"{(gender.IsFemale() ? "Female" : "Male")} clone will be set to default appearance");
         }
 
         public void SetCustomAppearance(Gender gender) {
             string file = Misc.PromptForFile("Ron files (.ron)|*.ron", $"Select the {(gender.IsFemale() ? "female" : "male")} headmorph");
 
-            if (string.IsNullOrEmpty(file)) { 
-                if (gender.IsFemale()) { SetFemaleCustom = false; }
-                else { SetMaleCustom = true; }
+            if (string.IsNullOrEmpty(file)) {
+                if (gender.IsFemale()) { SetFemaleCustom = false; } else { SetMaleCustom = true; }
                 return;
             }
 
@@ -247,15 +245,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public void ApplyAsync() {
             BackgroundWorker worker = new();
             worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
             worker.DoWork += Apply;
             worker.ProgressChanged += Apply_ProgressChanged;
             worker.RunWorkerCompleted += Apply_RunWokerCompleted;
 
             worker.RunWorkerAsync();
-
-            // IsBusy = true;
-
-            // IsBusy = false;
         }
 
         private void Apply(object sender, DoWorkEventArgs e) {
@@ -266,7 +261,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             if (SetMaleCustom) {
                 targets.Add(Gender.Male);
             } else {
-                ConditionalsManager.SetConditional(Gender.Male, false, (MEGame) TargetGame);
+                ConditionalsManager.SetConditional(Gender.Male, false, (MEGame)TargetGame);
                 (sender as BackgroundWorker).ReportProgress(0, "SetMaleDefault");
                 Thread.Sleep(1000);
             }
@@ -274,31 +269,56 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             if (SetFemaleCustom) {
                 targets.Add(Gender.Female);
             } else {
-                ConditionalsManager.SetConditional(Gender.Female, false, (MEGame) TargetGame);
+                ConditionalsManager.SetConditional(Gender.Female, false, (MEGame)TargetGame);
                 (sender as BackgroundWorker).ReportProgress(0, "SetFemaleDefault");
                 Thread.Sleep(1000);
             }
 
             if (targets.Count > 0) {
-                ApplyCustomApperance(sender, targets);
+                ApplyCustomApperance(sender, e, targets);
             }
         }
 
-        private void ApplyCustomApperance(object sender, List<Gender> targets) {
+        /// <summary>
+        /// Apply any selected morphs.
+        /// Morphs need to be aggregated in order to clean files once, before applying them.
+        /// Cannot call this method per morph or else clean files will reset previous morphs.
+        /// Cannot do this at phase where default is involved to avoid cleaning morphs when only wanting to set as default.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <param name="targets">List of gender targets</param>
+        private void ApplyCustomApperance(object sender, DoWorkEventArgs e, List<Gender> targets) {
             (sender as BackgroundWorker).ReportProgress(0, "Cleaning");
-            FSvBSDirectories.ApplyCleanFiles((MEGame) TargetGame);
+            FSvBSDirectories.ApplyCleanFiles((MEGame)TargetGame);
             (sender as BackgroundWorker).ReportProgress(0, "Cleaned");
+
             foreach (Gender gender in targets) {
-                ApplyMorph(sender, gender, gender.IsFemale() ? RonFFile : RonMFile);
-                ConditionalsManager.SetConditional(gender, true, (MEGame) TargetGame);
+                bool res = ApplyMorph(sender, e, gender, gender.IsFemale() ? RonFFile : RonMFile);
+                if (!res) {
+                    e.Cancel = true;
+                    return;
+                }
+                ConditionalsManager.SetConditional(gender, true, (MEGame)TargetGame);
             }
         }
 
-        private void ApplyMorph(object sender, Gender gender, string ronFile) {
+        /// <summary>
+        /// Applies an input morph file to the input Shepard gender
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <param name="gender">Shepard gender to apply the morph to</param>
+        /// <param name="ronFile">Morph file link</param>
+        /// <returns>True if the application was successful</returns>
+        private bool ApplyMorph(object sender, DoWorkEventArgs e, Gender gender, string ronFile) {
             (sender as BackgroundWorker).ReportProgress(0, $"Applying;{(gender.IsFemale() ? "female" : "male")}");
             MorphWriter writer = new(ronFile, (MEGame)TargetGame, gender);
-            bool res = writer.ApplyMorph();
-            if (res) {
+
+            (Dictionary<string, string> resourcesNotFound, Dictionary<string, IEnumerable<string>> resourceDuplicates) = writer.ApplyMorph();
+
+            // Success if all resources were found and there are no duplicates
+            if (resourcesNotFound.Count == 0 && resourceDuplicates.Count == 0) {
                 if (_applyToActor) {
                     (sender as BackgroundWorker).ReportProgress(0, "Linking");
                     MorphRelinker relinker = new((MEGame)TargetGame, gender);
@@ -306,8 +326,51 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 }
 
                 (sender as BackgroundWorker).ReportProgress(0, $"Applied;{(gender.IsFemale() ? "female" : "male")}");
+                return true;
             } else {
-                statusBar.UpdateStatus($"Aborted {(gender.IsFemale() ? "female" : "male")} morph application");
+                if (resourcesNotFound.Count > 0) {
+                    (sender as BackgroundWorker).ReportProgress(0,
+                        $"ResourcesNotFound;{(gender.IsFemale() ? "female" : "male")};{ResourcesToString("resourcesNotFound", resourcesNotFound)}");
+                }
+
+                if (resourceDuplicates.Count > 0) {
+                    (sender as BackgroundWorker).ReportProgress(0,
+                        $"ResourceDuplicates;{(gender.IsFemale() ? "female" : "male")};{ResourcesToString("resourceDuplicates", resourceDuplicates)}");
+                }
+                
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Parses a dictionary of resources to a single string 
+        /// </summary>
+        /// <param name="type">Error type of the resources</param>
+        /// <param name="errors">Dictionary of errors, passes as an object</param>
+        /// <returns></returns>
+        private string ResourcesToString(string type, object errors) {
+            switch(type) {
+                case "resourcesNotFound":
+                    Dictionary<string, string> resourcesNotFound =
+                        (Dictionary<string, string>)Convert.ChangeType(errors, typeof(Dictionary<string, string>));
+
+                    return string.Join(Environment.NewLine, resourcesNotFound.Values);
+                case "resourceDuplicates":
+                    Dictionary<string, IEnumerable<string>> resourceDuplicates =
+                        (Dictionary<string, IEnumerable<string>>)Convert.ChangeType(errors, typeof(Dictionary<string, IEnumerable<string>>));
+
+                    string dupMsg = "";
+                    foreach (string key in resourceDuplicates.Keys) {
+                        // Example:
+                        //
+                        // Hair_Pulled02.HMF_HIR_SCP_Pll02_Diff:
+                        // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIR\CookedPCConsole\BioD_MOD_HAIR1.pcc
+                        // - D:\Games\Origin\ME3\BioGame\CookedPCConsole\DLC\DLC_MOD_HAIRS\CookedPCConsole\BioD_MOD_HAIR2.pcc
+                        dupMsg += $"{key}:" + Environment.NewLine + string.Join(Environment.NewLine, resourceDuplicates[key]) + Environment.NewLine + Environment.NewLine;
+                    }
+                    return dupMsg;
+                default:
+                    return "";
             }
         }
 
@@ -341,15 +404,25 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     windowManager.ShowWindowAsync(new CustomMessageBoxViewModel($"The {status[1]} headmorph was applied succesfully.",
                         "Success", "OK"), null, null);
                     break;
+                case "ResourcesNotFound":
+                    windowManager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.NotFound,
+                        status[1] == "female" ? Gender.Female : Gender.Male, status[2]), null, null);
+                    break;
+                case "ResourceDuplicates":
+                    windowManager.ShowDialogAsync(new ResourceErrorHandlerViewModel(ResourceError.Duplicates,
+                        status[1] == "female" ? Gender.Female : Gender.Male, status[2]), null, null);
+                    break;
             }
         }
 
         private void Apply_RunWokerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (e.Error != null) {
-                // Catch error
+                windowManager.ShowDialogAsync(new ExceptionHandlerViewModel(e.Error), null, null);;
+                statusBar.UpdateStatus("");
+                IsBusy = false;
             } else if (e.Cancelled) {
-                // Cancelled
-
+                statusBar.UpdateStatus($"The morphs were not applied");
+                IsBusy = false;
             } else {
                 IsBusy = false;
             }
