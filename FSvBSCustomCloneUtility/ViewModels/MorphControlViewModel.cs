@@ -165,7 +165,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             if (game.IsOTGame()) {
                 if (!ME3PathChecked) {
                     if (!GetGamePath(game)) {
-                        statusBar.UpdateStatus("Error: ME3 game path not set");
+                        statusBar.UpdateStatus("ME3 game path not set");
                         TargetGame = null;
                         TargetPath = "";
                         IsME3 = false;
@@ -175,7 +175,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             } else {
                 if (!LE3PathChecked) {
                     if (!GetGamePath(game)) {
-                        statusBar.UpdateStatus("Error: LE3 game path not set");
+                        statusBar.UpdateStatus("LE3 game path not set");
                         TargetGame = null;
                         TargetPath = "";
                         IsLE3 = false;
@@ -186,7 +186,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             // Verify mod installation
             if (!VerifyMod(game)) {
-                statusBar.UpdateStatus("Error: Mod not installed or invalid");
+                statusBar.UpdateStatus("The mod could not be found or is an incompatible version");
                 TargetGame = null;
                 TargetPath = "";
                 if (game.IsOTGame()) { IsME3 = false; } else { IsLE3 = false; }
@@ -195,7 +195,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             TargetPath = MEDirectories.GetExecutablePath(game);
             TargetGame = game;
-            statusBar.UpdateStatus($"Selected Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}as the game target");
+            statusBar.UpdateStatus($"Set Mass Effect 3 {(game.IsOTGame() ? "" : "LE ")}as the game target");
             if (game.IsOTGame()) { IsME3 = true; } else { IsLE3 = true; }
             return;
         }
@@ -264,7 +264,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 IsMaleDefault = true;
             }
 
-            statusBar.UpdateStatus($"{(gender.IsFemale() ? "Female" : "Male")} clone will be set to default appearance");
+            statusBar.UpdateStatus($"{(gender.IsFemale() ? "Female" : "Male")} clone will be set to the default appearance");
         }
 
         public void SetCustomAppearance(Gender gender) {
@@ -285,7 +285,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 IsMaleDefault = false;
             }
 
-            statusBar.UpdateStatus($"Added {(gender.IsFemale() ? "Female" : "Male")} headmorph file. The clone will be set to custom appearance");
+            statusBar.UpdateStatus($"Added {(gender.IsFemale() ? "female" : "male")} headmorph file");
         }
 
         public bool CanApplyAsync {
@@ -375,7 +375,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     relinker.RelinkMorph();
                 }
 
-                (sender as BackgroundWorker).ReportProgress(0, $"Applied;{(gender.IsFemale() ? "female" : "male")}");
+                (sender as BackgroundWorker).ReportProgress(0, $"Applied;{(gender.IsFemale() ? "Female" : "Male")}");
                 return true;
             } else {
                 if (resourcesNotFound.Count > 0) {
@@ -450,8 +450,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                     statusBar.UpdateStatus("Default appearance for the female clone set");
                     break;
                 case "Applied":
-                    statusBar.UpdateStatus($"Applied {status[1]} headmorph");
-                    windowManager.ShowDialogAsync(new CustomMessageBoxViewModel($"The {status[1]} headmorph was applied succesfully.",
+                    statusBar.UpdateStatus($"{status[1]} headmorph applied");
+                    windowManager.ShowDialogAsync(new CustomMessageBoxViewModel($"{status[1]} headmorph applied succesfully.",
                         "Success", "OK"), null, null);
                     break;
                 case "ResourcesNotFound":
@@ -471,7 +471,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 statusBar.UpdateStatus("");
                 IsBusy = false;
             } else if (e.Cancelled) {
-                statusBar.UpdateStatus($"The morphs were not applied");
+                statusBar.UpdateStatus($"The morphs were not applied due to an error");
                 IsBusy = false;
             } else {
                 IsBusy = false;

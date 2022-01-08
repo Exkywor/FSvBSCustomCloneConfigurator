@@ -31,7 +31,9 @@
 
             <StackPanel Grid.Row="0" Grid.Column="0">
                 <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">GAME TARGET</TextBlock>
-                <TextBlock TextWrapping="Wrap">Select the game to apply changes to.</TextBlock>
+                <TextBlock TextWrapping="Wrap">
+                    Select the game to apply the changes to.
+                </TextBlock>
             </StackPanel>
 
             <Rectangle VerticalAlignment="Stretch" Fill="Gray" Width="1" Grid.Row="0" Grid.Column="1"/>
@@ -64,10 +66,14 @@
         <!-- Appearance -->
         <StackPanel Grid.Row="1" Margin="0,30,0,15">
             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">
-                APPEARANCE
+                CLONE'S APPEARANCE
             </TextBlock>
             <TextBlock TextWrapping="Wrap">
-                Toggle the appearance for the male and female clones between the default iconic head or the custom headmorph.
+                Select either, or both, male and female .ron headmorph files to apply to the clone.
+                Choose "Default" to revert any custom appearance back to the default iconic one.
+                <LineBreak/>
+                Pressing "Apply" will set the selected options, remove any previously applied headmorph, and set the
+                appearance to "Default" if you haven't chosen a morph.
             </TextBlock>
         </StackPanel>
 
@@ -90,11 +96,11 @@
             <Rectangle VerticalAlignment="Stretch" Fill="Gray" Margin="5,0,20,0" Width="1" Grid.Row="0" Grid.Column="1"/>
             <RadioButton Content="Default" IsChecked="{Binding IsMaleDefault}"
                          cal:Message.Attach="SetDefaultAppearance('Male')"
-                         ToolTip="Set the male clone to use Broshep's head"
+                         ToolTip="Set the male clone to use the default Broshep head"
                          GroupName="MaleCond" Margin="0,0,20,0" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" />
             <RadioButton Content="Custom" IsChecked="{Binding IsMaleCustom}"
                          cal:Message.Attach="SetCustomAppearance('Male')"
-                         ToolTip="Set the male clone to use headmorph"
+                         ToolTip="Select a headmorh to apply to the male clone"
                          Margin="0,0,10,0" GroupName="MaleCond" Grid.Row="0" Grid.Column="3"  HorizontalAlignment="Center"/>
             <TextBox Text="{Binding RonMFile, Mode=OneWay}"
                      ToolTip="Selected male headmorph file."
@@ -105,11 +111,11 @@
             <Rectangle VerticalAlignment="Stretch" Fill="Gray" Margin="5,0,20,0" Width="1" Grid.Row="2" Grid.Column="1"/>
             <RadioButton Content="Default" IsChecked="{Binding IsFemaleDefault}"
                          cal:Message.Attach="SetDefaultAppearance('Female')"
-                         ToolTip="Set the female clone to use Broshep's head"
+                         ToolTip="Set the female clone to use the default Femshep head"
                          GroupName="FemaleCond" Margin="0,0,20,0" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" />
             <RadioButton Content="Custom" IsChecked="{Binding IsFemaleCustom}"
                          cal:Message.Attach="SetCustomAppearance('Female')"
-                         ToolTip="Set the female clone to use headmorph"
+                         ToolTip="Select a headmorh to apply to the female clone"
                          Margin="0,0,10,0" GroupName="FemaleCond" Grid.Row="2" Grid.Column="3"  HorizontalAlignment="Center"/>
             <TextBox Text="{Binding RonFFile, Mode=OneWay}"
                      ToolTip="Selected female headmorph file."
@@ -119,9 +125,8 @@
             <!-- Apply -->
             <Button Content="Apply"
                     cal:Message.Attach="ApplyAsync"
-                    ToolTip="Apply the headmorph(s) to the target game. This clears any previously applied headmorph."
+                    ToolTip="Apply the selected options to the mod files of the target game. THis clears any previously applied headmorphs."
                     Margin="0,30,0,0" Grid.Row="3" Grid.ColumnSpan="5" Width="100" />
-
         </Grid>
     </Grid>
 </UserControl>
