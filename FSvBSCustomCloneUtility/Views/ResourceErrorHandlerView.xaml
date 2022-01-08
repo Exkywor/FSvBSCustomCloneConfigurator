@@ -20,7 +20,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Grid.Row="0">
-            <fa5:ImageAwesome Icon="{Binding ErrIcon}" Foreground="white" Width="50" Height="48" Margin="0,10,20,0" VerticalAlignment="Top"/>
+            <fa5:ImageAwesome Icon="{Binding ErrIcon}" Foreground="white" Width="50" Height="50" Margin="0,10,20,0" VerticalAlignment="Top"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
                 <TextBlock x:Name="ErrDescription" HorizontalAlignment="Stretch" TextWrapping="Wrap" Width="490"/>
                 <TextBlock x:Name="ErrInstructions" HorizontalAlignment="Stretch"  Margin="0,10,0,5" TextWrapping="Wrap" Width="490"/>

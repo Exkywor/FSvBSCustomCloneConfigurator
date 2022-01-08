@@ -66,5 +66,14 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 await ActivateItemAsync(observer);
             }
         }
+
+        public void LaunchInfoWindow() {
+
+        }
+        public void LaunchHelpWindow() {
+            windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(
+                    "The FemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.", "Error", "OK"),
+                null, null);
+        }
     }
 }

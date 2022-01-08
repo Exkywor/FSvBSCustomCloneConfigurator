@@ -5,8 +5,5 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FSvBSCustomCloneUtility.Views"
              mc:Ignorable="d">
-    <StackPanel>
-        <Rectangle HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
-        <TextBlock Margin="0,10,0,0" x:Name="StatusMessage"/>
-    </StackPanel>
+    <TextBlock x:Name="StatusMessage"/>
 </UserControl>

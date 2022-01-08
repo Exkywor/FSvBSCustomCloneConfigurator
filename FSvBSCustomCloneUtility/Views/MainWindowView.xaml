@@ -13,8 +13,8 @@
         mc:Ignorable="d"
         Title="FemShep v BroShep Utility Tool"
         WindowStartupLocation="CenterScreen"
-        Width="720" Height="500"
-        MinWidth="720" MinHeight="500">
+        Width="760" Height="545"
+        MinWidth="760" MinHeight="545">
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
@@ -24,15 +24,18 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="10" />
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
@@ -44,7 +47,7 @@
                 <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <Grid.Background>
-                <ImageBrush ImageSource="../images/main_banner.png" Stretch="UniformToFill"/>
+                <ImageBrush RenderOptions.BitmapScalingMode="HighQuality" ImageSource="../images/main_banner.png" Stretch="UniformToFill"/>
             </Grid.Background>
 
             <Button Grid.Column="2" Grid.Row="0" x:Name="VisitME3"
@@ -53,11 +56,30 @@
             <Button Grid.Column="2" Grid.Row="1" x:Name="VisitLE3" 
                     Content="Visit LE3 mod site" ToolTip="Visit the LE3 mod on NexusMods"
                     VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="auto" />
-            <Image VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="1" Source="../images/logo.png" MaxWidth="400" Margin="10"/>
+            <Image RenderOptions.BitmapScalingMode="Fant"  VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="1" Source="../images/logo.png" Width="400" MaxWidth="400" Margin="10"/>
         </Grid>
 
 
-        <ContentControl Margin="10,20,10,10" Grid.Row="2" Grid.Column="1" x:Name="MorphControl" />
-        <ContentControl Margin="10" Grid.Row="3" Grid.Column="1" x:Name="StatusBar"/>
+        <ContentControl Margin="10,20,10,10" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" x:Name="MorphControl" />
+
+        <!-- Bottom -->
+        <Rectangle Margin="10,5,10,0" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+        <ContentControl Margin="10" Grid.Row="4" Grid.Column="1" x:Name="StatusBar"/>
+
+        <Button x:Name="LaunchInfoWindow"
+                Background="#2a2b34" BorderThickness="0"
+                Margin="20,10,0,0" Grid.Row="4" Grid.Column="2" VerticalAlignment="Top">
+            <Button.Content>
+                <fa5:ImageAwesome Icon="Solid_InfoCircle" Foreground="white" Width="15" Height="15"/>
+            </Button.Content>
+        </Button>
+        <Button x:Name="LaunchHelpWindow"
+                Background="#2a2b34" BorderThickness="0"
+                Margin="0,10,10,0" Grid.Row="4" Grid.Column="3" VerticalAlignment="Top">
+            <Button.Content>
+                <fa5:ImageAwesome Icon="Solid_QuestionCircle" Foreground="white" Width="15" Height="15"/>
+            </Button.Content>
+        </Button>
     </Grid>
 </Window>
