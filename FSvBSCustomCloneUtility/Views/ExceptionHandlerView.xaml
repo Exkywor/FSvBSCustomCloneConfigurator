@@ -23,6 +23,7 @@
         </StackPanel>
         <Grid Margin="0,15" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="85"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="90"/>
@@ -30,9 +31,11 @@
             </Grid.ColumnDefinitions>
             <Button Content="Copy" Width="75" Grid.Column="0" HorizontalAlignment="Left" x:Name="Copy"
                     ToolTip="Copy the exception message to the clipboard" />
-            <Button Content="Continue" Width="80" Grid.Column="2" HorizontalAlignment="Right" x:Name="Continue"
+            <Button Content="Post an Issue" Width="100" Grid.Column="1" HorizontalAlignment="Left" x:Name="NewIssue"
+                    ToolTip="Post an issue"/>
+            <Button Content="Continue" Width="80" Grid.Column="3" HorizontalAlignment="Right" x:Name="Continue"
                     ToolTip="Continue the execution of the application"/>
-            <Button Content="Quit" Width="80" Grid.Column="3" HorizontalAlignment="Right" x:Name="Quit"
+            <Button Content="Quit" Width="80" Grid.Column="4" HorizontalAlignment="Right" x:Name="Quit"
                     ToolTip="Quit the application"/>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Visible" Height="{Binding ExceptionHeight}" MaxHeight="450" VerticalAlignment="Top">

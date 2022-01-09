@@ -1,0 +1,24 @@
+{"How do I get the .ron morph files to apply?" :
+"Download Trilogy Save Editor (from NexusMods) and in it open the save file containing your morph. Then go to the Head Morph tab and click Export. This will create a .ron file that you can then load into this tool.",
+"How do I revert to the default BroShep/FemShep appearance of the clone?" :
+"Selecte Default under Clone's Appearance for the clone you want. Note that any previously applied morphs will be removed, so you must select any morphs you want to use before hitting Apply.",
+"Can I use the default appearance for either the male/female clone, and a headmorph for the other one?" :
+"Yes. Select Default for the clone you want to have use the default appearance, and Custom for the other.",
+"Can I apply a male morph to a female clone and vice-versa?" :
+"No if you don't wanna see imploded heads.",
+"I don't have access to/can't remember the mods my morph uses, what should I do?" :
+"Simnply remove the lines that refer to them from your .ron file.",
+"Does it matter if I'm using the alternative version of the mod?" :
+"Not at all. You can use either the normal or alternative versions of the mod without issue, as long as their version is compatible.",
+"How do I add scars to my custom clone?" :
+"You need to add HED_Face_Alignment_Emis, HED_Face_Alignment_Norm, EYE_Diff texture paremeters using Face_EmisScars_0[1-5] textures.",
+"I choose scars when installing the mod, but can't see them after I apply the morph, what is happening?" :
+"The scars install options when installing the mod with Mod Manager control the scars for the Default Appearance, not for custom headmorphs.",
+"Some color/texture doesn't look exactly how it should, what should I do?" :
+"In rare ocasions some scalars don't translate the same to the clone, so try tweaking them in the .ron file. If that doesn't work, post a bug in the mod page.",
+"Can I use this tool after installing texture mods?" :
+"Yes you can. As long as you just use the tool it should not present any issues.",
+"I previously applied a morph for either the female/male clone only, then in a later use of the tool applied a morph for the other clone, but the previous morph got removed and reset to the default appearance, what happened?" :
+"Whenever you apply a morph, the mod files are reset to avoid any issues, removing in the process any previously applied morph. ",
+"An Unhandled Exception occurred, what should I do?" :
+"Click the Copy button on the exception window, paste it in an online pastebin, then post the link to it in the bug section of the mod page."}

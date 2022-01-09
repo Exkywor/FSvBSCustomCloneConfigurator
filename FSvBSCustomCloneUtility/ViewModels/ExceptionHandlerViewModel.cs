@@ -5,6 +5,7 @@ using Caliburn.Micro;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.Helpers;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +43,14 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             try { Clipboard.SetText(ExceptionStackTrace); }
             catch (Exception) { }
         }
+
+        public void NewIssue() {
+            Process.Start(new ProcessStartInfo {
+                FileName = $"https://github.com/Exkywor/FSvBSCustomCloneUtility/issues/new",
+                UseShellExecute = true
+            });
+        }
+
     }
 }
 

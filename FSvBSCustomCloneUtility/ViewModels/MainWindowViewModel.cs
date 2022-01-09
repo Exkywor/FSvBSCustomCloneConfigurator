@@ -1,11 +1,14 @@
 ﻿using Caliburn.Micro;
 using FSvBSCustomCloneUtility.InterfacesAndClasses;
+using FSvBSCustomCloneUtility.Models;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using Path = System.IO.Path;
@@ -14,6 +17,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
     public class MainWindowViewModel : Conductor<PropertyChangedBase> {
         private static IWindowManager windowManager = new WindowManager();
         private List<PropertyChangedBase> controls = new();
+        private List<FAQItem> faq = new();
+
         public PropertyChangedBase MorphControl { get; set; }
         public StatusBar StatusBar { get; set; }
 
@@ -44,6 +49,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             controls.Add(StatusBar);
             controls.Add(MorphControl);
 
+            LoadFAQ();
             LoadViewAsync();
         } 
 
@@ -67,12 +73,24 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             }
         }
 
+        /// <summary>
+        /// Load the FAQ json to a dictionary
+        /// Done here to avoid rereading every time you launch the help window
+        /// </summary>
+        private void LoadFAQ() {
+            using StreamReader sr = new("../../../resources/FAQ.json");
+            string faqString = sr.ReadToEnd();
+            Dictionary<string, string> faqParsed = JsonSerializer.Deserialize<Dictionary<string, string>>(faqString);
+            foreach (string i in faqParsed.Keys) {
+                faq.Add(new FAQItem(i, faqParsed[i]));
+            }
+        }
+
         public void LaunchInfoWindow() {
 
         }
         public void LaunchHelpWindow() {
-            windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(
-                    "The FemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.", "Error", "OK"),
+            windowManager.ShowWindowAsync(new FAQWindowViewModel(faq),
                 null, null);
         }
     }
