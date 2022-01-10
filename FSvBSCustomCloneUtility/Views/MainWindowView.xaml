@@ -11,7 +11,7 @@
         xmlns:viewmodels="clr-namespace:FSvBSCustomCloneUtility.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="FemShep v BroShep Utility Tool"
+        Title="FemShep v BroShep Custom Clone Configurator"
         WindowStartupLocation="CenterScreen"
         Width="760" Height="545"
         MinWidth="760" MinHeight="545">

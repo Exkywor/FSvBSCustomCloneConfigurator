@@ -9,12 +9,12 @@
     <PackageProjectUrl>https://www.nexusmods.com/masseffectlegendaryedition/mods/850</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/Exkywor/FSvBSCustomCloneUtility/</RepositoryUrl>
-    <Description>FemShep v BroShep Utility Tool</Description>
-    <PackageLicenseFile>D:\dev\projects\FSvBSCustomCloneUtility\FSvBSCustomCloneUtility\LICENSE.txt</PackageLicenseFile>
+    <Description>FemShep v BroShep Custom Clone Configurator</Description>
+    <PackageLicenseFile>D:\dev\projects\FSvBSCustomCloneUtility\LICENSE.txt</PackageLicenseFile>
     <SignAssembly>False</SignAssembly>
     <Authors>Exkywor</Authors>
-    <Product>FSvBSUtilityTool</Product>
-    <AssemblyName>FSvBSUtilityTool</AssemblyName>
+    <Product>FSvBSCustomCloneConfigurator</Product>
+    <AssemblyName>FSvBSC3</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
