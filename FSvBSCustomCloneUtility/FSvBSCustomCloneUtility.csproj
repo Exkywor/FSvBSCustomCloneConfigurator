@@ -6,6 +6,23 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>resources\images\icon.ico</ApplicationIcon>
     <IsPublishable>True</IsPublishable>
+    <PackageProjectUrl>https://www.nexusmods.com/masseffectlegendaryedition/mods/850</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Exkywor/FSvBSCustomCloneUtility/</RepositoryUrl>
+    <Description>FemShep v BroShep Utility Tool</Description>
+    <PackageLicenseFile>D:\dev\projects\FSvBSCustomCloneUtility\FSvBSCustomCloneUtility\LICENSE.txt</PackageLicenseFile>
+    <SignAssembly>False</SignAssembly>
+    <Authors>Exkywor</Authors>
+    <Product>FSvBSUtilityTool</Product>
+    <AssemblyName>FSvBSUtilityTool</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <ItemGroup>
@@ -68,6 +85,10 @@
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="resources\images\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
