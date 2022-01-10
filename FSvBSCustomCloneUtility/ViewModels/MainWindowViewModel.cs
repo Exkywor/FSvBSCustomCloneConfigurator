@@ -87,11 +87,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         public void LaunchInfoWindow() {
+            windowManager.ShowWindowAsync(new InfoWindowViewModel(), null, null);
 
         }
-        public void LaunchHelpWindow() {
-            windowManager.ShowWindowAsync(new FAQWindowViewModel(faq),
-                null, null);
+
+        public void LaunchFAQWindow() {
+            windowManager.ShowWindowAsync(new FAQWindowViewModel(faq), null, null);
         }
     }
 }

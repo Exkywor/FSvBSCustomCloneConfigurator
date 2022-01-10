@@ -68,15 +68,15 @@
         <ContentControl Margin="10" Grid.Row="4" Grid.Column="1" x:Name="StatusBar"/>
 
         <Button x:Name="LaunchInfoWindow"
-                ToolTip="Open the Information window"
+                ToolTip="Information"
                 Background="#2a2b34" BorderThickness="0"
                 Margin="20,10,0,0" Grid.Row="4" Grid.Column="2" VerticalAlignment="Top">
             <Button.Content>
                 <fa5:ImageAwesome Icon="Solid_InfoCircle" Foreground="white" Width="15" Height="15"/>
             </Button.Content>
         </Button>
-        <Button x:Name="LaunchHelpWindow"
-                ToolTip="Open the FAQ window"
+        <Button x:Name="LaunchFAQWindow"
+                ToolTip="Frequently Asked Questions"
                 Background="#2a2b34" BorderThickness="0"
                 Margin="0,10,10,0" Grid.Row="4" Grid.Column="3" VerticalAlignment="Top">
             <Button.Content>
