@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSvBSCustomCloneUtility.Views"
+        xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
@@ -12,36 +13,108 @@
     <Window.Style>
         <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}"/>
     </Window.Style>
-    <StackPanel Margin="20">
-        <StackPanel.Resources>
-            <Style x:Key="HyperlinkButton" TargetType="Button">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <ContentPresenter/>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Foreground" Value="Cyan"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        </StackPanel.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="400"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions> 
 
-        <Image RenderOptions.BitmapScalingMode="Fant"  VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="1" Source="../resources/images/logo.png" Width="400" MaxWidth="400" Margin="10"/>
-        <TextBlock FontSize="14" Text="{Binding FileVersion}" HorizontalAlignment="Center"/>
-        <Button Content="Visit GitHub site" Style="{StaticResource HyperlinkButton}" x:Name="OpenGitHub" HorizontalAlignment="Center"/>
-        <Button Content="Visit ME3 mod site" Style="{StaticResource HyperlinkButton}" x:Name="OpenME3" HorizontalAlignment="Center"/>
-        <Button Content="Visit LE3 mod site" Style="{StaticResource HyperlinkButton}" x:Name="OpenLE3" HorizontalAlignment="Center"/>
-        <TextBlock Text="CREDITS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-        <TextBlock>
-            This tool utilizes the Legendary Explorer Core and Mod Manager Core libraries in order to work.
-        </TextBlock>
-        <Button Content="Legendary Explorer" Style="{StaticResource HyperlinkButton}" x:Name="VisitLEX" HorizontalAlignment="Center"/>
-        <Button Content="Mass Effect Mod Manager" Style="{StaticResource HyperlinkButton}" x:Name="VisitM3" HorizontalAlignment="Center"/>
-    </StackPanel>
+        <Image RenderOptions.BitmapScalingMode="Fant" VerticalAlignment="Center" Grid.Row="0"
+               Source="../resources/images/logo.png" Width="400" MaxWidth="400" Margin="10,10,10,20"/>
+        <ScrollViewer Grid.Row="1">
+            <StackPanel >
+                <StackPanel.Resources>
+                    <Style x:Key="HyperlinkButton" TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Foreground" Value="Cyan"/>
+                        <Setter Property="FontSize" Value="14"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Resources>
+
+                <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding FileVersion}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <Button Content="Visit GitHub site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('GH')"/>
+
+                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Visit ME3 mod site    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('ME3')"/>
+                    <Button Content="    Visit LE3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('LE3')"/>
+                </StackPanel>
+
+                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+                <TextBlock Text="LIBRARIES" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Legendary Explorer Core    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('LEX')"/>
+                    <Button Content="    M3Tweaks Mod Manager Core    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('M3')"/>
+                    <Button Content="    Caliburn.Micro" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('CM')"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="FontAwesome5    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('FA')"/>
+                    <Button Content="    AdonisUI    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('AU')"/>
+                    <Button Content="    Microsoft-WindowsAPICodePack" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                         cal:Message.Attach="OpenSite('MW')"/>
+                </StackPanel>
+
+                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+                <TextBlock FontSize="14" HorizontalAlignment="Center">
+                    App icon by Audemus
+                </TextBlock>
+                <TextBlock FontSize="14" HorizontalAlignment="Center">
+                    Tool name by Jade
+                </TextBlock>
+
+                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+                <TextBlock Text="SPECIAL THANKS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
+                    Noira Fayn, Mgamerz, DropTheSquid, Audemus, Jade, Jenya, Sil, Padme4000, Morning Angel,
+                    VoodooLilium, CluckenDip, phoenixsoul13, Knightingale, ThaliaGrace, LEX Developers
+                </TextBlock>
+
+                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+                <TextBlock Text="LICENSE" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
+                    Copyright (C) 2022 Exkywor
+                    <LineBreak/><LineBreak/>
+                    This program is free software: you can redistribute it and/or modify
+                    it under the terms of the GNU General Public License as published by
+                    the Free Software Foundation, either version 3 of the License, or
+                    (at your option) any later version.
+                    <LineBreak/><LineBreak/>
+                    This program is distributed in the hope that it will be useful,
+                    but WITHOUT ANY WARRANTY; without even the implied warranty of
+                    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                    GNU General Public License for more details.
+                    <LineBreak/><LineBreak/>
+                    You should have received a copy of the GNU General Public License
+                    along with this program.  If not, see https://www.gnu.org/licenses/
+                </TextBlock>
+            </StackPanel>
+        </ScrollViewer>
+        <Button Margin="0,20,0,0" Grid.Row="2" Content="Close" Width="80" x:Name="Close" HorizontalAlignment="Right"
+                ToolTip="Close this window"/>
+    </Grid>
 </Window>
