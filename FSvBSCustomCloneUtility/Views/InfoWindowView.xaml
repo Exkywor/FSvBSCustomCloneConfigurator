@@ -49,10 +49,15 @@
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
+                <TextBlock Text="COMPATIBLE MOD VERSIONS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="Visit ME3 mod site    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                    <TextBlock Text="Mass Effect 3: 1.1.0    " FontSize="14"/>
+                    <Button Content="Visit ME3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('ME3')"/>
-                    <Button Content="    Visit LE3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Mass Effect 3 LE: 1.1.0    " FontSize="14"/>
+                    <Button Content="Visit LE3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('LE3')"/>
                 </StackPanel>
 
