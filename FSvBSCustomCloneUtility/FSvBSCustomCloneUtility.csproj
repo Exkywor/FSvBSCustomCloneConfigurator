@@ -8,13 +8,15 @@
     <IsPublishable>True</IsPublishable>
     <PackageProjectUrl>https://www.nexusmods.com/masseffectlegendaryedition/mods/850</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
-    <RepositoryUrl>https://github.com/Exkywor/FSvBSCustomCloneUtility/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Exkywor/FSvBSCustomCloneConfigurator/</RepositoryUrl>
     <Description>FemShep v BroShep Custom Clone Configurator</Description>
     <PackageLicenseFile>D:\dev\projects\FSvBSCustomCloneUtility\LICENSE.txt</PackageLicenseFile>
     <SignAssembly>False</SignAssembly>
     <Authors>Exkywor</Authors>
     <Product>FSvBSCustomCloneConfigurator</Product>
     <AssemblyName>FSvBSC3</AssemblyName>
+    <Copyright>Copyright (C) 2022 Exkywor</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -40,6 +42,13 @@
 
   <ItemGroup>
     <Content Include="resources\images\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

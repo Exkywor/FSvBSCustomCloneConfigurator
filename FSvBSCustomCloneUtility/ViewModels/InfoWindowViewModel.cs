@@ -20,7 +20,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
             switch (target) {
                 case "GH":
-                    url = "https://github.com/Exkywor/FSvBSCustomCloneUtility/";
+                    url = "https://github.com/Exkywor/FSvBSCustomCloneConfigurator/";
                     break;
                 case "ME3":
                     url = "https://www.nexusmods.com/masseffect3/mods/975";

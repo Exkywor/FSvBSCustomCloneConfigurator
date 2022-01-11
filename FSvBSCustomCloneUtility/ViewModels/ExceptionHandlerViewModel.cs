@@ -33,7 +33,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public void NewIssue() {
             Process.Start(new ProcessStartInfo {
-                FileName = $"https://github.com/Exkywor/FSvBSCustomCloneUtility/issues/new?assignees=&labels=&template=headmorph-bug-report.md&title=",
+                FileName = $"https://github.com/Exkywor/FSvBSCustomCloneConfigurator/issues/new?assignees=&labels=&template=headmorph-bug-report.md&title=",
                 UseShellExecute = true
             });
         }
