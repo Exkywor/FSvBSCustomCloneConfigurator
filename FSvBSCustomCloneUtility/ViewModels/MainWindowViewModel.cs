@@ -18,27 +18,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private static IWindowManager windowManager = new WindowManager();
         private List<PropertyChangedBase> controls = new();
         private List<FAQItem> faq = new();
-
         public PropertyChangedBase MorphControl { get; set; }
         public StatusBar StatusBar { get; set; }
-
-
-        public void VisitME3() {
-            VisitModSite(MEGame.ME3);
-        }
-
-        public void VisitLE3() {
-            VisitModSite(MEGame.LE3);
-        }
-
-        public void VisitModSite(MEGame game) {
-            string gameSite = game.IsLEGame() ? "masseffectlegendaryedition" : "masseffect3";
-            string modNumber = game.IsLEGame() ? "850" : "975";
-            Process.Start(new ProcessStartInfo {
-                FileName = @$"http://www.nexusmods.com/{gameSite}/mods/{modNumber}",
-                UseShellExecute = true
-            });
-        }
 
         public MainWindowViewModel() {
             initCoreLib();
@@ -84,6 +65,19 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             foreach (string i in faqParsed.Keys) {
                 faq.Add(new FAQItem(i, faqParsed[i]));
             }
+        }
+
+        /// <summary>
+        /// Open the mod website for the input game
+        /// </summary>
+        /// <param name="game">Game to open the mod site for</param>
+        public void VisitModSite(MEGame game) {
+            string gameSite = game.IsLEGame() ? "masseffectlegendaryedition" : "masseffect3";
+            string modNumber = game.IsLEGame() ? "850" : "975";
+            Process.Start(new ProcessStartInfo {
+                FileName = @$"http://www.nexusmods.com/{gameSite}/mods/{modNumber}",
+                UseShellExecute = true
+            });
         }
 
         public void LaunchInfoWindow() {

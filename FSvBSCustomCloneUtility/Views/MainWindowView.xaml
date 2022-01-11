@@ -50,10 +50,12 @@
                 <ImageBrush RenderOptions.BitmapScalingMode="HighQuality" ImageSource="../resources/images/main_banner.png" Stretch="UniformToFill"/>
             </Grid.Background>
 
-            <Button Grid.Column="2" Grid.Row="0" x:Name="VisitME3"
+            <Button Grid.Column="2" Grid.Row="0"
+                    cal:Message.Attach="VisitModSite('ME3')"
                     Content="Visit ME3 mod site" ToolTip="Visit the ME3 mod on NexusMods"
                     VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,15,0,0" Width="150" Height="auto"/>
-            <Button Grid.Column="2" Grid.Row="1" x:Name="VisitLE3" 
+            <Button Grid.Column="2" Grid.Row="1"
+                    cal:Message.Attach="VisitModSite('LE3')"
                     Content="Visit LE3 mod site" ToolTip="Visit the LE3 mod on NexusMods"
                     VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,15" Width="150" Height="auto" />
             <Image RenderOptions.BitmapScalingMode="Fant"  VerticalAlignment="Center" Grid.RowSpan="2" Grid.Column="1" Source="../resources/images/logo.png" Width="400" MaxWidth="400" Margin="10"/>

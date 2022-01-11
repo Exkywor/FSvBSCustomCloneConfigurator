@@ -31,6 +31,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             WindowHeight = (Convert.ToDouble(ExceptionHeight) + 200).ToString();
         }
 
+        public void NewIssue() {
+            Process.Start(new ProcessStartInfo {
+                FileName = $"https://github.com/Exkywor/FSvBSCustomCloneUtility/issues/new?assignees=&labels=&template=headmorph-bug-report.md&title=",
+                UseShellExecute = true
+            });
+        }
+
         public void Quit() {
             Environment.Exit(1);
         }
@@ -43,14 +50,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             try { Clipboard.SetText(ExceptionStackTrace); }
             catch (Exception) { }
         }
-
-        public void NewIssue() {
-            Process.Start(new ProcessStartInfo {
-                FileName = $"https://github.com/Exkywor/FSvBSCustomCloneUtility/issues/new",
-                UseShellExecute = true
-            });
-        }
-
     }
 }
 

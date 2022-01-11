@@ -19,6 +19,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         private IWindowManager windowManager = new WindowManager();
         private StatusBar statusBar;
 
+        /// <summary>
+        /// Whether or not the app is busy. Used to disable UI interactions while a process is happening
+        /// </summary>
         private bool _isBusy = false;
         protected bool IsBusy {
             get { return _isBusy; }
@@ -35,9 +38,14 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         // GAME TARGET AND PATH PROPERTIES
-        // Prevent us from trying to set the path if it's already set
+
+        // Checks to prevent trying to set the path if it's already set
         private bool ME3PathChecked = false;
         private bool LE3PathChecked = false;
+
+        public bool CanSetGameTarget {
+            get { return !IsBusy; }
+        }
 
         private bool _isME3 = false;
         public bool IsME3 {
@@ -124,6 +132,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         // MORPH PROPERTIES
         private bool _applyToActor = true;
 
+        public bool CanSetDefaultAppearance {
+            get { return TargetGame != null && !IsBusy; }
+        }
+        public bool CanSetCustomAppearance {
+            get { return TargetGame != null && !IsBusy; }
+        }
+
         private string _ronMFile = "";
         public string RonMFile {
             get { return _ronMFile; }
@@ -156,10 +171,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         // GAME TARGET METHODS
-        public bool CanSetGameTarget {
-            get { return !IsBusy; }
-        }
 
+        /// <summary>
+        /// Sets the game target to modify
+        /// </summary>
+        /// <param name="game">Game target</param>
         public void SetGameTarget(MEGame game) {
             // Get game path only if we haven't gotten it already
             if (game.IsOTGame()) {
@@ -248,13 +264,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         }
 
         // CONDITIONALS METHODS
-        public bool CanSetDefaultAppearance {
-            get { return TargetGame != null && !IsBusy; }
-        }
-        public bool CanSetCustomAppearance {
-            get { return TargetGame != null && !IsBusy; }
-        }
-
         public void SetDefaultAppearance(Gender gender) {
             if (gender.IsFemale()) {
                 IsFemaleCustom = false;
@@ -292,6 +301,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             get { return TargetGame != null && (RonMFile != "" || RonFFile != "" || !IsMaleCustom || !IsFemaleCustom) && !IsBusy; }
         }
 
+        /// <summary>
+        /// Starting method for the apply process. It creates and configures the background worker for multi-threading
+        /// </summary>
         public void ApplyAsync() {
             BackgroundWorker worker = new();
             worker.WorkerReportsProgress = true;
@@ -303,6 +315,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             worker.RunWorkerAsync();
         }
 
+        /// <summary>
+        /// The proper apply method that will be run in a different thread than the UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Apply(object sender, DoWorkEventArgs e) {
             (sender as BackgroundWorker).ReportProgress(0, "Busy");
             List<Gender> targets = new(); // Aggregation of targets

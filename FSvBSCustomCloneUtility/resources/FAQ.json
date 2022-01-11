@@ -15,10 +15,10 @@
 "I choose scars when installing the mod, but can't see them after I apply the morph, what is happening?" :
 "The scars install options when installing the mod with Mod Manager control the scars for the Default Appearance, not for custom headmorphs.",
 "Some color/texture doesn't look exactly how it should, what should I do?" :
-"In rare ocasions some scalars don't translate the same to the clone, so try tweaking them in the .ron file. If that doesn't work, post a bug in the mod page.",
-"Can I use this tool after installing texture mods?" :
-"Yes you can. As long as you just use the tool it should not present any issues.",
+"First of all check that it's not the lighting of the scene, since that can make some colors look a bit off. However, in rare ocasions some scalars don't translate the same to the clone, so try tweaking them in the .ron file. If that doesn't work, post a bug report in the Github page.",
+"Can I use this tool after installing texture mods, like ALOT?" :
+"Yes, provided that any required mods are installed pre-texture modding. You can even toggle between the custom and default appearances using this tool without issues.",
 "I previously applied a morph for either the female/male clone only, then in a later use of the tool applied a morph for the other clone, but the previous morph got removed and reset to the default appearance, what happened?" :
 "Whenever you apply a morph, the mod files are reset to avoid any issues, removing in the process any previously applied morph. ",
 "An Unhandled Exception occurred, what should I do?" :
-"Click the Copy button on the exception window, paste it in an online pastebin, then post the link to it in the bug section of the mod page."}
+"Click the Copy button on the exception window, paste it in an online pastebin, then add it in a bug report in the Github page."}
