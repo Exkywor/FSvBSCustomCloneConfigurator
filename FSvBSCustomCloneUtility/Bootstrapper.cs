@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using FSvBSCustomCloneUtility.ViewModels;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,11 @@ namespace FSvBSCustomCloneUtility
     {
         public Bootstrapper()
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File("FSvBSC3_log_.txt", rollingInterval: RollingInterval.Hour)
+                .CreateLogger();
+            
             Initialize();
         }
 
@@ -24,8 +30,10 @@ namespace FSvBSCustomCloneUtility
         }
 
         protected override void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) {
+            Log.Error(e.Exception.ToString());
+            
             IWindowManager manager = new WindowManager();
-            manager.ShowDialogAsync(new ExceptionHandlerViewModel(e.Exception), null, null);;
+            manager.ShowDialogAsync(new ExceptionHandlerViewModel(null), null, null);;
             e.Handled = true;
         }
     }

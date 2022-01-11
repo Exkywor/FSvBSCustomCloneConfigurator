@@ -4,6 +4,7 @@ using FSvBSCustomCloneUtility.InterfacesAndClasses;
 using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -484,6 +485,14 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         private void Apply_RunWokerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (e.Error != null) {
+                string info = $"Error when applying to {TargetGame}.";
+                if (IsMaleCustom) { info += $"\nMale Custom appearance: {RonMFile}\n{File.ReadAllText(RonMFile)}"; }
+                if (IsFemaleCustom) { info += $"\nFemale Custom appearance: {RonFFile}\n{File.ReadAllText(RonFFile)}"; }
+                if (!IsMaleCustom) { info += "\nMale Default appearance."; }
+                if (!IsFemaleCustom) { info += "\nFemale Default appearance."; }
+                Log.Error(info);
+                Log.Error($"Error message:\n {e.Error}");
+
                 windowManager.ShowDialogAsync(new ExceptionHandlerViewModel(e.Error), null, null);;
                 statusBar.UpdateStatus("");
                 IsBusy = false;
