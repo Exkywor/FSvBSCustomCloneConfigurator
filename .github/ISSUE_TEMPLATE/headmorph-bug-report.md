@@ -32,6 +32,9 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
+**Log**
+Go to the FSvBSC3 folder, find the log file corresponding to the hour when the error occurred. Copy the messages inside the log into an online pastebin, then copy the link to that here.
+
 **Stack Trace**
 If you see an error dialog with details or a copy button, post those details here. 
 
