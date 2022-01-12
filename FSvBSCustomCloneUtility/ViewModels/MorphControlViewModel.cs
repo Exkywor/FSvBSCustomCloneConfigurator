@@ -12,7 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using System.IO;
+using Action = System.Action;
 using Path = System.IO.Path;
 
 namespace FSvBSCustomCloneUtility.ViewModels {
@@ -171,42 +173,59 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             this.statusBar = statusBar;
         }
 
-        // GAME TARGET METHODS
+        public MorphControlViewModel(StatusBar statusBar, MEGame game, string path) {
+            this.statusBar = statusBar;
 
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.ApplicationIdle, 
+                new Action(() => { SetGameTarget(game, path); }));
+        }
+
+        // GAME TARGET METHODS
         /// <summary>
         /// Sets the game target to modify
         /// </summary>
         /// <param name="game">Game target</param>
-        public void SetGameTarget(MEGame game) {
-            // Get game path only if we haven't gotten it already
-            if (game.IsOTGame()) {
-                if (!ME3PathChecked) {
-                    if (!GetGamePath(game)) {
-                        statusBar.UpdateStatus("ME3 game path not set");
-                        TargetGame = null;
-                        TargetPath = "";
-                        IsME3 = false;
-                        return;
-                    } else { ME3PathChecked = true; }
+        /// <param name="path">Game path passed by the command line, empty otherwise</param>
+        public void SetGameTarget(MEGame game, string path) {
+            // Game path passed in the command line
+            if (!string.IsNullOrEmpty(path)) {
+                string pathRes = Validators.ValidatePath(game, path);
+                if (!string.IsNullOrEmpty(pathRes)) {
+                    UnsetGameTarget(game, pathRes);
+                    return;
+                } else {
+                    if (game.IsOTGame()) {
+                        ME3PathChecked = true;
+                        ME3Directory.DefaultGamePath = path;
+                    } else {
+                        LE3PathChecked = true;
+                        LE3Directory.DefaultGamePath = path;
+                    }
                 }
             } else {
-                if (!LE3PathChecked) {
-                    if (!GetGamePath(game)) {
-                        statusBar.UpdateStatus("LE3 game path not set");
-                        TargetGame = null;
-                        TargetPath = "";
-                        IsLE3 = false;
-                        return;
-                    } else { LE3PathChecked = true; }
+                // Get game path only if we haven't gotten it already
+                if (game.IsOTGame()) {
+                    if (!ME3PathChecked) {
+                        if (!GetGamePath(game)) {
+                            UnsetGameTarget(game, "ME3 game path not set");
+                            return;
+                        } else { ME3PathChecked = true; }
+                    }
+                } else {
+                    if (!LE3PathChecked) {
+                        if (!GetGamePath(game)) {
+                            UnsetGameTarget(game, "LE3 game path not set");
+                            return;
+                        } else { LE3PathChecked = true; }
+                    }
                 }
             }
 
-            // Verify mod installation
-            if (!VerifyMod(game)) {
-                statusBar.UpdateStatus("The mod could not be found or is an incompatible version");
-                TargetGame = null;
-                TargetPath = "";
-                if (game.IsOTGame()) { IsME3 = false; } else { IsLE3 = false; }
+            // Validate mod installation
+            string modRes = Validators.ValidateMod(game);
+            if (!string.IsNullOrEmpty(modRes)) {
+                UnsetGameTarget(game, "The mod could not be found or is an incompatible version");
+                windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(modRes, "Error", "OK"), null, null);
                 return;
             }
 
@@ -231,37 +250,31 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
                 if (string.IsNullOrEmpty(file)) { return false; } // User didn't select a file
 
-                if (game.IsOTGame()) {
-                    ME3Directory.DefaultGamePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));
-                } else {
-                    LE3Directory.DefaultGamePath = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));
-                }
+                string rootDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(file)));
+
+                string res = Validators.ValidatePath(game, rootDir);
+                if (!string.IsNullOrEmpty(res)) { // Game path not valid
+                    windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(res, "Error", "OK"), null, null);
+                    return false;
+                } 
+
+                if (game.IsOTGame()) { ME3Directory.DefaultGamePath = rootDir; }
+                else { LE3Directory.DefaultGamePath = rootDir; }
             }
 
             return true;
         }
 
         /// <summary>
-        /// Verify that the mod is installed in its compatible version for the input game
+        /// Unsets the game target
         /// </summary>
-        /// <param name="game">Target game</param>
-        /// <returns></returns>
-        private bool VerifyMod(MEGame game) {
-            if (!FSvBSDirectories.IsModInstalled(game)) {
-                windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(
-                        "The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.", "Error", "OK"),
-                    null, null);
-
-                return false;
-            } else if (!FSvBSDirectories.IsValidDummies(game, FSvBSDirectories.GetDummiesPath(game))) {
-                windowManager.ShowDialogAsync(new CustomMessageBoxViewModel(
-                        "The FemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.", "Error", "OK"),
-                    null, null);
-
-                return false;
-            } else {
-                return true;
-            }
+        /// <param name="game">Game target to unset</param>
+        /// <param name="status">Status message to show</param>
+        private void UnsetGameTarget(MEGame game, string status) {
+            statusBar.UpdateStatus(status);
+            TargetGame = null;
+            TargetPath = "";
+            if (game.IsOTGame()) { IsME3 = false; } else { IsLE3 = false; }
         }
 
         // CONDITIONALS METHODS

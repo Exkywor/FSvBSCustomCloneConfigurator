@@ -12,7 +12,8 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public string FileVersion { get; set; }
 
         public InfoWindowViewModel() {
-            FileVersion = $"Version {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+            FileVersion = "Version 1.0.0.0";
+            // FileVersion = $"Version {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
         }
 
         public void OpenSite(string target) {

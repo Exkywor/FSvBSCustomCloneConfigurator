@@ -46,13 +46,13 @@
 
                 <RadioButton Content="Mass Effect 3" GroupName="Target"
                              IsChecked="{Binding IsME3}"
-                             cal:Message.Attach="SetGameTarget('ME3')"
+                             cal:Message.Attach="SetGameTarget('ME3', '')"
                              ToolTip="Set Mass Effect 3 as the target"
                              HorizontalAlignment="Center" Grid.Column="0"/>
 
                 <RadioButton Content="Mass Effect 3 LE" GroupName="Target"
                              IsChecked="{Binding IsLE3}"
-                             cal:Message.Attach="SetGameTarget('LE3')"
+                             cal:Message.Attach="SetGameTarget('LE3', '')"
                              ToolTip="Set Mass Effect 3 LE as the target"
                              HorizontalAlignment="Center" Grid.Column="1"/>
             </Grid>

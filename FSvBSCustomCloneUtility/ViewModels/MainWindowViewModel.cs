@@ -5,6 +5,8 @@ using FSvBSCustomCloneUtility.Tools;
 using LegendaryExplorerCore;
 using LegendaryExplorerCore.GameFilesystem;
 using LegendaryExplorerCore.Packages;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -23,15 +25,39 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         public MainWindowViewModel() {
             initCoreLib();
-
-            // Create views and adds them to the observers
+            
             StatusBar = new StatusBarViewModel();
-            MorphControl = new MorphControlViewModel(StatusBar);
-            controls.Add(StatusBar);
-            controls.Add(MorphControl);
+
+            // Snippet from https://github.com/Kinkojiro/EGM-Settings/blob/master/EGMSettings/EGMSettings.xaml.cs
+            // Check if game path was passed in the command line
+            string[] args = Environment.GetCommandLineArgs();
+            string argDir = "";
+            MEGame? argGame = null;
+
+            // Set the path and game if it's either ME3 or LE3
+            if (args.Length > 1 && !string.IsNullOrEmpty(args[1]) && Directory.Exists(argDir = Path.GetFullPath(args[1].Trim('"')))) {
+                //test if ME3 directory has been passed
+                if (File.Exists(Path.Combine(argDir, "Binaries\\Win32\\MassEffect3.exe"))) {
+                    argGame = MEGame.ME3;
+                }
+                //test if LE3 directory has been passed
+                if (File.Exists(Path.Combine(argDir, "Binaries\\Win64\\MassEffect3.exe"))) {
+                    argGame = MEGame.LE3;
+                }
+            }
+
+            // Call MorphControlViewModel with the cl argument only if its a valid one
+            if (!string.IsNullOrEmpty(argDir) && argGame != null) {
+                MorphControl = new MorphControlViewModel(StatusBar, (MEGame) argGame, argDir);
+            } else {
+                MorphControl = new MorphControlViewModel(StatusBar);
+            }
+
+            controls.AddRange(new List<PropertyChangedBase> {StatusBar, MorphControl});
 
             LoadFAQ();
             LoadViewAsync();
+
         } 
 
         /// <summary>
@@ -59,11 +85,16 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// Done here to avoid rereading every time you launch the help window
         /// </summary>
         private void LoadFAQ() {
-            using StreamReader sr = new("../../../resources/FAQ.json");
-            string faqString = sr.ReadToEnd();
-            Dictionary<string, string> faqParsed = JsonSerializer.Deserialize<Dictionary<string, string>>(faqString);
-            foreach (string i in faqParsed.Keys) {
-                faq.Add(new FAQItem(i, faqParsed[i]));
+            try {
+                using StreamReader sr = new("D:/dev/projects/FSvBSCustomCloneUtility/FSvBSCustomCloneUtility/resources/FAQ.json");
+                string faqString = sr.ReadToEnd();
+                Dictionary<string, string> faqParsed = JsonSerializer.Deserialize<Dictionary<string, string>>(faqString);
+                foreach (string i in faqParsed.Keys) {
+                    faq.Add(new FAQItem(i, faqParsed[i]));
+                }
+            } catch (Exception e) {
+                Log.Error(e.ToString());
+                windowManager.ShowDialogAsync(new ExceptionHandlerViewModel(e), null, null); ;
             }
         }
 
