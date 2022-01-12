@@ -36,8 +36,6 @@
 
   <ItemGroup>
     <None Remove="resources\FAQ.json" />
-    <None Remove="resources\images\logo.png" />
-    <None Remove="resources\images\main_banner.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,7 +65,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="resources\FAQ.json" />
+    <Content Include="resources\FAQ.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Resource Include="resources\images\logo.png" />
     <Resource Include="resources\images\main_banner.png" />
   </ItemGroup>

@@ -86,7 +86,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// </summary>
         private void LoadFAQ() {
             try {
-                using StreamReader sr = new("D:/dev/projects/FSvBSCustomCloneUtility/FSvBSCustomCloneUtility/resources/FAQ.json");
+                using StreamReader sr = new(Path.Combine(Environment.CurrentDirectory, "resources/FAQ.json"));
                 string faqString = sr.ReadToEnd();
                 Dictionary<string, string> faqParsed = JsonSerializer.Deserialize<Dictionary<string, string>>(faqString);
                 foreach (string i in faqParsed.Keys) {
