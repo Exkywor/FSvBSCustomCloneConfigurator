@@ -11,7 +11,7 @@
 "Does it matter if I'm using the alternative version of the mod?" :
 "Not at all. You can use either the normal or alternative versions of the mod without issue, as long as their version is compatible.",
 "How do I add scars to my custom clone?" :
-"You need to add HED_Face_Alignment_Emis, HED_Face_Alignment_Norm, EYE_Diff texture paremeters using Face_EmisScars_0[1-5] textures.",
+"You need to add HED_Face_Alignment_Emis, HED_Face_Alignment_Norm, EYE_Diff texture paremeters using Face_EmisScars_0[1-5] textures, and add the HED_Emis_Intensity scalar parameter with a value between 0 to 5.",
 "I choose scars when installing the mod, but can't see them after I apply the morph, what is happening?" :
 "The scars install options when installing the mod with Mod Manager control the scars for the Default Appearance, not for custom headmorphs.",
 "Some color/texture doesn't look exactly how it should, what should I do?" :
@@ -20,5 +20,7 @@
 "Yes, provided that any required mods are installed pre-texture modding. You can even toggle between the custom and default appearances using this tool without issues.",
 "I previously applied a morph for either the female/male clone only, then in a later use of the tool applied a morph for the other clone, but the previous morph got removed and reset to the default appearance, what happened?" :
 "Whenever you apply a morph, the mod files are reset to avoid any issues, removing in the process any previously applied morph. ",
+"Can I use this tool while the game is running?":
+"Yes, you can. However, if you apply a morph to change from Default to Custom, rather than replacing an existing one, you'll see the changes the next time you boot the game.",
 "An Unhandled Exception occurred, what should I do?" :
 "Click the Copy button on the exception window, paste it in an online pastebin, then add it in a bug report in the Github page."}

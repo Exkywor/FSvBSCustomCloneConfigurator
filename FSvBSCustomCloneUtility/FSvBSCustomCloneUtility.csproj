@@ -36,6 +36,8 @@
 
   <ItemGroup>
     <None Remove="resources\FAQ.json" />
+    <None Remove="resources\images\logo.png" />
+    <None Remove="resources\images\splashscreen.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,6 +72,10 @@
     </Content>
     <Resource Include="resources\images\logo.png" />
     <Resource Include="resources\images\main_banner.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SplashScreen Include="resources\images\splashscreen.png" />
   </ItemGroup>
 
   <ItemGroup>
