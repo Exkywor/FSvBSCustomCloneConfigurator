@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,8 +13,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         public string FileVersion { get; set; }
 
         public InfoWindowViewModel() {
-            FileVersion = "Version 1.0.0.0";
-            // FileVersion = $"Version {FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+            FileVersion = $"Version {FileVersionInfo.GetVersionInfo(Path.Combine(Environment.CurrentDirectory, "FSvBSC3.exe")).FileVersion}";
         }
 
         public void OpenSite(string target) {
