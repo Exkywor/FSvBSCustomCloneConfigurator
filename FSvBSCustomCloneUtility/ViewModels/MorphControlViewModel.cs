@@ -393,6 +393,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// <param name="ronFile">Morph file link</param>
         /// <returns>True if the application was successful</returns>
         private bool ApplyMorph(object sender, DoWorkEventArgs e, Gender gender, string ronFile) {
+            Log.Information($"Applying {(gender.IsFemale() ? "female" : "male")} headmorph");
             (sender as BackgroundWorker).ReportProgress(0, $"Applying;{(gender.IsFemale() ? "female" : "male")}");
             MorphWriter writer = new(ronFile, (MEGame)TargetGame, gender);
 
@@ -403,10 +404,12 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 if (_applyToActor) {
                     (sender as BackgroundWorker).ReportProgress(0, "Linking");
                     MorphRelinker relinker = new((MEGame)TargetGame, gender);
+                    Log.Information($"Relinking {(gender.IsFemale() ? "female" : "male")} headmorph");
                     relinker.RelinkMorph();
                 }
 
                 (sender as BackgroundWorker).ReportProgress(0, $"Applied;{(gender.IsFemale() ? "Female" : "Male")}");
+                Log.Information($"Applied {(gender.IsFemale() ? "female" : "male")} headmorph");
                 return true;
             } else {
                 if (resourcesNotFound.Count > 0) {
@@ -498,9 +501,9 @@ namespace FSvBSCustomCloneUtility.ViewModels {
 
         private void Apply_RunWokerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (e.Error != null) {
-                string info = $"Error when applying to {TargetGame}.";
-                if (IsMaleCustom) { info += $"\nMale Custom appearance: {RonMFile}\n{File.ReadAllText(RonMFile)}"; }
-                if (IsFemaleCustom) { info += $"\nFemale Custom appearance: {RonFFile}\n{File.ReadAllText(RonFFile)}"; }
+                string info = $"Error applying to {TargetGame}.";
+                if (IsMaleCustom) { info += $"\nMale Custom appearance: {RonMFile}"; }
+                if (IsFemaleCustom) { info += $"\nFemale Custom appearance: {RonFFile}"; }
                 if (!IsMaleCustom) { info += "\nMale Default appearance."; }
                 if (!IsFemaleCustom) { info += "\nFemale Default appearance."; }
                 Log.Error(info);

@@ -18,7 +18,7 @@ namespace FSvBSCustomCloneUtility
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File("FSvBSC3_log_.txt", rollingInterval: RollingInterval.Hour)
+                .WriteTo.File("log_.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
             
             Initialize();
