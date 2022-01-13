@@ -84,18 +84,23 @@
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
                 <TextBlock FontSize="14" HorizontalAlignment="Center">
-                    App icon by Audemus
+                    App icon and splash art design by Audemus
                 </TextBlock>
                 <TextBlock FontSize="14" HorizontalAlignment="Center">
                     Tool name by Jade
+                </TextBlock>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap">
+                    Promotional morphs by CluckenDip, Jenya, MorningAngel, Noira Fayn, Padme4000, and VoodooLilium
                 </TextBlock>
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
                 <TextBlock Text="SPECIAL THANKS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
-                    Noira Fayn, Mgamerz, DropTheSquid, Audemus, Jade, Jenya, Sil, Padme4000, Morning Angel,
-                    VoodooLilium, CluckenDip, phoenixsoul13, Knightingale, ThaliaGrace, LEX Developers
+                    Noira Fayn, Mgamerz, DropTheSquid, Jenya, Audemus, Jade, Sil, Padme4000, MorningAngel,
+                    VoodooLilium, CluckenDip, phoenixsoul13, Knightingale, ThaliaGrace
+                    <LineBreak/>
+                    All the developers of LEX and M3, without whose work this wouldn't be possible
                 </TextBlock>
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
