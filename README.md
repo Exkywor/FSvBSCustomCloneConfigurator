@@ -1,4 +1,4 @@
-[![Download latest release](https://github.com/Exkywor/FSvBSCustomCloneUtility/blob/master/FSvBSCustomCloneUtility/resources/images/logo.png)](https://github.com/Exkywor/FSvBSCustomCloneUtility/releases/latest)
+[![Download latest release](https://github.com/Exkywor/FSvBSCustomCloneConfigurator/blob/master/FSvBSCustomCloneUtility/resources/images/splashimage_banner.png)](https://github.com/Exkywor/FSvBSCustomCloneUtility/releases/latest)
 
 Tool to configure a custom appearance of the Citadel clone for _Mass Effect 3_ and _Mass Effect 3 Legendary Edition_.  
 
