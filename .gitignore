@@ -156,6 +156,9 @@ csx/
 # Windows Store app package directory
 AppPackages/
 
+# Notepad++ backup files
+*.bak
+
 # Others
 *.[Cc]ache
 ClientBin/
