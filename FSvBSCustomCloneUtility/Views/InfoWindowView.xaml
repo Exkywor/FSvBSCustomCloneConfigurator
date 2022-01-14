@@ -43,13 +43,13 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding FileVersion}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock FontSize="18" FontWeight="Bold" Text="{Binding FileVersion}" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <Button Content="Visit GitHub site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('GH')"/>
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
-                <TextBlock Text="COMPATIBLE MOD VERSIONS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock Text="COMPATIBLE MOD VERSIONS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock Text="Mass Effect 3: 1.1.0    " FontSize="14"/>
                     <Button Content="Visit ME3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
@@ -63,7 +63,7 @@
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
-                <TextBlock Text="LIBRARIES" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock Text="LIBRARIES" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Legendary Explorer Core    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('LEX')"/>
@@ -83,29 +83,49 @@
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
-                <TextBlock FontSize="14" HorizontalAlignment="Center">
-                    App icon and splash art design by Audemus
-                </TextBlock>
-                <TextBlock FontSize="14" HorizontalAlignment="Center">
-                    Tool name by Jade
-                </TextBlock>
-                <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap">
-                    Promotional morphs by CluckenDip, Jenya, MorningAngel, Noira Fayn, Padme4000, and VoodooLilium
-                </TextBlock>
-
-                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
-
-                <TextBlock Text="SPECIAL THANKS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
-                    Noira Fayn, Mgamerz, DropTheSquid, Jenya, Audemus, Jade, Sil, Padme4000, MorningAngel,
-                    VoodooLilium, CluckenDip, phoenixsoul13, Knightingale, ThaliaGrace
+                    App icon, splash art, and banner by Audemus
                     <LineBreak/>
-                    All the developers of LEX and M3, without whose work this wouldn't be possible
+                    <LineBreak/>
+                    Splash art and banner morphs by CluckenDip, Jenya, MorningAngel, Noira Fayn, Padme4000, and VoodooLilium
                 </TextBlock>
 
                 <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
 
-                <TextBlock Text="LICENSE" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock Text="SPECIAL THANKS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
+                    Noira Fayn, for her enormous help thoroughly testing this tool and reporting bugs, for the help making the code
+                    and UI of the tool better, and for sharing her knowledge on morphs and way too many other useful things
+                    <LineBreak/>
+                    <LineBreak/>
+                    Mgamerz and DropTheSquid, for their help and pointers navigating problems that arose when developing this tool
+                    <LineBreak/>
+                    <LineBreak/>
+                    Jenya, for her help find solutions to bugs with the morphs
+                    <LineBreak/>
+                    <LineBreak/>
+                    Audemus, for the icon and splash art designs
+                    <LineBreak/>
+                    <LineBreak/>
+                    Jade, for coming up with the tool name
+                    <LineBreak/>
+                    <LineBreak/>
+                    CluckenDip, Herobrine24, Jenya, Knightingale, Morax, MorningAngel, NoiraFayn, Padme4000, phoenixsoul13,
+                    ThaliaGrace, and VoodooLilium, for sharing the many headmorphs that were used in testing this tool
+                    <LineBreak/>
+                    <LineBreak/>
+                    The Mass Effect Modding Workshop, for all your support
+                    <LineBreak/>
+                    <LineBreak/>
+                    All the developers of LEX and M3, without whose work this tool and mod wouldn't even be possible
+                    <LineBreak/>
+                    <LineBreak/>
+                    You, for giving this mod a try. I hope you have a great time with it
+                </TextBlock>
+
+                <Rectangle Width="100" Margin="0,20" HorizontalAlignment="Stretch" Fill="Gray" Height="1"/>
+
+                <TextBlock Text="LICENSE" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <TextBlock FontSize="14" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
                     Copyright (C) 2022 Exkywor
                     <LineBreak/><LineBreak/>
