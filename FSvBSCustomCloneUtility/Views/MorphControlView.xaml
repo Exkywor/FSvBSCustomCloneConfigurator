@@ -14,10 +14,17 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
+        <TextBlock Grid.Row="0" TextWrapping="Wrap">
+            Use this tool to apply and control custom headmorphs for the Citadel clone. If you don't intend to apply a headmorph, the installation through ME3Tweaks Mod Manager is enough, though you can use this tool at any point afterwards.
+        </TextBlock>
+        <Rectangle HorizontalAlignment="Stretch" Fill="Gray" Margin="0,20" Height="1" Grid.Row="1"/>
+
         <!-- Game Target -->
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="15"/>
@@ -64,7 +71,7 @@
         </Grid>
 
         <!-- Appearance -->
-        <StackPanel Grid.Row="1" Margin="0,30,0,15">
+        <StackPanel Grid.Row="3" Margin="0,30,0,15">
             <TextBlock TextWrapping="Wrap" FontSize="18" FontWeight="Bold">
                 CLONE'S APPEARANCE
             </TextBlock>
@@ -77,7 +84,7 @@
             </TextBlock>
         </StackPanel>
 
-        <Grid Grid.Row="2" VerticalAlignment="Center">
+        <Grid Grid.Row="4" VerticalAlignment="Center">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="15" />
