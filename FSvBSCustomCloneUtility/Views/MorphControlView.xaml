@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" TextWrapping="Wrap">
-            Use this tool to apply and control custom headmorphs for the Citadel clone. If you don't intend to apply a headmorph, the installation through ME3Tweaks Mod Manager is enough, though you can use this tool at any point afterwards.
+            Use this tool to apply custom headmorphs to the Citadel clone. If you don't intend to use a morph, installing the mod through ME3Tweaks Mod Manager is enough.
         </TextBlock>
         <Rectangle HorizontalAlignment="Stretch" Fill="Gray" Margin="0,20" Height="1" Grid.Row="1"/>
 

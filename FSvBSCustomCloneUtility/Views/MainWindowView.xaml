@@ -50,7 +50,7 @@
 
         <!-- Bottom -->
 
-        <Grid Margin="20,10,20,5"  DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+        <Grid Margin="20,10,20,10"  DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="10"/>

@@ -374,6 +374,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             FSvBSDirectories.ApplyCleanFiles((MEGame)TargetGame);
             (sender as BackgroundWorker).ReportProgress(0, "Cleaned");
 
+            Log.Information($"Applying morphs to {TargetGame}");
             foreach (Gender gender in targets) {
                 bool res = ApplyMorph(sender, e, gender, gender.IsFemale() ? RonFFile : RonMFile);
                 if (!res) {
