@@ -85,7 +85,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// Done here to avoid rereading every time you launch the help window
         /// </summary>
         private void LoadFAQ() {
-            Log.Information("Loading FAQ");
             try {
                 using StreamReader sr = new(Path.Combine(Environment.CurrentDirectory, "resources/FAQ.json"));
                 string faqString = sr.ReadToEnd();
@@ -93,7 +92,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
                 foreach (string i in faqParsed.Keys) {
                     faq.Add(new FAQItem(i, faqParsed[i]));
                 }
-                Log.Information("Loaded FAQ");
             } catch (Exception e) {
                 Log.Error($"Error loading FAQ. {e}");
                 windowManager.ShowDialogAsync(new ExceptionHandlerViewModel(e), null, null); ;
