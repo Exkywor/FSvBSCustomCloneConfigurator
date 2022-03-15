@@ -70,9 +70,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="resources\FAQ.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="resources\FAQ.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Resource Include="resources\images\logo.png" />
     <Resource Include="resources\images\main_banner.png" />
   </ItemGroup>

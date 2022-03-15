@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -86,8 +87,13 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// </summary>
         private void LoadFAQ() {
             try {
-                using StreamReader sr = new(Path.Combine(Environment.CurrentDirectory, "resources/FAQ.json"));
+                var assembly = Assembly.GetExecutingAssembly();
+                string faqName = "FSvBSCustomCloneUtility.resources.FAQ.json";
+                string[] names = assembly.GetManifestResourceNames();
+                using Stream stream = assembly.GetManifestResourceStream(faqName);
+                using StreamReader sr = new(stream);
                 string faqString = sr.ReadToEnd();
+
                 Dictionary<string, string> faqParsed = JsonSerializer.Deserialize<Dictionary<string, string>>(faqString);
                 foreach (string i in faqParsed.Keys) {
                     faq.Add(new FAQItem(i, faqParsed[i]));
