@@ -18,8 +18,8 @@
     <Copyright>Copyright (C) 2022 Exkywor</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
