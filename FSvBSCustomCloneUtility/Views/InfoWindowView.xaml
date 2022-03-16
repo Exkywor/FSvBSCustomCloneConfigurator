@@ -38,6 +38,7 @@
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Cursor" Value="Hand"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -51,12 +52,12 @@
 
                 <TextBlock Text="COMPATIBLE MOD VERSIONS" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Mass Effect 3: 1.1.0    " FontSize="14"/>
+                    <TextBlock Text="Mass Effect 3: 1.1.0 or higher    " FontSize="14"/>
                     <Button Content="Visit ME3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('ME3')"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Mass Effect 3 LE: 1.1.0    " FontSize="14"/>
+                    <TextBlock Text="Mass Effect 3 LE: 1.1.0 or higher    " FontSize="14"/>
                     <Button Content="Visit LE3 mod site" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('LE3')"/>
                 </StackPanel>
@@ -67,8 +68,6 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Legendary Explorer Core    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('LEX')"/>
-                    <Button Content="    M3Tweaks Mod Manager Core    " Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
-                         cal:Message.Attach="OpenSite('M3')"/>
                     <Button Content="    Caliburn.Micro" Style="{StaticResource HyperlinkButton}" HorizontalAlignment="Center"
                          cal:Message.Attach="OpenSite('CM')"/>
                 </StackPanel>
