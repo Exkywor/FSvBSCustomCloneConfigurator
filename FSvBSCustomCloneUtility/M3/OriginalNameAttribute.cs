@@ -20,6 +20,8 @@
  *    distribution.
  */
 
+// Code from https://github.com/ME3Tweaks/ME3TweaksModManager/
+
 using System;
 
 namespace MassEffectModManagerCore.modmanager.save.game3

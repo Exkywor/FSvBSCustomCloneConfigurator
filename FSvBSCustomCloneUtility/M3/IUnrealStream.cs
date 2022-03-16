@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Code from https://github.com/ME3Tweaks/ME3TweaksModManager/
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
