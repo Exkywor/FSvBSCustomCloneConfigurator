@@ -46,6 +46,16 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
+        /// Get the name of the mod's patch dir, accounting for game version and mod version
+        /// </summary>
+        /// <param name="game">Game to check for</param>
+        /// <returns>Mod dir name</returns>
+        public static string GetPatchesModDirName(MEGame game)
+        {
+            return $"DLC_MOD_FSvBS{(game.IsOTGame() ? "" : "LE")}P{(IsVvs(game) ? "_V" : "")}";
+        }
+
+        /// <summary>
         /// Gets the path to the FSvBS folder for ME3
         /// </summary>
         public static string ME3ModPath => GetModPath(MEGame.ME3);
@@ -80,6 +90,20 @@ namespace FSvBSCustomCloneUtility.Tools {
         public static string GetCookedPath(MEGame game) {
             if (!IsModInstalled(game)) { return null; }
             else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetModDirName(game)}\CookedPCConsole"); }
+        }
+
+        /// <summary>
+        /// Gets the path to the FSvBS's patches CookedPCConsole folder for LE3
+        /// </summary>
+        public static string LE3PatchesModPath => GetPatchesModPath(MEGame.LE3);
+        /// <summary>
+        /// Gets the path for the FSvBS's patches CookedPCConsole folder for the input game
+        /// </summary>
+        /// <param name="game">Game to get the path for</param>
+        /// <returns>Path to the FSvBS's patches CookedPCConsole folder, null if the mod is not installed</returns>
+        public static string GetPatchesModPath(MEGame game) {
+            if (!IsPatchesModInstalled(game)) { return null; }
+            else { return Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetPatchesModDirName(game)}\CookedPCConsole"); }
         }
 
         /// <summary>
@@ -118,6 +142,17 @@ namespace FSvBSCustomCloneUtility.Tools {
         /// <returns></returns>
         public static string GetCleanPath(MEGame game) {
             string folder = Path.Combine(GetCookedPath(game), "Clean");
+            if (!Directory.Exists(folder)) { return null; }
+            else { return folder; }
+        }
+
+        /// <summary>
+        /// Gets the path to the clean folder for the input game mod's patches
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static string GetPatchesCleanPath(MEGame game) {
+            string folder = Path.Combine(GetPatchesModPath(game), "Clean");
             if (!Directory.Exists(folder)) { return null; }
             else { return folder; }
         }
@@ -177,12 +212,46 @@ namespace FSvBSCustomCloneUtility.Tools {
         }
 
         /// <summary>
+        /// Gets the paths of the FSvBS's patches mod files that contain instances of the clone for the input game
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="game">Game to get the paths for</param>
+        /// <returns>List of file paths containing instances of the clone, in the patches mod</returns>
+        public static List<string> GetPatchesInstancePaths(MEGame game)
+        {
+            List<string> paths = [];
+
+            if (game is not MEGame.LE3) { return paths; }
+
+            foreach (string file in CLONE_INSTANCES_FILENAMES) {
+                string path = Path.Combine(LE3PatchesModPath, file);
+
+                if (!Path.Exists(path)) { continue; }
+
+                paths.Add(path);
+            }
+
+            return paths;
+        }
+
+        /// <summary>
         /// Checks if the mod is installed for the input game
         /// </summary>
         /// <param name="game">Game to check for</param>
         /// <returns>True if the mod is installed</returns>
         public static bool IsModInstalled(MEGame game) {
             if (!Directory.Exists(Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetModDirName(game)}"))) {
+                return false;
+            } else { return true; }
+        }
+
+        /// <summary>
+        /// Checks if the patches mod is installed for the input game
+        /// </summary>
+        /// <param name="game">Game to check for</param>
+        /// <returns>True if the patches mod is installed</returns>
+        public static bool IsPatchesModInstalled(MEGame game) {
+            if (!Directory.Exists(Path.Combine(MEDirectories.GetBioGamePath(game), $@"DLC\{GetPatchesModDirName(game)}"))) {
                 return false;
             } else { return true; }
         }
@@ -216,6 +285,11 @@ namespace FSvBSCustomCloneUtility.Tools {
         public static void ApplyCleanClone(MEGame game) {
             foreach(string file in GetCloneInstancesPaths(game)) {
                 File.Copy(Path.Combine(GetCleanPath(game), $"{Path.GetFileNameWithoutExtension(file)}_Clean.pcc"), file, true);
+            }
+
+            // For patches
+            foreach(string file in GetPatchesInstancePaths(game)) {
+                File.Copy(Path.Combine(GetPatchesCleanPath(game), $"{Path.GetFileNameWithoutExtension(file)}_Clean.pcc"), file, true);
             }
         }
 

@@ -30,6 +30,7 @@ namespace FSvBSCustomCloneUtility.Tools {
         private void Load(MEGame game, Gender gender) {
             this.gender = gender;
             this.targetFiles = FSvBSDirectories.GetCloneInstancesPaths(game);
+            this.targetFiles.AddRange(FSvBSDirectories.GetPatchesInstancePaths(game));
 
             using IMEPackage pcc = MEPackageHandler.OpenMEPackage(FSvBSDirectories.GetDummiesPath(game));
             this.archetype = pcc.FindExport($"BioChar_CustomDummy.Archetypes.fsvbs_dummy_custom_{(gender.IsMale() ? "male" : "female")}_Con");

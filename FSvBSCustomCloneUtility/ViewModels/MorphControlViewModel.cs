@@ -338,6 +338,11 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             (sender as BackgroundWorker).ReportProgress(0, "Busy");
             List<Gender> targets = new(); // Aggregation of targets
 
+            // Apply clean files, which are needed for going back from Custom to Default, or Custom to Custom
+            (sender as BackgroundWorker).ReportProgress(0, "Cleaning");
+            FSvBSDirectories.ApplyCleanFiles((MEGame)TargetGame);
+            (sender as BackgroundWorker).ReportProgress(0, "Cleaned");
+
             // Since the files are reset, we set the bool for non-headmorphs to default to avoid issues
             if (IsMaleCustom) {
                 targets.Add(Gender.Male);
@@ -370,10 +375,6 @@ namespace FSvBSCustomCloneUtility.ViewModels {
         /// <param name="e"></param>
         /// <param name="targets">List of gender targets</param>
         private void ApplyCustomApperance(object sender, DoWorkEventArgs e, List<Gender> targets) {
-            (sender as BackgroundWorker).ReportProgress(0, "Cleaning");
-            FSvBSDirectories.ApplyCleanFiles((MEGame)TargetGame);
-            (sender as BackgroundWorker).ReportProgress(0, "Cleaned");
-
             Log.Information($"Applying morphs to {TargetGame}");
             foreach (Gender gender in targets) {
                 bool res = ApplyMorph(sender, e, gender, gender.IsFemale() ? RonFFile : RonMFile);

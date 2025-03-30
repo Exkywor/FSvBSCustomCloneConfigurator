@@ -57,8 +57,7 @@ namespace FSvBSCustomCloneUtility.ViewModels {
             controls.AddRange(new List<PropertyChangedBase> {StatusBar, MorphControl});
 
             LoadFAQ();
-            LoadViewAsync();
-
+            _ = LoadViewAsync();
         } 
 
         /// <summary>
