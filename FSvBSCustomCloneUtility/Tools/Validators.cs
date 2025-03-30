@@ -65,7 +65,7 @@ namespace FSvBSCustomCloneUtility.Tools {
             if (!FSvBSDirectories.IsModInstalled(game)) {
                 return "The FemShep v BroShep mod was not found. Make sure to install the mod before running this tool.";
             } else if (!FSvBSDirectories.IsValidDummies(game, FSvBSDirectories.GetDummiesPath(game))) {
-                return "The FemShep v BroShep mod version is incompatible. Make sure to have version 1.1.0 or higher installed.";
+                return "The FemShep v BroShep mod version is incompatible. Make sure to have version 1.5.0 or higher installed.";
             } else {
                 return null;
             }

@@ -9,7 +9,7 @@
 "I don't have access to/can't remember the mods my morph uses, what should I do?" :
 "Simply remove the lines that refer to them from your .ron file.",
 "Does it matter if I'm using the Vanilla vs version of the mod?" :
-"Not at all. You can use either the normal or Vanilla vs mods without issue, as long as their version number is compatible (currently 1.1.0 and higher).",
+"Not at all. You can use either the normal or Vanilla vs mods without issue, as long as their version number is compatible (currently 1.5.0 and higher).",
 "How do I add scars to my custom clone?" :
 "You need to add the HED_Face_Alignment_Emis, HED_Face_Alignment_Norm, EYE_Diff texture parameters using the Face_EmisScars_0[1-5] textures, and add the HED_Emis_Intensity scalar parameter with a value between 0 to 5.",
 "I choose scars when installing the mod via ME3Tweaks Mod Manager, but can't see them in my custom clone after I apply it, what is happening?" :
